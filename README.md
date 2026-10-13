@@ -166,7 +166,8 @@ The landing page and documentation use Cocoa County's community/open-source
 identity from the [organization profile](https://github.com/Cocoa-County/.github)
 with an original cozy cocoa-and-cream theme and gently floating marshmallows.
 The theme selector supports system, light, and dark modes, with a remembered
-choice across documentation pages. Motion can be paused and is disabled for
+choice across documentation pages. Cozy red wordmark mugs have gently rising
+steam. Both steam and marshmallow motion can be paused and are disabled for
 reduced-motion preferences. No external fonts or animation libraries are needed.
 This is a project-local design, not a shared official design-system package.
 The generic map generator and Concord district colors remain unchanged.

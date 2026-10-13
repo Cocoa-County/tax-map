@@ -29,6 +29,13 @@
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
 
   document.addEventListener("DOMContentLoaded", () => {
+    for (const brand of document.querySelectorAll(".brand")) {
+      const steam = document.createElement("span");
+      steam.className = "mug-steam";
+      steam.setAttribute("aria-hidden", "true");
+      for (let i = 0; i < 3; i++) steam.append(document.createElement("span"));
+      brand.append(steam);
+    }
     const background = document.createElement("div");
     background.className = "cocoa-background";
     background.setAttribute("aria-hidden", "true");
@@ -68,8 +75,9 @@
     motion.type = "button";
     function updateMotion() {
       background.dataset.paused = String(paused || reducedMotion.matches);
+      root.dataset.motionPaused = String(paused || reducedMotion.matches);
       motion.disabled = reducedMotion.matches;
-      motion.textContent = reducedMotion.matches ? "Motion reduced" : paused ? "Resume marshmallows" : "Pause marshmallows";
+      motion.textContent = reducedMotion.matches ? "Motion reduced" : paused ? "Resume animation" : "Pause animation";
       motion.setAttribute("aria-label", reducedMotion.matches ? "Animation disabled by your reduced-motion preference" : motion.textContent);
     }
     motion.addEventListener("click", () => {

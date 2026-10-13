@@ -17,8 +17,15 @@ body { margin: 0; line-height: 1.65; isolation: isolate; }
 .appearance-controls button { cursor: pointer; }
 .appearance-controls :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .appearance-controls button:hover { background: var(--soft); }
-.brand::before { content: ""; position: absolute; width: 25px; height: 20px; left: -38px; top: 4px; border-radius: 3px 3px 10px 10px; background: var(--accent); }
-.brand::after { content: ""; position: absolute; width: 8px; height: 10px; left: -16px; top: 6px; border: 3px solid var(--accent); border-left: 0; border-radius: 0 8px 8px 0; }
+.brand::before { content: ""; position: absolute; width: 25px; height: 20px; left: -38px; top: 4px; border-radius: 3px 3px 10px 10px; background: linear-gradient(110deg, #cf584d, #a13232); box-shadow: inset 2px 0 3px #ffffff30, 0 2px 3px #482e2420; }
+.brand::after { content: ""; position: absolute; width: 8px; height: 10px; left: -16px; top: 6px; border: 3px solid #b53e38; border-left: 0; border-radius: 0 8px 8px 0; }
+.mug-steam { position: absolute; left: -35px; top: -17px; width: 22px; height: 20px; pointer-events: none; }
+.mug-steam span { position: absolute; bottom: 0; width: 5px; height: 13px; border-left: 2px solid var(--muted); border-radius: 50%; opacity: 0; animation: cocoa-steam 3.6s ease-out infinite; }
+.mug-steam span:nth-child(1) { left: 1px; animation-delay: -2.4s; }
+.mug-steam span:nth-child(2) { left: 8px; animation-delay: -1.2s; }
+.mug-steam span:nth-child(3) { left: 15px; }
+@keyframes cocoa-steam { 0% { transform: translateY(5px) scale(.7); opacity: 0; } 25% { opacity: .5; } 70% { opacity: .3; } 100% { transform: translate(3px, -7px) scale(1.15); opacity: 0; } }
+html[data-motion-paused="true"] .mug-steam span { animation-play-state: paused; }
 .brand { position: relative; margin-left: 38px; }
 a { color: var(--accent); text-underline-offset: 4px; }
 a:hover { color: var(--accent-hover); }
@@ -90,4 +97,4 @@ footer { display: flex; align-items: center; justify-content: space-between; gap
   .feature-grid { gap: 20px; }.feature-grid h3 { font-size: 1.1rem; }.feature-grid p { font-size: .86rem; }
   .agent-prompt { padding: 20px; }.closing { padding: 48px 20px; }footer { padding: 24px 20px; flex-wrap: wrap; }footer > span { display: none; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; }.marshmallow { animation: none; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; }.marshmallow, .mug-steam span { animation: none; }.mug-steam span { opacity: .3; } }
