@@ -6,7 +6,7 @@
   <meta name="description" content="Turn public records into transparent tax and assessment maps. AI-assisted research, cited explanations, and a public app your community controls.">
   <meta name="theme-color" content="#fcf6ed">
   <title>taxmap | Public records, made useful</title>
-  <link rel="stylesheet" href="style.css?v=cocoa-3">
+  <link rel="stylesheet" href="style.css?v=cocoa-4">
   <script src="theme.js?v=cocoa-2"></script>
 </head>
 <body>
@@ -14,7 +14,7 @@
   <header class="site-header">
     <a class="brand" href="./" aria-label="taxmap home">taxmap<small>by Cocoa County</small></a>
     <nav aria-label="Main navigation">
-      <a href="#how-it-works">How it works</a>
+      <a href="#workflow">How it works</a>
       <a href="docs/">Documentation</a>
       <a href="concord/">Explore Concord <span aria-hidden="true">&nearr;</span></a>
       <a class="nav-source" href="https://github.com/Cocoa-County/tax-map">GitHub</a>
@@ -60,6 +60,24 @@
         <p>&ldquo;How was this assessment calculated?&rdquo;</p>
       </div>
       <p>The evidence may already be in reports, resolutions, assessment rolls, and parcel data. taxmap gives an AI agent a repeatable workflow for connecting those records&mdash;with citations and checks, not just plausible answers.</p>
+    </section>
+
+    <section class="section workflow" id="workflow" aria-labelledby="workflow-title">
+      <div class="section-heading">
+        <p class="eyebrow">From evidence to application</p>
+        <h2 id="workflow-title">One workflow. A site people can verify.</h2>
+        <p>The agent helps interpret the records. You review the model. taxmap builds the application from that reviewed data.</p>
+      </div>
+      <ol class="workflow-diagram" aria-label="Five stages from public records to a published map">
+        <li><span class="workflow-role">Your sources</span><h3>Bring the evidence</h3><p>Documents, public links, assessment rolls, and parcel GIS.</p></li>
+        <li><span class="workflow-role">Agent + MCP tools</span><h3>Research &amp; model</h3><p>Connect districts, parcels, rates, and formulas to citations.</p></li>
+        <li><span class="workflow-role">Checks + human review</span><h3>Verify &amp; approve</h3><p>Check totals and joins. Explain gaps. Review public fields.</p></li>
+        <li><span class="workflow-role">taxmap build</span><h3>Generate the app</h3><p>Map, search, parcel panels, calculators, and source views.</p></li>
+        <li><span class="workflow-role">Approved deployment</span><h3>Publish &amp; share</h3><p>Host the static site on GitHub Pages or another web host.</p></li>
+      </ol>
+      <p class="workflow-cycle"><span aria-hidden="true">&circlearrowleft;</span> New records or a new fiscal year? Update the project, review the changes, and rebuild.</p>
+      <p class="fine">Project files preserve the evidence and model at every stage. Building does not automatically approve publication or make estimates authoritative.</p>
+      <a href="docs/developers.html#workflow">See the tools behind the workflow &rarr;</a>
     </section>
 
     <section class="section" id="how-it-works" aria-labelledby="martinez-title">
