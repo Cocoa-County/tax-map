@@ -164,9 +164,11 @@ map files are not committed.
 
 The landing page and documentation use Cocoa County's community/open-source
 identity from the [organization profile](https://github.com/Cocoa-County/.github)
-and the blue (`#1f78b4`) and neutral-panel styling of
-[CocoaCountyMap](https://github.com/Cocoa-County/CocoaCountyMap).
-This is a project-local adaptation, not a shared official design-system package.
+with an original cozy cocoa-and-cream theme and gently floating marshmallows.
+The theme selector supports system, light, and dark modes, with a remembered
+choice across documentation pages. Motion can be paused and is disabled for
+reduced-motion preferences. No external fonts or animation libraries are needed.
+This is a project-local design, not a shared official design-system package.
 The generic map generator and Concord district colors remain unchanged.
 
 In GitHub **Settings > Pages**, select **GitHub Actions** as the source.

@@ -1,7 +1,7 @@
 .docs-home { padding: 56px 32px; }
 .docs-home > .lead { max-width: 760px; }
 .docs-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 40px 0; }
-.docs-cards > a { display: block; padding: 28px; background: white; border: 1px solid var(--line); border-radius: 14px; text-decoration: none; color: var(--ink); }
+.docs-cards > a { display: block; padding: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; text-decoration: none; color: var(--ink); }
 .docs-cards > a:hover { border-color: var(--accent); background: var(--soft); }
 .docs-cards h2 { font-size: 1.55rem; margin-top: 16px; }
 .docs-cards p { color: var(--muted); }
@@ -19,7 +19,7 @@
 .docs-article h3 { margin-top: 24px; }
 .docs-article section { padding-top: 34px; margin-top: 34px; border-top: 1px solid var(--line); scroll-margin-top: 20px; }
 .docs-article li { margin: 8px 0; }
-.docs-article pre { overflow-x: auto; padding: 18px; border-radius: 9px; background: var(--deep); color: #edf4fa; font-size: .82rem; line-height: 1.6; }
+.docs-article pre { overflow-x: auto; padding: 18px; border-radius: 9px; background: var(--code-bg); color: #f8ecdc; font-size: .82rem; line-height: 1.6; }
 .docs-article code { overflow-wrap: anywhere; }
 .docs-article pre code { padding: 0; border: 0; margin: 0; overflow-wrap: normal; }
 .callout { padding: 18px 22px; background: var(--soft); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; }
