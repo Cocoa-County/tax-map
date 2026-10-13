@@ -346,7 +346,8 @@ def district_outline_build(only: list[str] | None = None) -> dict:
 def district_upsert(district: dict, merge: bool = False) -> dict:
     """Create/replace a district: {id, name, fiscal_year, agency, description, color, membership:
     {roll, where} | {attribute, values}, zones: [{id, name, membership: {roll, where} | {parent: true}}],
-    formulas: [ids], total, parcel_count, notes, outline: {gap_m, tolerance_m, fill_holes_m2}, evidence: [...]}.
+    formulas: [ids], total, parcel_count, notes, outline: {gap_m, tolerance_m, fill_holes_m2}, evidence: [...],
+    bill_labels: [{code, label, fiscal_year, note, evidence: [...]}]}.
     merge=True shallow-merges into the existing definition."""
     return model_ops.upsert_entity(_project(), "district", district, merge)
 

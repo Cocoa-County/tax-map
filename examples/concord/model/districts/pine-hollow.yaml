@@ -4,6 +4,14 @@ short_name: Pine Hollow
 fiscal_year: 2026-27
 agency: City of Concord
 color: '#2e7d32'
+bill_labels:
+- code: MU
+  label: PINE HOLLOW LMD
+  fiscal_year: 2026-27
+  evidence:
+  - resource: county-bill-pine-hollow-2026-27
+    locator: Special taxes and assessments, APN 121-231-001, checked October 13, 2026
+    quote: PINE HOLLOW LMD / MU
 membership:
   roll: pine-hollow-2026-27
 formulas:

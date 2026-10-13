@@ -29,6 +29,23 @@ def test_roll_totals(project):
         assert all(check["ok"] for check in summary["checks"]), summary
 
 
+def test_verified_county_bill_labels(project):
+    expected = {
+        "downtown": ("MH", "CONCORD DNTWN LMD"),
+        "citywide-lighting": ("JC", "CONCORD STREET LTS"),
+        "pine-hollow": ("MU", "PINE HOLLOW LMD"),
+        "district-3": ("JV", "KIRKWOOD LMD"),
+    }
+    for district in project.districts():
+        label, = district.bill_labels
+        assert (label.code, label.label) == expected[district.id]
+        assert label.fiscal_year == "2026-27" and label.evidence
+        for citation in label.evidence:
+            assert project.resource(citation.resource).origin_url.startswith("https://taxcolp.cccttc.us/")
+        if district.id == "district-3":
+            assert "Ygnacio Woods" in label.note and len(label.evidence) == 2
+
+
 def test_committed_outlines_cover_every_district_and_zone(project):
     outlines = json.loads((CONCORD / "gis" / "districts" / "outlines.geojson").read_text(encoding="utf-8"))
     ids = {f["properties"]["id"] for f in outlines["features"]}

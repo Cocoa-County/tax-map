@@ -4,6 +4,14 @@ short_name: Downtown
 fiscal_year: 2026-27
 agency: City of Concord
 color: '#ef6c00'
+bill_labels:
+- code: MH
+  label: CONCORD DNTWN LMD
+  fiscal_year: 2026-27
+  evidence:
+  - resource: county-bill-downtown-2026-27
+    locator: Special taxes and assessments, APN 112-101-025, checked October 13, 2026
+    quote: CONCORD DNTWN LMD / MH
 membership:
   roll: downtown-2026-27
 zones:

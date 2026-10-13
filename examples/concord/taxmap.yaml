@@ -23,6 +23,11 @@ layers:
     label_fields:
     - USE_DESC
 site:
+  parcel_links:
+  - label: County tax bill (PDF)
+    url_template: https://taxcolp.cccttc.us/PTS_TaxbillsPdfCY?APN={apn_display}
+  - label: Accessible bill
+    url_template: https://taxcolp.cccttc.us/PTS_TaxbillsHtmlCY?APN={apn_display}
   title: Concord Assessment Districts
   subtitle: FY 2026-27 landscape and lighting assessments
   publish_fields:

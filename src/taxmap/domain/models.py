@@ -7,8 +7,10 @@ folder; the SQLite index is only a cache derived from these files.
 from __future__ import annotations
 
 from typing import Any, Literal
+from urllib.parse import urlsplit
+import re
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Model(BaseModel):
@@ -64,6 +66,24 @@ class ApnConfig(Model):
     display_pattern: str | None = Field(None, description="e.g. '###-###-###' for display formatting")
 
 
+class ParcelLink(Model):
+    label: str = Field(min_length=1)
+    url_template: str = Field(description="HTTP(S) URL with {apn} (normalized) or {apn_display} placeholders")
+
+    @field_validator("url_template")
+    @classmethod
+    def validate_template(cls, value: str) -> str:
+        parts = urlsplit(value)
+        if parts.scheme not in {"https", "http"} or not parts.netloc or "{" in parts.netloc or "}" in parts.netloc:
+            raise ValueError("Parcel links must use an absolute HTTP(S) URL with a fixed host")
+        stripped = re.sub(r"\{apn(?:_display)?\}", "", value)
+        if "{" in stripped or "}" in stripped:
+            raise ValueError("Parcel link placeholders must be {apn} or {apn_display}")
+        if stripped == value:
+            raise ValueError("Parcel links must include an APN placeholder")
+        return value
+
+
 class SiteConfig(Model):
     title: str | None = None
     subtitle: str | None = None
@@ -74,6 +94,7 @@ class SiteConfig(Model):
     copy_documents: bool = Field(False, description="Copy referenced documents into the site for offline citations")
     disclaimer: str | None = None
     base_url: str | None = None
+    parcel_links: list[ParcelLink] = Field(default_factory=list, description="External official parcel links")
 
 
 class ProjectConfig(Model):
@@ -170,6 +191,16 @@ class Zone(Model):
     evidence: list[Evidence] = Field(default_factory=list)
 
 
+class BillLabel(Model):
+    """Verified county bill wording, not a parcel-level charge or membership rule."""
+
+    code: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    fiscal_year: str | None = None
+    note: str | None = None
+    evidence: list[Evidence] = Field(default_factory=list)
+
+
 class District(Model):
     id: str
     name: str
@@ -179,6 +210,7 @@ class District(Model):
     color: str | None = None
     description: str | None = None
     membership: Membership | None = None
+    bill_labels: list[BillLabel] = Field(default_factory=list)
     zones: list[Zone] = Field(default_factory=list)
     formulas: list[str] = Field(default_factory=list)
     total: float | None = Field(None, description="Total levy stated by the source document")

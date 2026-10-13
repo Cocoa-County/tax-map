@@ -16,6 +16,34 @@ resources:
   tags:
   - council
   notes: Link-only. Download with resource_add_url to extract text and cite pages.
+- id: county-bill-downtown-2026-27
+  kind: web
+  title: 'County bill label verification: downtown, FY 2026-27'
+  origin_url: https://taxcolp.cccttc.us/PTS_TaxbillsHtmlCY?APN=112-101-025
+  added_at: '2026-10-13T18:53:35+00:00'
+  notes: Checked October 13, 2026. Special taxes and assessments section. Reference for bill wording only;
+    current-year URL changes as county advances the bill year. No payment or valuation data copied.
+- id: county-bill-kirkwood-2026-27
+  kind: web
+  title: 'County bill label verification: kirkwood, FY 2026-27'
+  origin_url: https://taxcolp.cccttc.us/PTS_TaxbillsHtmlCY?APN=118-130-001
+  added_at: '2026-10-13T18:53:35+00:00'
+  notes: Checked October 13, 2026. Special taxes and assessments section. Reference for bill wording only;
+    current-year URL changes as county advances the bill year. No payment or valuation data copied.
+- id: county-bill-pine-hollow-2026-27
+  kind: web
+  title: 'County bill label verification: pine-hollow, FY 2026-27'
+  origin_url: https://taxcolp.cccttc.us/PTS_TaxbillsHtmlCY?APN=121-231-001
+  added_at: '2026-10-13T18:53:35+00:00'
+  notes: Checked October 13, 2026. Special taxes and assessments section. Reference for bill wording only;
+    current-year URL changes as county advances the bill year. No payment or valuation data copied.
+- id: county-bill-ygnacio-woods-2026-27
+  kind: web
+  title: 'County bill label verification: ygnacio-woods, FY 2026-27'
+  origin_url: https://taxcolp.cccttc.us/PTS_TaxbillsHtmlCY?APN=134-541-001
+  added_at: '2026-10-13T18:53:35+00:00'
+  notes: Checked October 13, 2026. Special taxes and assessments section. Reference for bill wording only;
+    current-year URL changes as county advances the bill year. No payment or valuation data copied.
 - id: district-3-report-2026-27
   kind: document
   title: 'Final Engineer''s Report: Landscaping and Lighting Maintenance District No. 3 FY 2026-27'

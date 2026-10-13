@@ -4,6 +4,14 @@ short_name: Citywide Lighting
 fiscal_year: 2026-27
 agency: City of Concord
 color: '#1565c0'
+bill_labels:
+- code: JC
+  label: CONCORD STREET LTS
+  fiscal_year: 2026-27
+  evidence:
+  - resource: county-bill-downtown-2026-27
+    locator: Special taxes and assessments, APN 112-101-025, checked October 13, 2026
+    quote: CONCORD STREET LTS / JC
 description: Applies citywide; no parcel roll is published, so membership uses the parcel layer's city
   boundary field.
 membership:

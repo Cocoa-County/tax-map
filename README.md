@@ -28,6 +28,44 @@ keeps its own APN, official assessments, calculator inputs, and shareable link.
 Search results and APN links also show the chooser when other properties
 overlap an interior point of the selected footprint.
 
+Configure official per-parcel links under `site.parcel_links`:
+
+```yaml
+site:
+  parcel_links:
+    - label: County tax bill (PDF)
+      url_template: https://taxcolp.cccttc.us/PTS_TaxbillsPdfCY?APN={apn_display}
+```
+
+Templates support `{apn}` (normalized APN) and `{apn_display}` (project display
+pattern); values are URL-encoded. Only absolute HTTP(S) links with fixed hosts
+are allowed. Concord includes current county PDF and accessible HTML bill
+links, verified against the county lookup API. Bills open on the county site;
+availability and the current bill year may differ from the project's fiscal
+year. No bills or payment information are copied into the map.
+
+Districts can define `bill_labels` to connect their full names with the exact
+description and code used in the county bill's **Special taxes and assessments**
+section:
+
+```yaml
+bill_labels:
+  - code: MH
+    label: CONCORD DNTWN LMD
+    fiscal_year: 2026-27
+    evidence:
+      - resource: county-bill-example
+        locator: Special taxes and assessments
+```
+
+Cards show the code and label; district details include verification year and
+citations. Optional `note` explains ambiguous wording. Concord's verified labels
+are `MH` / `CONCORD DNTWN LMD`, `JC` / `CONCORD STREET LTS`,
+`MU` / `PINE HOLLOW LMD`, and `JV` / `KIRKWOOD LMD`. The last label is used for
+both Kirkwood and Ygnacio Woods Unit II. Match **both** code and description;
+these reference labels do not prove a charge or change parcel membership.
+The map covers only its modeled districts, not every special tax on the bill.
+
 Version 1 ships the MCP server, the skills, a CLI and the site generator.
 The server is deterministic: it stores, extracts, searches, computes and
 checks, while the agent reads, decides and writes.

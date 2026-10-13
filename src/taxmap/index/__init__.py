@@ -108,9 +108,13 @@ def rebuild(project: Project, extract_missing: bool = True) -> dict:
             db.execute("INSERT INTO entities VALUES (?,?,?,?)", ("district", district.id, district.name,
                                                                  f"model/districts/{district.id}.yaml"))
             db.execute("INSERT INTO docs VALUES (?,?,?,?,?)", (
-                " ".join(filter(None, [district.name, district.description, *(z.name for z in district.zones)])),
+                " ".join(filter(None, [district.name, district.description, *(z.name for z in district.zones),
+                                      *(text for label in district.bill_labels
+                                        for text in (label.code, label.label, label.note))])),
                 district.name, "district", district.id, None))
             evidence += _evidence_rows("district", district.id, "district", district.evidence)
+            for label in district.bill_labels:
+                evidence += _evidence_rows("district", district.id, f"bill_label:{label.code}", label.evidence)
             for zone in district.zones:
                 evidence += _evidence_rows("district", district.id, f"zone:{zone.id}", zone.evidence)
         for formula in project.formulas():

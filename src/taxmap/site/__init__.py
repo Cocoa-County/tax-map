@@ -192,6 +192,7 @@ def build_site(project: Project, output: str | None = None) -> dict:
             "rolls": [r.id for r in rolls], "members": len(context.members.get(district.id, ())),
             "rule": rule(district.membership), "zones": zones, "formulas": district.formulas,
             "notes_html": notes_html, "evidence": _evidence(district.evidence),
+            "bill_labels": [label.dump() for label in district.bill_labels],
         })
         list_groups = [district.id] if groups_out[-1]["rule"]["type"] == "list" else []
         list_groups += [z["id"] for z in zones if z["rule"]["type"] == "list"]
@@ -239,6 +240,7 @@ def build_site(project: Project, output: str | None = None) -> dict:
             "and county tax bill are authoritative."),
         "jurisdiction": jurisdiction.dump(), "fiscal_year": project.config.fiscal_year,
         "apn_display_pattern": project.config.apn.display_pattern, "pages": pages, "built_at": now_iso(),
+        "parcel_links": [link.dump() for link in project.config.site.parcel_links],
     })
 
     static = _static_dir()

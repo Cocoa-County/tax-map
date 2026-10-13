@@ -402,6 +402,18 @@
     return Object.values(state.formulas).filter((f) => groups.has(f.district));
   }
 
+  function billLabels(district, detailed = false) {
+    const labels = district.bill_labels || [];
+    if (!labels.length) return null;
+    return el("div", { class: "bill-labels" },
+      el("p", { class: "eyebrow" }, "Look for on your bill"),
+      labels.map((item) => el("div", {},
+        el("p", { class: "bill-label" }, el("code", {}, item.code), " ", el("strong", {}, item.label)),
+        item.note ? el("p", { class: "muted" }, item.note) : null,
+        detailed && item.fiscal_year ? el("p", { class: "muted" }, `Verified bill year: ${item.fiscal_year}`) : null,
+        detailed ? evidenceList(item.evidence) : null)));
+  }
+
   function renderParcel() {
     const { attrs, apn } = state.selected;
     const { groups, amounts } = memberGroups(apn, attrs);
@@ -411,6 +423,16 @@
       el("h2", {}, address || `APN ${formatApn(apn)}`),
       address ? el("p", { class: "muted" }, `APN ${formatApn(apn)}`) : null)];
     const districts = state.districts.districts.filter((d) => groups.has(d.id));
+    if (normalizeApn(apn) && (state.config.parcel_links || []).length) {
+      body.push(el("div", { class: "parcel-official-links" },
+        el("div", { class: "row-actions" }, state.config.parcel_links.map((link) => {
+          const url = link.url_template.replace(/\{apn(_display)?\}/g, (_, display) =>
+            encodeURIComponent(display ? formatApn(apn) : normalizeApn(apn)));
+          return el("a", { class: "official-link", href: url, target: "_blank", rel: "noopener noreferrer" }, link.label,
+            el("span", { "aria-hidden": "true" }, " ↗"));
+        })),
+        el("p", { class: "muted" }, "Opens the official county site. Bill availability and tax year are determined by the county.")));
+    }
     const listedTotal = Object.values(amounts).filter((amount) => typeof amount === "number").reduce((a, b) => a + b, 0);
     if (Object.values(amounts).some((amount) => typeof amount === "number")) {
       body.push(el("div", { class: "parcel-total" }, el("span", {}, "Listed annual assessments"),
@@ -453,6 +475,7 @@
         el("div", { class: "card-head" },
           el("strong", { title: district.name }, el("span", { class: "swatch", style: `background:${district.color}` }), " ", district.short_name || district.name),
           el("span", { class: "amount" }, amount !== undefined ? money(amount) : "")),
+        billLabels(district),
         zones.length ? el("div", {}, zones.map((z) => el("span", { class: "chip" },
           el("span", { class: "swatch", style: `background:${z.color}` }), z.name))) : null,
         el("p", { class: "muted" }, amount !== undefined ? `Official ${district.fiscal_year || ""} roll amount`
@@ -461,6 +484,10 @@
           formulas.map((f) => el("button", { type: "button", "aria-label": `Calculate ${f.name}`, onclick: () => openCalculator(f.id) },
             formulas.length === 1 ? "Calculator" : f.name)),
           el("button", { type: "button", class: "ghost", onclick: () => openDistrict(district.id) }, "Details"))));
+    }
+    if (districts.some((district) => (district.bill_labels || []).length)) {
+      body.push(el("p", { class: "muted" },
+        "Match both the description and code in the bill's Special taxes and assessments section. These are reference labels, not confirmation of a charge on this parcel. Other bill charges are not mapped here; the county bill is authoritative."));
     }
     body.push(el("details", {}, el("summary", {}, "Parcel attributes"),
       el("table", { class: "kv" }, Object.entries(attrs).map(([k, v]) => el("tr", {}, el("th", {}, k), el("td", {}, numberText(v)))))));
@@ -679,6 +706,7 @@
     const rollTotal = district.rolls.length ? money(district.roll_total) : "No roll";
     const body = el("div", {},
       district.description ? el("p", {}, district.description) : null,
+      billLabels(district, true),
       el("table", { class: "kv" },
         el("tr", {}, el("th", {}, "Agency"), el("td", {}, district.agency || "—")),
         el("tr", {}, el("th", {}, "Fiscal year"), el("td", {}, district.fiscal_year || "—")),

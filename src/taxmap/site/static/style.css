@@ -50,6 +50,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .panel h3 { font-size: .8rem; margin: 20px 0 8px; display: flex; align-items: center; gap: 8px; }
 .eyebrow { text-transform: uppercase; letter-spacing: .1em; font-weight: 700; font-size: .65rem; color: var(--accent); margin: 0 0 6px; }
 .parcel-heading > .muted { margin: 4px 0 14px; }
+.parcel-official-links { margin: 12px 0; }
+.parcel-official-links > .muted { font-size: .7rem; margin: 6px 0; }
+.official-link { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--accent); text-decoration: none; font-size: .8rem; font-weight: 600; }
+.official-link:hover { background: #edf6f4; border-color: var(--accent); }
 .count { background: #f1f5f9; color: var(--muted); padding: 1px 7px; border-radius: 12px; }
 .overlap-chooser { margin: 16px 0; }
 .overlap-chooser > .muted { font-size: .75rem; }
@@ -70,6 +74,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .card-head strong { font-size: .85rem; }
 .card-head .amount { white-space: nowrap; }
 .card > .muted { margin: 8px 0; font-size: .75rem; }
+.bill-labels { margin: 10px 0; padding: 8px 10px; background: var(--bg); border-radius: 8px; }
+.bill-labels .eyebrow { margin: 0 0 5px; }
+.bill-label { margin: 0; font-size: .78rem; overflow-wrap: anywhere; }
+.bill-label code { display: inline-block; padding: 2px 5px; border: 1px solid var(--line); border-radius: 4px; }
+.bill-labels .muted { margin: 5px 0 0; font-size: .75rem; }
 .amount { font-variant-numeric: tabular-nums; font-weight: 600; }
 .row-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 table.kv, table.grid { width: 100%; border-collapse: collapse; font-size: .85rem; }

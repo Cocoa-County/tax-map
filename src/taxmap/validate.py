@@ -59,6 +59,10 @@ def validate_project(project: Project, check_hashes: bool = True) -> dict:
     formula_ids = {f.id for f in formulas}
     for district in districts:
         check_evidence(f"district {district.id}", district.evidence)
+        for label in district.bill_labels:
+            check_evidence(f"district {district.id} bill label {label.code}", label.evidence)
+            if not label.evidence:
+                warnings.append(f"district {district.id}: bill label {label.code} has no evidence")
         for zone in district.zones:
             if zone.id in group_ids:
                 errors.append(f"district {district.id}: zone id {zone.id!r} is not unique")

@@ -3,7 +3,7 @@ import json
 import pytest
 
 from taxmap import assess, gis, index, ingest
-from taxmap.domain.models import District, Formula
+from taxmap.domain.models import BillLabel, District, Formula, ParcelLink
 from taxmap.extract import extract_text, read_pages
 from taxmap.gis.outlines import build_outlines
 from taxmap.project import Project, find_project, init_project
@@ -126,9 +126,12 @@ def test_rolls_formulas_outlines_site(mapped):
     assert report["ok"], report
 
     mapped.config.site.publish_fields = ["APN", "SQFT", "ADDR"]
+    mapped.config.site.parcel_links = [ParcelLink(label="County bill", url_template="https://example.org/bill?apn={apn}")]
     mapped.save_config()
     built = build_site(Project(mapped.root))
     site = mapped.root / "site"
+    config = json.loads((site / "data" / "config.json").read_text(encoding="utf-8"))
+    assert config["parcel_links"] == [{"label": "County bill", "url_template": "https://example.org/bill?apn={apn}"}]
     assert built["parcels"] == 4 and built["indexed_apns"] == 3
     assert (site / "index.html").exists() and (site / "formula.js").exists()
     assert (site / "formula-display.js").exists()
@@ -141,3 +144,48 @@ def test_rolls_formulas_outlines_site(mapped):
     published = "".join(p.read_text(encoding="utf-8") for p in (site / "data").rglob("*.json"))
     published += "".join(p.read_text(encoding="utf-8") for p in (site / "data").rglob("*.geojson"))
     assert "Private" not in published
+
+
+@pytest.mark.parametrize("url", [
+    "javascript:alert('{apn}')", "/bill?apn={apn}", "https://{apn}.example.org/",
+    "https://example.org/{unknown}", "https://example.org/bill",
+])
+def test_invalid_parcel_link_templates_rejected(url):
+    with pytest.raises(ValueError):
+        ParcelLink(label="Bill", url_template=url)
+
+
+def test_parcel_link_display_template():
+    link = ParcelLink(label="Bill", url_template="https://example.org/bill?apn={apn_display}")
+    assert "{apn_display}" in link.url_template
+
+
+def test_bill_labels_published_searchable_and_cited(mapped):
+    resource = ingest.add_note(mapped, "Bill wording", "Landscape charges appear as DEMO LMD / AB.")
+    district = mapped.districts()[0]
+    label = BillLabel(code="AB", label="DEMO LMD", fiscal_year="2026-27",
+                      note="The county uses an abbreviated description.",
+                      evidence=[{"resource": resource.id, "locator": "Special taxes and assessments"}])
+    district.bill_labels = [label]
+    mapped.save_entity("district", district)
+    assert validate_project(mapped)["ok"]
+    build_site(mapped)
+    data = json.loads((mapped.root / "site" / "data" / "districts.json").read_text(encoding="utf-8"))
+    assert data["districts"][0]["bill_labels"] == [label.dump()]
+    index.rebuild(mapped)
+    assert any(hit["ref"] == "lmd" for hit in index.search(mapped, "DEMO LMD"))
+    citations = index.evidence_for(mapped, resource_id=resource.id)
+    assert any(item["field"] == "bill_label:AB" for item in citations)
+
+    district.bill_labels[0].evidence[0].resource = "missing-bill"
+    mapped.save_entity("district", district)
+    report = validate_project(mapped)
+    assert not report["ok"]
+    assert any("bill label AB" in error and "missing-bill" in error for error in report["errors"])
+
+
+def test_bill_labels_optional_and_nonempty():
+    assert District(id="demo", name="Demo").bill_labels == []
+    for code, label in [("", "DEMO LMD"), ("AB", "")]:
+        with pytest.raises(ValueError):
+            BillLabel(code=code, label=label)

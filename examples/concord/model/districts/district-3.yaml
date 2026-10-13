@@ -4,6 +4,18 @@ short_name: District No. 3
 fiscal_year: 2026-27
 agency: City of Concord
 color: '#6a1b9a'
+bill_labels:
+- code: JV
+  label: KIRKWOOD LMD
+  fiscal_year: 2026-27
+  note: This county label covers both Kirkwood and Ygnacio Woods Unit II. It does not identify the benefit zone by itself.
+  evidence:
+  - resource: county-bill-kirkwood-2026-27
+    locator: Special taxes and assessments, APN 118-130-001, checked October 13, 2026
+    quote: KIRKWOOD LMD / JV
+  - resource: county-bill-ygnacio-woods-2026-27
+    locator: Special taxes and assessments, APN 134-541-001, checked October 13, 2026
+    quote: KIRKWOOD LMD / JV
 zones:
 - id: kirkwood
   name: Kirkwood
