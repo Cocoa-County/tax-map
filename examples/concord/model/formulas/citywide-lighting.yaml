@@ -1,0 +1,421 @@
+id: citywide-lighting
+name: Citywide street lighting assessment
+district: citywide-lighting
+fiscal_year: 2026-27
+description: Equivalent dwelling units (EDU) from the County land-use code times the per-EDU rate.
+inputs:
+- name: use_code
+  label: County land-use code
+  source:
+    parcel: USE_CODE
+- name: private_street
+  label: Single-family home on a private street (1 = yes)
+  default: 0.0
+  caveat: Not in the parcel data. Private-street homes drop the 0.25 security factor (0.75 EDU).
+constants:
+  rate:
+    value: 25.0
+    label: Rate per EDU
+    unit: $/EDU
+    evidence:
+    - resource: citywide-lighting-report-2026-27
+      page: 15
+      locator: Part D, printed p. 11
+lookups:
+  edu:
+    label: EDU schedule (Appendix A)
+    entries:
+    - keys: 11, 12, 13, 14, 19, 61
+      value: 1.0
+      label: Single-family home
+      details:
+        intensity: 0.25
+        pedestrian: 0.5
+        security: 0.25
+    - keys: 16, 29
+      value: 0.5
+      label: Condominium
+      details:
+        intensity: 0.25
+        pedestrian: 0.125
+        security: 0.125
+    - keys: '21'
+      value: 1.75
+      label: 'Multiple family: 2 units'
+      details:
+        intensity: 0.25
+        pedestrian: 1.0
+        security: 0.5
+    - keys: 22, 24
+      value: 3.0
+      label: 'Multiple family: 3 units'
+      details:
+        intensity: 0.25
+        pedestrian: 2.25
+        security: 0.5
+    - keys: '23'
+      value: 3.25
+      label: 'Multiple family: 4 units'
+      details:
+        intensity: 0.5
+        pedestrian: 2.25
+        security: 0.5
+    - keys: '25'
+      value: 5.0
+      label: 'Multiple family: 5-12 units'
+      details:
+        intensity: 0.5
+        pedestrian: 3.5
+        security: 1.0
+    - keys: '26'
+      value: 6.0
+      label: 'Multiple family: 13-24 units'
+      details:
+        intensity: 0.75
+        pedestrian: 4.0
+        security: 1.25
+    - keys: '27'
+      value: 7.0
+      label: 'Multiple family: 25-59 units'
+      details:
+        intensity: 0.75
+        pedestrian: 4.5
+        security: 1.75
+    - keys: '28'
+      value: 8.0
+      label: 'Multiple family: 60+ units'
+      details:
+        intensity: 1.0
+        pedestrian: 5.0
+        security: 2.0
+    - keys: '31'
+      value: 4.0
+      label: Commercial stores
+      details:
+        intensity: 1.0
+        pedestrian: 2.0
+        security: 1.0
+    - keys: '32'
+      value: 4.0
+      label: Small grocery stores
+      details:
+        intensity: 1.0
+        pedestrian: 2.0
+        security: 1.0
+    - keys: '33'
+      value: 3.0
+      label: Office buildings
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '34'
+      value: 3.0
+      label: Medical-dental offices
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '35'
+      value: 4.0
+      label: Service stations
+      details:
+        intensity: 1.0
+        pedestrian: 2.0
+        security: 1.0
+    - keys: '36'
+      value: 2.5
+      label: Garages
+      details:
+        intensity: 1.0
+        pedestrian: 0.5
+        security: 1.0
+    - keys: '37'
+      value: 6.0
+      label: Recreational clubs
+      details:
+        intensity: 1.0
+        pedestrian: 4.0
+        security: 1.0
+    - keys: '38'
+      value: 3.0
+      label: Golf courses
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '39'
+      value: 6.0
+      label: Bowling alleys
+      details:
+        intensity: 1.0
+        pedestrian: 4.0
+        security: 1.0
+    - keys: '40'
+      value: 5.0
+      label: Boat harbors
+      details:
+        intensity: 1.0
+        pedestrian: 3.0
+        security: 1.0
+    - keys: '41'
+      value: 8.0
+      label: Supermarkets
+      details:
+        intensity: 1.0
+        pedestrian: 6.0
+        security: 1.0
+    - keys: '42'
+      value: 20.0
+      label: Shopping centers
+      details:
+        intensity: 5.0
+        pedestrian: 10.0
+        security: 5.0
+    - keys: '43'
+      value: 3.0
+      label: Financial office buildings
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '44'
+      value: 9.0
+      label: Hotels, motels, mobile homes
+      details:
+        intensity: 2.0
+        pedestrian: 5.0
+        security: 2.0
+    - keys: '45'
+      value: 6.0
+      label: Theaters
+      details:
+        intensity: 2.0
+        pedestrian: 2.0
+        security: 2.0
+    - keys: '46'
+      value: 5.0
+      label: Drive-in restaurants
+      details:
+        intensity: 1.0
+        pedestrian: 3.0
+        security: 1.0
+    - keys: '47'
+      value: 5.0
+      label: Restaurants
+      details:
+        intensity: 1.0
+        pedestrian: 3.0
+        security: 1.0
+    - keys: '48'
+      value: 5.0
+      label: Mixed multiple/commercial
+      details:
+        intensity: 1.0
+        pedestrian: 3.0
+        security: 1.0
+    - keys: '49'
+      value: 5.0
+      label: Auto agency
+      details:
+        intensity: 1.0
+        pedestrian: 3.0
+        security: 1.0
+    - keys: 51, 52
+      value: 5.0
+      label: Industrial parks
+      details:
+        intensity: 1.0
+        pedestrian: 3.0
+        security: 1.0
+    - keys: 53, 54, 56
+      value: 20.0
+      label: Industrial
+      details:
+        intensity: 5.0
+        pedestrian: 10.0
+        security: 5.0
+    - keys: '55'
+      value: 5.0
+      label: Warehouses
+      details:
+        intensity: 1.0
+        pedestrian: 3.0
+        security: 1.0
+    - keys: '59'
+      value: 0.0
+      label: Unassigned (pipeline right-of-way)
+      details:
+        intensity: 0.0
+        pedestrian: 0.0
+        security: 0.0
+    - keys: '70'
+      value: 3.0
+      label: Convalescent hospitals
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '71'
+      value: 2.0
+      label: Churches
+      details:
+        intensity: 0.5
+        pedestrian: 1.0
+        security: 0.5
+    - keys: '72'
+      value: 2.0
+      label: Schools
+      details:
+        intensity: 0.5
+        pedestrian: 1.0
+        security: 0.5
+    - keys: '73'
+      value: 3.0
+      label: Hospitals
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '74'
+      value: 1.0
+      label: Cemeteries, mortuaries
+      details:
+        intensity: 0.25
+        pedestrian: 0.5
+        security: 0.25
+    - keys: '75'
+      value: 4.0
+      label: Fraternal and service organizations
+      details:
+        intensity: 1.0
+        pedestrian: 2.0
+        security: 1.0
+    - keys: '76'
+      value: 3.0
+      label: Retirement housing complex
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '77'
+      value: 3.0
+      label: Cultural uses
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '78'
+      value: 0.0
+      label: Parks and playgrounds
+      details:
+        intensity: 0.0
+        pedestrian: 0.0
+        security: 0.0
+    - keys: '79'
+      value: 3.0
+      label: Government-owned buildings (developed business-use portion)
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: 10, 15, 17, 18, 20, 30, 50, 60, 62-69
+      value: 0.5
+      label: Vacant land
+      details:
+        intensity: 0.25
+        pedestrian: 0.0
+        security: 0.25
+    - keys: '80'
+      value: 0.0
+      label: Mineral rights
+      details:
+        intensity: 0.0
+        pedestrian: 0.0
+        security: 0.0
+    - keys: '81'
+      value: 0.5
+      label: Private roads
+      details:
+        intensity: 0.125
+        pedestrian: 0.25
+        security: 0.125
+    - keys: '82'
+      value: 0.0
+      label: Pipelines and canals
+      details:
+        intensity: 0.0
+        pedestrian: 0.0
+        security: 0.0
+    - keys: '83'
+      value: 3.0
+      label: State Board assessed parcels (developed business-use portion)
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '84'
+      value: 0.0
+      label: Utilities
+      details:
+        intensity: 0.0
+        pedestrian: 0.0
+        security: 0.0
+    - keys: '85'
+      value: 2.5
+      label: Parking facilities
+      details:
+        intensity: 0.5
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '86'
+      value: 3.0
+      label: Municipal properties (developed business-use portion)
+      details:
+        intensity: 1.0
+        pedestrian: 1.0
+        security: 1.0
+    - keys: '87'
+      value: 0.0
+      label: Common areas
+      details:
+        intensity: 0.0
+        pedestrian: 0.0
+        security: 0.0
+    - keys: '88'
+      value: 0.0
+      label: Mobile homes (underlying parcel only)
+      details:
+        intensity: 0.0
+        pedestrian: 0.0
+        security: 0.0
+    - keys: '89'
+      value: 1.0
+      label: Split parcels in different tax-code areas
+      details:
+        intensity: 0.25
+        pedestrian: 0.5
+        security: 0.25
+    - keys: '99'
+      value: 0.0
+      label: Exempt assignment
+      details:
+        intensity: 0.0
+        pedestrian: 0.0
+        security: 0.0
+    evidence:
+    - resource: citywide-lighting-report-2026-27
+      page: 17
+      locator: Appendix A, printed p. 13
+terms:
+- name: EDU
+  label: Equivalent dwelling units
+  expression: if(private_street == 1 and lookup(edu, use_code) == 1, 0.75, lookup(edu, use_code))
+expression: round(rate * EDU, 2)
+caveats:
+- Government-owned and State Board parcels are assessed only on the portion developed for business use.
+- Individual mobile homes are not assessed; the underlying parcel is.
+evidence:
+- resource: citywide-lighting-report-2026-27
+  page: 15
+  locator: Part D, printed pp. 11-12

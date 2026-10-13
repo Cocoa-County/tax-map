@@ -1,0 +1,25 @@
+id: citywide-lighting
+name: Citywide Street Lighting Assessment District
+short_name: Citywide Lighting
+fiscal_year: 2026-27
+agency: City of Concord
+color: '#1565c0'
+description: Applies citywide; no parcel roll is published, so membership uses the parcel layer's city
+  boundary field.
+membership:
+  attribute: BOUNDARYID
+  values:
+  - Concord
+formulas:
+- citywide-lighting
+total: 1046853.92
+notes: citywide-lighting.md
+outline:
+  enabled: false
+evidence:
+- resource: citywide-lighting-report-2026-27
+  page: 15
+  locator: Part D, printed pp. 11-12
+- resource: citywide-lighting-report-2026-27
+  page: 16
+  locator: Part E, printed p. 12

@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "taxmap": {
+      "type": "stdio",
+      "command": "${workspaceFolder}/.venv/Scripts/taxmap-mcp",
+      "args": ["--project", "${workspaceFolder}/examples/concord"]
+    }
+  }
+}

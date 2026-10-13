@@ -1,0 +1,20 @@
+id: pine-hollow
+name: Pine Hollow Estates Landscape and Lighting Maintenance District
+short_name: Pine Hollow
+fiscal_year: 2026-27
+agency: City of Concord
+color: '#2e7d32'
+membership:
+  roll: pine-hollow-2026-27
+formulas:
+- pine-hollow
+total: 61755.46
+parcel_count: 401
+notes: pine-hollow.md
+evidence:
+- resource: pine-hollow-report-2026-27
+  page: 15
+  locator: Part E, printed p. 11
+- resource: pine-hollow-report-2026-27
+  page: 19
+  locator: Assessment roll, PDF pp. 19-23

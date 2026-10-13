@@ -1,0 +1,15 @@
+id: district-3-2026-27
+district: district-3
+fiscal_year: 2026-27
+csv: district-3-2026-27.csv
+columns:
+  apn: Assessor parcel number
+  zone: Benefit zone
+  assessment: FY 2026-27 levy ($)
+stated_total: 31444.52
+stated_count: 503
+notes: Transcribed from the Final Engineer's Report roll by concord-lnl.
+evidence:
+- resource: district-3-report-2026-27
+  page: 23
+  locator: Assessment roll, PDF pp. 23-28

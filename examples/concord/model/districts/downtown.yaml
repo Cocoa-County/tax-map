@@ -1,0 +1,53 @@
+id: downtown
+name: Downtown Landscape Maintenance District
+short_name: Downtown
+fiscal_year: 2026-27
+agency: City of Concord
+color: '#ef6c00'
+membership:
+  roll: downtown-2026-27
+zones:
+- id: todos-santos
+  name: Todos Santos Plaza
+  color: '#f4511e'
+  membership:
+    roll: downtown-2026-27
+    where:
+      todos_santos: Y
+- id: streetscape
+  name: Streetscape
+  color: '#fb8c00'
+  membership:
+    roll: downtown-2026-27
+    where:
+      streetscape: Y
+  outline:
+    gap_m: 15.0
+- id: collector-median
+  name: Collector Street Median
+  color: '#c0ca33'
+  membership:
+    roll: downtown-2026-27
+    where:
+      collector_median: Y
+- id: thoroughfare-median
+  name: Thoroughfare Median
+  color: '#8d6e63'
+  description: Every Downtown parcel shares the Thoroughfare Median zone.
+  membership:
+    parent: true
+formulas:
+- downtown
+total: 519152.18
+parcel_count: 767
+notes: downtown.md
+evidence:
+- resource: downtown-report-2026-27
+  page: 18
+  locator: Part D, printed pp. 14-17
+- resource: downtown-report-2026-27
+  page: 22
+  locator: Part E, printed p. 18
+- resource: downtown-report-2026-27
+  page: 24
+  locator: Assessment roll, PDF pp. 24-41

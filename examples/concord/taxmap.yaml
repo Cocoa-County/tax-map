@@ -1,0 +1,46 @@
+name: concord
+title: Concord Assessment Districts
+description: Concord, California landscape, lighting and street-lighting assessment districts for FY 2026-27,
+  ported from concord-lnl.
+jurisdiction:
+  name: City of Concord
+  county: Contra Costa
+  state: CA
+  agency: City of Concord Public Works
+fiscal_year: 2026-27
+projected_crs: 26910
+apn:
+  display_pattern: '###-###-###'
+layers:
+  parcels:
+    title: Concord parcels
+    kind: parcels
+    source:
+      url: https://gis.cityofconcord.org/gsrv1/rest/services/PublicGISBasemap/MapServer/9
+    id_field: OBJECTID
+    apn_field: APN
+    address_field: full_address_display
+    label_fields:
+    - USE_DESC
+site:
+  title: Concord Assessment Districts
+  subtitle: FY 2026-27 landscape and lighting assessments
+  publish_fields:
+  - APN
+  - full_address_display
+  - USE_CODE
+  - USE_DESC
+  - TRA
+  - ACREAGE
+  - TOT_AREA
+  - GR_LND_AR
+  - Shape.STArea()
+  - TLA
+  - UNITS
+  - YR_BUILT
+  - TRACT
+  - BOUNDARYID
+  - s_city
+  - assr_url
+  disclaimer: Unofficial research map. Amounts come from the City's FY 2026-27 Engineer's Reports; the
+    County tax bill is authoritative. Calculator results are estimates.

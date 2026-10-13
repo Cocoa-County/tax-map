@@ -1,0 +1,41 @@
+id: pine-hollow
+name: Pine Hollow Estates assessment
+district: pine-hollow
+fiscal_year: 2026-27
+description: District cost apportioned in proportion to each parcel's original dwelling floor area.
+inputs:
+- name: s
+  label: Original dwelling floor area
+  unit: sq ft
+  source:
+    parcel: TLA
+  caveat: Uses the County's current living area (TLA). The report uses ORIGINAL dwelling area, so additions
+    make this an approximation; the roll amount is authoritative.
+constants:
+  T:
+    value: 61755.46
+    label: Total district assessment
+    unit: $
+    evidence:
+    - resource: pine-hollow-report-2026-27
+      page: 15
+      locator: Part E, printed p. 11
+  S:
+    value: 731026.0
+    label: Total original dwelling floor area
+    unit: sq ft
+    evidence:
+    - resource: pine-hollow-report-2026-27
+      page: 14
+      locator: Part D, Table 2, printed p. 10
+terms:
+- name: rate
+  label: Rate per sq ft
+  expression: T / S
+expression: round(T * s / S, 2)
+caveats:
+- The published display rate $0.08448/sq ft is rounded; the roll is authoritative.
+evidence:
+- resource: pine-hollow-report-2026-27
+  page: 14
+  locator: Part D, Table 2, printed p. 10

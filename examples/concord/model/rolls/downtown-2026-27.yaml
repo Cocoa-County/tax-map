@@ -1,0 +1,19 @@
+id: downtown-2026-27
+district: downtown
+fiscal_year: 2026-27
+csv: downtown-2026-27.csv
+columns:
+  apn: Assessor parcel number
+  property_class: Report property class (COM, CONDO, SFR, ...)
+  todos_santos: Y if in the Todos Santos Plaza zone
+  collector_median: Y if in the Collector Median zone
+  streetscape: Y if in the Streetscape zone
+  site_address: Situs address printed in the roll
+  assessment: FY 2026-27 levy ($)
+stated_total: 519152.18
+stated_count: 767
+notes: Transcribed from the Final Engineer's Report roll by concord-lnl.
+evidence:
+- resource: downtown-report-2026-27
+  page: 24
+  locator: Assessment roll, PDF pp. 24-41

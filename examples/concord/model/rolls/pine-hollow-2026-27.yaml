@@ -1,0 +1,14 @@
+id: pine-hollow-2026-27
+district: pine-hollow
+fiscal_year: 2026-27
+csv: pine-hollow-2026-27.csv
+columns:
+  apn: Assessor parcel number
+  assessment: FY 2026-27 levy ($)
+stated_total: 61755.46
+stated_count: 401
+notes: Transcribed from the Final Engineer's Report roll by concord-lnl.
+evidence:
+- resource: pine-hollow-report-2026-27
+  page: 19
+  locator: Assessment roll, PDF pp. 19-23

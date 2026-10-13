@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tax map</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1 id="title">Tax map</h1>
+      <p id="subtitle"></p>
+    </div>
+    <div class="search">
+      <label class="visually-hidden" for="search-input">Search by APN or address</label>
+      <input id="search-input" type="search" placeholder="Search APN or address" autocomplete="off">
+      <ul id="search-results" class="search-results" role="listbox" hidden></ul>
+    </div>
+    <nav class="actions">
+      <button type="button" id="open-districts" class="ghost">Districts</button>
+      <button type="button" id="open-sources" class="ghost">Sources</button>
+      <button type="button" id="open-about" class="ghost">About</button>
+    </nav>
+  </header>
+  <main class="layout">
+    <div id="map" aria-label="Parcel map"></div>
+    <div id="zoom-hint" class="zoom-hint" hidden>Zoom in to see parcels</div>
+    <aside id="panel" class="panel" aria-live="polite">
+      <button type="button" class="sheet-handle" id="sheet-handle" aria-label="Expand or collapse panel"></button>
+      <div id="panel-body"></div>
+    </aside>
+  </main>
+  <dialog id="modal" class="modal">
+    <form method="dialog" class="modal-head">
+      <h2 id="modal-title"></h2>
+      <button class="ghost close" aria-label="Close">&times;</button>
+    </form>
+    <div id="modal-body" class="modal-body"></div>
+  </dialog>
+  <footer id="disclaimer" class="disclaimer"></footer>
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="formula.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

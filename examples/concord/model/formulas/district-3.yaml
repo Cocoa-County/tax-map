@@ -1,0 +1,48 @@
+id: district-3
+name: District No. 3 assessment
+district: district-3
+fiscal_year: 2026-27
+description: Flat per-parcel rate in Kirkwood; per-EDU rate in Ygnacio Woods Unit II. Valley Terrace and
+  Balhan Terrace are levied $0 this year.
+inputs:
+- name: in_K
+  label: In Kirkwood zone
+  source:
+    member: kirkwood
+- name: in_Y
+  label: In Ygnacio Woods Unit II zone
+  source:
+    member: ygnacio-woods
+- name: EDU
+  label: Equivalent dwelling units (Ygnacio Woods)
+  description: One per single-family parcel.
+  default: 1.0
+constants:
+  r_K:
+    value: 40.64
+    label: Kirkwood rate
+    unit: $/parcel
+    evidence:
+    - resource: district-3-report-2026-27
+      page: 19
+      locator: Part D, Table 5
+  r_Y:
+    value: 355.0
+    label: Ygnacio Woods Unit II rate
+    unit: $/EDU
+    evidence:
+    - resource: district-3-report-2026-27
+      page: 19
+      locator: Part D, Table 5
+terms:
+- name: kirkwood
+  label: Kirkwood
+  expression: in_K * r_K
+- name: ygnacio
+  label: Ygnacio Woods Unit II
+  expression: in_Y * r_Y * EDU
+expression: round(kirkwood + ygnacio, 2)
+evidence:
+- resource: district-3-report-2026-27
+  page: 19
+  locator: Part D, Tables 5-6, printed pp. 15-16

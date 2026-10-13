@@ -1,0 +1,181 @@
+id: downtown
+name: Downtown assessment
+district: downtown
+fiscal_year: 2026-27
+description: Sum of the Todos Santos Plaza, Streetscape, Collector Median and Thoroughfare Median charges.
+inputs:
+- name: I_P
+  label: In Todos Santos Plaza zone
+  source:
+    member: todos-santos
+- name: I_S
+  label: In Streetscape zone
+  source:
+    member: streetscape
+- name: I_C
+  label: In Collector Median zone
+  source:
+    member: collector-median
+- name: I_T
+  label: In Thoroughfare Median zone
+  source:
+    member: thoroughfare-median
+- name: use_code
+  label: County land-use code
+  source:
+    parcel: USE_CODE
+  default: 0.0
+- name: units
+  label: Residential units
+  unit: units
+  source:
+    parcel: UNITS
+  caveat: When UNITS is blank the unit count is implied from the land-use code; buildings with 5+ units
+    need the count entered.
+- name: tot_area
+  label: Total area (TOT_AREA)
+  unit: sq ft
+  source:
+    parcel: TOT_AREA
+- name: gross_land_area
+  label: Gross land area (GR_LND_AR)
+  unit: sq ft
+  source:
+    parcel: GR_LND_AR
+- name: acreage
+  label: Acreage
+  unit: acres
+  source:
+    parcel: ACREAGE
+- name: shape_area
+  label: GIS polygon area
+  unit: sq ft
+  source:
+    parcel: Shape.STArea()
+- name: F_S
+  label: Streetscape frontage
+  unit: ft
+  default: 0.0
+  caveat: Frontage is not in the parcel data; enter it to estimate.
+- name: F_C
+  label: Collector median qualifying frontage
+  unit: ft
+  default: 0.0
+  caveat: Only parcels that generally front a landscaped collector median.
+- name: F_T
+  label: Thoroughfare median qualifying frontage
+  unit: ft
+  default: 0.0
+  caveat: Only parcels that generally front a landscaped thoroughfare median.
+constants:
+  plaza_area:
+    value: 0.066582
+    label: Plaza nonresidential area rate
+    unit: $/sq ft
+    evidence:
+    - resource: downtown-report-2026-27
+      page: 18
+      locator: Part D, rate calculations, printed pp. 14-17
+  plaza_unit:
+    value: 20.227564
+    label: Plaza residential unit rate
+    unit: $/unit
+    evidence:
+    - resource: downtown-report-2026-27
+      page: 18
+      locator: Part D, rate calculations, printed pp. 14-17
+  street_front:
+    value: 2.019385
+    label: Streetscape frontage rate
+    unit: $/ft
+    evidence:
+    - resource: downtown-report-2026-27
+      page: 18
+      locator: Part D, rate calculations, printed pp. 14-17
+  coll_front:
+    value: 0.57362
+    label: Collector median frontage rate
+    unit: $/ft
+    evidence:
+    - resource: downtown-report-2026-27
+      page: 18
+      locator: Part D, rate calculations, printed pp. 14-17
+  coll_area:
+    value: 0.003344
+    label: Collector median area rate
+    unit: $/sq ft
+    evidence:
+    - resource: downtown-report-2026-27
+      page: 18
+      locator: Part D, rate calculations, printed pp. 14-17
+  thor_front:
+    value: 1.418458
+    label: Thoroughfare median frontage rate
+    unit: $/ft
+    evidence:
+    - resource: downtown-report-2026-27
+      page: 18
+      locator: Part D, rate calculations, printed pp. 14-17
+  thor_area:
+    value: 0.003371
+    label: Thoroughfare median area rate
+    unit: $/sq ft
+    evidence:
+    - resource: downtown-report-2026-27
+      page: 18
+      locator: Part D, rate calculations, printed pp. 14-17
+lookups:
+  residential:
+    label: Residential land-use codes
+    default: 0.0
+    entries:
+    - keys: 11-14, 16, 19, 21-29, 61
+      value: 1.0
+      label: Residential
+  implied_units:
+    label: Units implied by land-use code
+    default: 0.0
+    entries:
+    - keys: 11-14, 16, 19, 29, 61
+      value: 1.0
+      label: Single unit
+    - keys: '21'
+      value: 2.0
+      label: Duplex
+    - keys: 22, 24
+      value: 3.0
+      label: Triplex
+    - keys: '23'
+      value: 4.0
+      label: Fourplex
+terms:
+- name: R
+  label: Residential parcel
+  expression: lookup(residential, use_code)
+- name: U
+  label: Residential units
+  expression: if(coalesce(units, 0) > 0, units, lookup(implied_units, use_code))
+- name: P
+  label: Parcel area (sq ft)
+  expression: if(coalesce(tot_area, 0) > 0, tot_area, if(coalesce(gross_land_area, 0) > 0, gross_land_area,
+    if(coalesce(acreage, 0) > 0, acreage * 43560, shape_area)))
+- name: plaza
+  label: Todos Santos Plaza
+  expression: I_P * ((1 - R) * plaza_area * P + R * plaza_unit * U)
+- name: streetscape
+  label: Streetscape
+  expression: I_S * street_front * F_S
+- name: collector
+  label: Collector Street Median
+  expression: I_C * (coll_front * F_C + coll_area * P)
+- name: thoroughfare
+  label: Thoroughfare Median
+  expression: I_T * (thor_front * F_T + thor_area * P)
+expression: round(plaza + streetscape + collector + thoroughfare, 2)
+caveats:
+- Frontage inputs default to 0, so the estimate is a lower bound for fronting parcels.
+- Area uses County assessor fields, which may differ from the report's measurements.
+evidence:
+- resource: downtown-report-2026-27
+  page: 18
+  locator: Part D, rate calculations, printed pp. 14-17

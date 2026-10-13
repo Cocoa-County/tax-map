@@ -1,0 +1,41 @@
+id: district-3
+name: Landscaping and Lighting Maintenance District No. 3
+short_name: District No. 3
+fiscal_year: 2026-27
+agency: City of Concord
+color: '#6a1b9a'
+zones:
+- id: kirkwood
+  name: Kirkwood
+  color: '#8e24aa'
+  membership:
+    roll: district-3-2026-27
+    where:
+      zone: Kirkwood
+  evidence:
+  - resource: district-3-report-2026-27
+    page: 19
+    locator: Part D, Table 5, printed p. 15
+- id: ygnacio-woods
+  name: Ygnacio Woods Unit II
+  color: '#d81b60'
+  membership:
+    roll: district-3-2026-27
+    where:
+      zone: Ygnacio Woods
+  evidence:
+  - resource: district-3-report-2026-27
+    page: 19
+    locator: Part D, Table 5, printed p. 15
+formulas:
+- district-3
+total: 31444.52
+parcel_count: 503
+notes: district-3.md
+evidence:
+- resource: district-3-report-2026-27
+  page: 19
+  locator: Part D, Tables 5-6, printed pp. 15-16
+- resource: district-3-report-2026-27
+  page: 23
+  locator: Assessment roll, PDF pp. 23-28
