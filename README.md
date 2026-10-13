@@ -162,6 +162,8 @@ publishes both sites in one artifact. Pushes to `main` deploy automatically;
 `workflow_dispatch` also allows a manual rebuild. Parcel geometry and generated
 map files are not committed.
 
+taxmap is the application; Cocoa County is the organization behind it. The
+website leads with the app name and attributes it as "by Cocoa County."
 The landing page and documentation use Cocoa County's community/open-source
 identity from the [organization profile](https://github.com/Cocoa-County/.github)
 with an original cozy cocoa-and-cream theme and gently floating marshmallows.
