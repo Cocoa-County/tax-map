@@ -6,6 +6,8 @@
 ## Documentation
 - [Documentation hub](docs/): guides for communities, developers, and agents.
 - [Non-technical guide](docs/community.html): reading maps and reviewing projects.
+- [Start with an agent](docs/get-started.html): local CLI onboarding and a
+  complete setup-to-preview request for Codex, Claude Code, or Copilot.
 - [Developer guide](docs/developers.html): setup, models, tests, and deployment.
 - [Agent playbook](docs/agents.txt): plain-text workflow and evidence contract.
 - [Agent HTML guide](docs/agents.html): browsable tool-oriented instructions.

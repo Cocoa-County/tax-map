@@ -85,6 +85,14 @@ checks, while the agent reads, decides and writes.
 
 ## Install
 
+**New to terminals or building with AI?** Follow
+[Start with an agent](website/docs/get-started.html): install and sign into
+Codex, Claude Code, or GitHub Copilot CLI, open a dedicated workspace, and paste
+one project request. The agent handles local taxmap installation, MCP setup,
+research, validation, and a preview. Permissions, possible client restarts,
+missing data, and publication approval remain explicit. No hosted backend or
+new installer is required.
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\pip install -e ".[dev]"
