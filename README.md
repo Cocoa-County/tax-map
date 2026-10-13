@@ -17,6 +17,11 @@ using the **taxmap MCP server** and **agent skills** turns them into:
   color-coded symbol explanations and calculation steps, district explainers and a
   source list. It needs no backend.
 
+The map stays full-width until a parcel is selected. Parcel details can be
+hidden and reopened without losing the selection. Calculators keep the
+estimate visible while you edit, group public-data inputs and district
+membership into expandable sections, and offer a reset for what-if scenarios.
+
 Version 1 ships the MCP server, the skills, a CLI and the site generator.
 The server is deterministic: it stores, extracts, searches, computes and
 checks, while the agent reads, decides and writes.

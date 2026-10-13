@@ -15,10 +15,11 @@
     </div>
     <div class="search">
       <label class="visually-hidden" for="search-input">Search by APN or address</label>
-      <input id="search-input" type="search" placeholder="Search APN or address" autocomplete="off">
+      <input id="search-input" type="search" placeholder="Search APN or address" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-controls="search-results" aria-expanded="false">
       <ul id="search-results" class="search-results" role="listbox" hidden></ul>
+      <div id="search-status" class="search-status" role="status" hidden></div>
     </div>
-    <nav class="actions">
+    <nav class="actions" aria-label="Explore this map">
       <button type="button" id="open-districts" class="ghost">Districts</button>
       <button type="button" id="open-sources" class="ghost">Sources</button>
       <button type="button" id="open-about" class="ghost">About</button>
@@ -27,12 +28,17 @@
   <main class="layout">
     <div id="map" aria-label="Parcel map"></div>
     <div id="zoom-hint" class="zoom-hint" hidden>Zoom in to see parcels</div>
-    <aside id="panel" class="panel" aria-live="polite">
-      <button type="button" class="sheet-handle" id="sheet-handle" aria-label="Expand or collapse panel"></button>
+    <button type="button" id="open-panel" class="map-panel-toggle" aria-controls="panel" aria-expanded="false">Explore parcels</button>
+    <aside id="panel" class="panel" aria-label="Parcel details" hidden>
+      <div class="panel-toolbar">
+        <span>Parcel details</span>
+        <button type="button" class="ghost sheet-handle" id="sheet-handle" aria-label="Expand parcel details" aria-expanded="false">Expand</button>
+        <button type="button" class="ghost" id="close-panel" aria-label="Hide parcel details">&times;</button>
+      </div>
       <div id="panel-body"></div>
     </aside>
   </main>
-  <dialog id="modal" class="modal">
+  <dialog id="modal" class="modal" aria-labelledby="modal-title">
     <form method="dialog" class="modal-head">
       <h2 id="modal-title"></h2>
       <button class="ghost close" aria-label="Close">&times;</button>

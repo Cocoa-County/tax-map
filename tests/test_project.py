@@ -132,7 +132,11 @@ def test_rolls_formulas_outlines_site(mapped):
     assert built["parcels"] == 4 and built["indexed_apns"] == 3
     assert (site / "index.html").exists() and (site / "formula.js").exists()
     assert (site / "formula-display.js").exists()
-    assert 'src="formula-display.js"' in (site / "index.html").read_text(encoding="utf-8")
+    html = (site / "index.html").read_text(encoding="utf-8")
+    assert 'src="formula-display.js"' in html
+    assert 'id="open-panel"' in html and 'id="close-panel"' in html
+    assert 'aria-label="Parcel details" hidden' in html
+    assert 'role="combobox"' in html and 'id="search-status"' in html
     published = "".join(p.read_text(encoding="utf-8") for p in (site / "data").rglob("*.json"))
     published += "".join(p.read_text(encoding="utf-8") for p in (site / "data").rglob("*.geojson"))
     assert "Private" not in published

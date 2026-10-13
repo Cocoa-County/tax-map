@@ -238,35 +238,69 @@
   }
 
   function initSearch() {
-    const input = $("search-input"), list = $("search-results");
+    const input = $("search-input"), list = $("search-results"), status = $("search-status");
     let active = -1, results = [];
+    const dismiss = () => {
+      list.hidden = true;
+      status.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+      input.removeAttribute("aria-activedescendant");
+    };
     const render = () => {
       list.replaceChildren(...results.map((row, i) => el("li", {
-        role: "option", "aria-selected": i === active ? "true" : "false",
+        id: `search-option-${i}`, role: "option", "aria-selected": i === active ? "true" : "false",
         onmousedown: (event) => { event.preventDefault(); choose(i); },
       }, row[2] || formatApn(row[1]), el("small", {}, `APN ${formatApn(row[1])}`))));
       list.hidden = !results.length;
+      input.setAttribute("aria-expanded", String(results.length > 0));
+      if (active >= 0) input.setAttribute("aria-activedescendant", `search-option-${active}`);
+      else input.removeAttribute("aria-activedescendant");
+      status.textContent = input.value.trim().length >= 2 && !results.length ? "No matching parcels. Try an APN or another address." : "";
+      status.hidden = !status.textContent;
+      if (active >= 0) list.children[active].scrollIntoView({ block: "nearest" });
     };
-    const choose = (i) => {
+    const choose = async (i) => {
       const row = results[i];
       if (!row) return;
-      list.hidden = true;
+      dismiss();
       input.value = row[2] || row[1];
-      goToRow(row);
+      try {
+        await goToRow(row);
+      } catch (error) {
+        showMessage(`Could not load parcel (${error.message}).`);
+      }
     };
     input.addEventListener("input", async () => {
-      const rows = await ensureSearch();
-      results = searchRows(rows, input.value);
+      const query = input.value;
+      results = [];
+      active = -1;
+      dismiss();
+      if (query.trim().length < 2) return;
+      status.textContent = "Searching parcels…";
+      status.hidden = false;
+      let rows;
+      try {
+        rows = await ensureSearch();
+      } catch (error) {
+        if (input.value === query) {
+          status.textContent = `Could not search parcels (${error.message}). Reload to try again.`;
+          status.hidden = false;
+        }
+        return;
+      }
+      if (input.value !== query || document.activeElement !== input) return;
+      results = searchRows(rows, query);
       active = results.length ? 0 : -1;
       render();
     });
     input.addEventListener("keydown", (event) => {
       if (event.key === "ArrowDown") { active = Math.min(results.length - 1, active + 1); render(); event.preventDefault(); }
       else if (event.key === "ArrowUp") { active = Math.max(0, active - 1); render(); event.preventDefault(); }
-      else if (event.key === "Enter") { choose(active); }
-      else if (event.key === "Escape") { list.hidden = true; }
+      else if (event.key === "Enter") { choose(active); event.preventDefault(); }
+      else if (event.key === "Escape") dismiss();
     });
-    input.addEventListener("blur", () => setTimeout(() => { list.hidden = true; }, 150));
+    input.addEventListener("focus", () => { if (input.value.trim().length >= 2) render(); });
+    input.addEventListener("blur", () => setTimeout(dismiss, 150));
   }
 
   async function goToRow(row) {
@@ -285,8 +319,22 @@
   }
 
   // ------------------------------------------------------------------ parcel panel
+  function setPanelOpen(open) {
+    $("panel").hidden = !open;
+    $("open-panel").hidden = open;
+    $("open-panel").setAttribute("aria-expanded", String(open));
+    if (open) {
+      $("panel").classList.remove("expanded");
+      $("sheet-handle").setAttribute("aria-expanded", "false");
+      $("sheet-handle").setAttribute("aria-label", "Expand parcel details");
+      $("sheet-handle").textContent = "Expand";
+    }
+    if (map) requestAnimationFrame(() => map.invalidateSize());
+  }
+
   function showMessage(text) {
     $("panel-body").replaceChildren(el("p", { class: "muted" }, text));
+    setPanelOpen(true);
   }
 
   async function selectParcel(id, tileHint) {
@@ -313,36 +361,43 @@
     const { attrs, apn } = state.selected;
     const { groups, amounts } = memberGroups(apn, attrs);
     const address = state.manifest.address_field ? attrs[state.manifest.address_field] : null;
-    const body = [el("h2", {}, address || `APN ${formatApn(apn)}`), el("p", { class: "muted" }, `APN ${formatApn(apn)}`)];
+    const body = [el("div", { class: "parcel-heading" },
+      el("p", { class: "eyebrow" }, "Selected parcel"),
+      el("h2", {}, address || `APN ${formatApn(apn)}`),
+      address ? el("p", { class: "muted" }, `APN ${formatApn(apn)}`) : null)];
     const districts = state.districts.districts.filter((d) => groups.has(d.id));
-    body.push(el("h3", {}, "Districts and assessments"));
+    const listedTotal = Object.values(amounts).filter((amount) => typeof amount === "number").reduce((a, b) => a + b, 0);
+    if (Object.values(amounts).some((amount) => typeof amount === "number")) {
+      body.push(el("div", { class: "parcel-total" }, el("span", {}, "Listed annual assessments"),
+        el("strong", {}, money(listedTotal)), el("small", {}, "Official roll amounts · Not the full property tax bill")));
+    }
+    body.push(el("h3", {}, "Districts", el("span", { class: "count" }, districts.length)));
     if (!districts.length) body.push(el("p", { class: "muted" }, "Not in any mapped district."));
-    let total = 0, anyAmount = false;
     for (const district of districts) {
       const zones = district.zones.filter((z) => groups.has(z.id));
       const amount = amounts[district.id];
-      if (typeof amount === "number") { total += amount; anyAmount = true; }
       const formulas = formulasFor(new Set([district.id]));
       body.push(el("div", { class: "card" },
         el("div", { class: "card-head" },
-          el("strong", {}, el("span", { class: "swatch", style: `background:${district.color}` }), " ", district.name),
+          el("strong", { title: district.name }, el("span", { class: "swatch", style: `background:${district.color}` }), " ", district.short_name || district.name),
           el("span", { class: "amount" }, amount !== undefined ? money(amount) : "")),
         zones.length ? el("div", {}, zones.map((z) => el("span", { class: "chip" },
           el("span", { class: "swatch", style: `background:${z.color}` }), z.name))) : null,
         el("p", { class: "muted" }, amount !== undefined ? `Official ${district.fiscal_year || ""} roll amount`
           : (district.rolls.length ? "Not on the assessment roll" : "No published roll; see calculator estimate")),
         el("div", { class: "row-actions" },
-          formulas.map((f) => el("button", { type: "button", onclick: () => openCalculator(f.id) }, `Calculate: ${f.name}`)),
-          el("button", { type: "button", class: "ghost", onclick: () => openDistrict(district.id) }, "About district"))));
+          formulas.map((f) => el("button", { type: "button", "aria-label": `Calculate ${f.name}`, onclick: () => openCalculator(f.id) },
+            formulas.length === 1 ? "Calculator" : f.name)),
+          el("button", { type: "button", class: "ghost", onclick: () => openDistrict(district.id) }, "Details"))));
     }
-    if (anyAmount) body.push(el("p", {}, "Total of listed roll amounts: ", el("span", { class: "amount" }, money(total))));
     body.push(el("details", {}, el("summary", {}, "Parcel attributes"),
       el("table", { class: "kv" }, Object.entries(attrs).map(([k, v]) => el("tr", {}, el("th", {}, k), el("td", {}, numberText(v)))))));
     body.push(el("div", { class: "row-actions" },
       el("button", { type: "button", class: "ghost", onclick: copyLink }, "Copy link"),
       state.selected.feature ? el("button", { type: "button", class: "ghost", onclick: downloadSelected }, "Download GeoJSON") : null));
     $("panel-body").replaceChildren(...body);
-    $("panel").classList.remove("collapsed");
+    $("open-panel").textContent = "Parcel details";
+    setPanelOpen(true);
   }
 
   function copyLink() {
@@ -368,6 +423,7 @@
     const { values, origins } = resolveInputs(formula, selected && selected.apn, selected && selected.attrs);
     const official = selected ? memberGroups(selected.apn, selected.attrs).amounts[formula.district] : undefined;
     const form = el("form", { class: "calc-inputs", onsubmit: (e) => e.preventDefault() });
+    const summary = el("div", { class: "calculator-summary", "aria-live": "polite", "aria-atomic": "true" });
     const output = el("div");
     const tooltip = el("div", { id: "formula-tooltip", class: "formula-tooltip", role: "tooltip", hidden: true });
     let activeSymbol;
@@ -402,33 +458,72 @@
         hideTooltip();
       }
     });
-    $("modal").onscroll = () => {
+    $("modal-body").onscroll = () => {
       if (activeSymbol && activeSymbol.matches(":focus")) showTooltip({ target: activeSymbol });
       else hideTooltip();
     };
     const fields = {};
+    const propertyFields = [];
+    const membershipFields = [];
+    const edited = el("p", { class: "muted scenario-status" });
     for (const spec of formula.inputs) {
       const value = values[spec.name];
-      const input = el("input", { name: spec.name, type: spec.type === "text" ? "text" : "number", step: "any",
-        value: value === null || value === undefined ? "" : String(value) });
+      const membership = spec.source && spec.source.member && (value === 0 || value === 1);
+      const input = membership
+        ? el("input", { name: spec.name, type: "checkbox", checked: value === 1 })
+        : spec.source && spec.source.member
+          ? el("select", { name: spec.name },
+            el("option", { value: "", selected: value === null }, "Choose membership"),
+            el("option", { value: "1", selected: value === 1 }, "In this district or zone"),
+            el("option", { value: "0", selected: value === 0 }, "Not in this district or zone"))
+        : el("input", { name: spec.name, type: spec.type === "text" ? "text" : "number", step: "any",
+          value: value === null || value === undefined ? "" : String(value) });
       input.addEventListener("input", recompute);
       fields[spec.name] = input;
-      form.append(el("label", {}, `${spec.label || spec.name}${spec.unit ? ` (${spec.unit})` : ""}`, input,
+      const field = el("label", { class: membership ? "membership-input" : "" },
+        el("span", {}, `${spec.label || spec.name}${spec.unit ? ` (${spec.unit})` : ""}`), input,
         el("span", { class: "hint" }, `${origins[spec.name]}${spec.description ? ` — ${spec.description}` : ""}`),
-        spec.caveat ? el("span", { class: "hint bad" }, spec.caveat) : null));
+        spec.caveat ? el("span", { class: "hint bad" }, spec.caveat) : null);
+      if (membership) membershipFields.push(field);
+      else if (spec.source && (spec.source.parcel || spec.source.roll)) propertyFields.push(field);
+      else form.append(field);
     }
+    const propertyGroup = propertyFields.length ? el("details", { class: "input-group" },
+      el("summary", {}, "Public-data inputs"), el("div", { class: "calc-inputs" }, propertyFields)) : null;
+    if (propertyGroup) form.append(propertyGroup);
+    if (membershipFields.length) form.append(el("details", { class: "input-group" }, el("summary", {}, "District membership"),
+      el("div", { class: "calc-inputs" }, membershipFields)));
+    const reset = el("button", { type: "button", class: "ghost", onclick: () => {
+      for (const spec of formula.inputs) {
+        const input = fields[spec.name], value = values[spec.name];
+        if (input.type === "checkbox") input.checked = value === 1;
+        else input.value = value === null || value === undefined ? "" : String(value);
+      }
+      recompute();
+    } }, "Reset inputs");
     function currentValues() {
       const out = {};
       for (const spec of formula.inputs) {
-        const raw = fields[spec.name].value;
-        out[spec.name] = raw === "" ? null : (spec.type === "text" ? raw : F.toNumber(raw));
+        const input = fields[spec.name], raw = input.value;
+        out[spec.name] = input.type === "checkbox" ? Number(input.checked)
+          : raw === "" ? null : (spec.type === "text" ? raw : F.toNumber(raw));
       }
       return out;
     }
     function recompute() {
       hideTooltip();
       const inputValues = currentValues();
+      const changed = formula.inputs.some((spec) => {
+        const initial = values[spec.name];
+        const normalized = initial === undefined || initial === "" ? null
+          : spec.type === "text" ? initial : F.toNumber(initial);
+        return inputValues[spec.name] !== normalized;
+      });
+      edited.textContent = changed ? "What-if scenario · Original data unchanged" : "Original inputs · Edit to explore a scenario";
+      reset.disabled = !changed;
+      const disclosureState = [...output.querySelectorAll("details")].map((details) => details.open);
       const result = F.evaluate(formula, inputValues);
+      if (!summary.childElementCount && result.value === null && propertyGroup) propertyGroup.open = true;
       const display = window.TaxmapFormulaDisplay;
       const symbols = display.symbols(formula, inputValues, result);
       function equationBlock(ast, name, value, label) {
@@ -439,17 +534,19 @@
             { name, value, substitute: true, label: `${label}, with current values` }) }));
       }
       const parts = [];
-      if (!result.applicable) parts.push(el("p", { class: "calc-result" }, "Not applicable"), el("p", { class: "muted" }, `Condition: ${formula.applies_when}`));
-      else if (result.value === null) parts.push(el("p", { class: "warn" }, result.missing || result.error));
-      else parts.push(el("div", { class: "calc-result" }, el("span", {}, "Estimated annual assessment"), el("strong", {}, money(result.value))));
-      if (typeof official === "number" && result.value !== null && result.value !== undefined) {
+      const summaryParts = [];
+      if (!result.applicable) summaryParts.push(el("p", { class: "calc-result" }, "Not applicable"), el("p", { class: "muted" }, `Condition: ${formula.applies_when}`));
+      else if (result.value === null) summaryParts.push(el("p", { class: "warn" }, result.missing || result.error));
+      else summaryParts.push(el("div", { class: "calc-result" }, el("span", {}, "Estimated annual assessment"), el("strong", {}, money(result.value))));
+      if (typeof official === "number" && result.value !== null && result.value !== undefined && result.applicable) {
         const diff = result.value - official;
         const match = Math.abs(diff) <= (formula.tolerance || 0.01) + 1e-9;
-        parts.push(el("p", { class: match ? "ok" : "bad" }, `Official roll: ${money(official)} — `,
+        summaryParts.push(el("p", { class: `roll-comparison ${match ? "ok" : "muted"}` }, `Official roll: ${money(official)} — `,
           match ? "matches" : `differs by ${money(diff)}`));
       }
+      summary.replaceChildren(...summaryParts);
       parts.push(equationBlock(formula.ast, null, result.applicable ? result.value : null, "Assessment formula"));
-      if (formula.terms.length) parts.push(el("details", { open: true }, el("summary", {}, "Calculation steps"),
+      if (formula.terms.length) parts.push(el("details", {}, el("summary", {}, "Calculation steps"),
         formula.terms.map((t) => equationBlock(t.ast, t.name, result.terms[t.name], t.label || t.name))));
       parts.push(el("details", {}, el("summary", {}, "What the symbols mean"),
         el("p", { class: "muted" }, "Blue: inputs · Amber: adopted constants · Green: calculated values. Focus or hover a symbol for its explanation."),
@@ -469,14 +566,19 @@
                 el("th", {}, key), el("td", {}, numberText(value))))) : null))));
       }
       output.replaceChildren(...parts);
+      [...output.querySelectorAll("details")].forEach((details, i) => {
+        if (disclosureState[i] !== undefined) details.open = disclosureState[i];
+      });
     }
     const constants = Object.entries(formula.constants);
     const body = el("div", {},
       formula.description ? el("p", {}, formula.description) : null,
       selected ? el("p", { class: "muted" }, `Parcel APN ${formatApn(selected.apn)}. Values are prefilled from public data; edit them to explore what-if scenarios.`)
         : el("p", { class: "muted" }, "Enter values to estimate an assessment."),
-      el("div", { class: "calculator-layout" }, el("section", { class: "calculator-input-panel" }, el("h3", {}, "Parcel inputs"), form),
-        el("section", { class: "calculator-formulas", "aria-live": "polite" }, output)),
+      summary,
+      el("div", { class: "calculator-layout" }, el("section", { class: "calculator-input-panel" },
+        el("div", { class: "input-panel-heading" }, el("h3", {}, "Parcel inputs"), reset), edited, form),
+        el("section", { class: "calculator-formulas" }, output)),
       el("details", {}, el("summary", {}, "Expression source"), el("div", { class: "expression" }, formula.expression)),
       formula.applies_when ? el("p", { class: "muted" }, `Applies when: ${formula.applies_when}`) : null,
       constants.length ? el("details", {}, el("summary", {}, "Constants"), el("table", { class: "grid" }, constants.map(([name, c]) =>
@@ -533,9 +635,11 @@
             if (e.target.checked) state.visibleOutlines.add(group.id); else state.visibleOutlines.delete(group.id);
             drawOutlines();
           } });
-        items.push(el("div", { class: `district-item${group.zone ? " zone" : ""}` }, box,
+        items.push(el("div", { class: `district-item${group.zone ? " zone" : ""}` },
+          el("label", { class: "outline-toggle", title: `Show outline for ${group.name}` }, box),
           el("span", {}, el("span", { class: "swatch", style: `background:${group.color}` }), " ",
-            group.zone ? group.name : el("button", { type: "button", class: "link", onclick: () => openDistrict(group.id) }, group.name),
+            group.zone ? group.name : el("button", { type: "button", class: "link", title: group.name,
+              "aria-label": group.name, onclick: () => openDistrict(group.id) }, group.short_name || group.name),
             el("div", { class: "muted" }, `${numberText(group.members)} parcels`,
               !group.zone && group.rolls.length ? ` · roll ${money(group.roll_total)}` : "")),
           hasOutline ? el("button", { type: "button", class: "ghost", onclick: () => { $("modal").close(); zoomToGroup(group.id); } }, "Zoom") : el("span")));
@@ -624,19 +728,31 @@
     $("open-districts").addEventListener("click", () => openModal("Districts", renderDistrictList()));
     $("open-sources").addEventListener("click", openSources);
     $("open-about").addEventListener("click", () => openAbout());
+    $("open-panel").addEventListener("click", () => {
+      setPanelOpen(true);
+      $("close-panel").focus({ preventScroll: true });
+    });
+    $("close-panel").addEventListener("click", () => {
+      setPanelOpen(false);
+      $("open-panel").focus({ preventScroll: true });
+    });
     $("sheet-handle").addEventListener("click", () => {
       const panel = $("panel");
-      if (panel.classList.contains("collapsed")) panel.classList.remove("collapsed");
-      else panel.classList.toggle("expanded");
+      const expanded = panel.classList.toggle("expanded");
+      $("sheet-handle").setAttribute("aria-expanded", String(expanded));
+      $("sheet-handle").setAttribute("aria-label", expanded ? "Reduce parcel details" : "Expand parcel details");
+      $("sheet-handle").textContent = expanded ? "Reduce" : "Expand";
     });
     $("modal").addEventListener("close", () => {
       if (state.selected) setHash({ apn: state.selected.apn }); else setHash({});
     });
     window.addEventListener("hashchange", applyHash);
     $("panel-body").replaceChildren(
+      el("p", { class: "eyebrow" }, "Explore your community"),
       el("h2", {}, "Explore parcels"),
       el("p", {}, "Search for an address or APN, or zoom in and click a parcel to see its districts, official assessment amounts, and calculators."),
       el("button", { type: "button", onclick: () => openModal("Districts", renderDistrictList()) }, "Browse districts"));
+    setPanelOpen(false);
     await applyHash();
   }
 
