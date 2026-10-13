@@ -133,6 +133,34 @@
 
   // ------------------------------------------------------------------ map
   let map, parcelLayer, outlineGroup, selectedLayer;
+  let lastParcelClick, parcelClickVersion = 0;
+  let parcelSelectionVersion = 0;
+  const parcelHit = window.TaxmapParcelHit;
+
+  async function onParcelClick(event, feature) {
+    const version = ++parcelClickVersion;
+    ++parcelSelectionVersion;
+    const point = [event.latlng.lng, event.latlng.lat];
+    try {
+      // Centroid-based tiles can hold overlapping footprints in different files.
+      await Promise.all(state.manifest.tiles.filter((tile) => parcelHit.inBounds(point, tile.bounds))
+        .map((tile) => loadTile(tile.id)));
+      if (version !== parcelClickVersion) return;
+      let matches = parcelHit.find(point, state.featureById.values(), normalizeApn);
+      if (!matches.length) matches = [state.featureById.get(String(feature.id))];
+      await Promise.all([...new Set(matches.map((entry) => entry.tile))].map(tileAttributes));
+      if (version !== parcelClickVersion) return;
+      const current = matches.findIndex((entry) => state.selected
+        && (String(entry.feature.id) === String(state.selected.id)
+          || (normalizeApn(state.selected.apn) && normalizeApn(entry.feature.properties.apn) === normalizeApn(state.selected.apn))));
+      const repeat = current >= 0 && lastParcelClick && event.latlng.distanceTo(lastParcelClick) < 15;
+      const target = matches[repeat ? (current + 1) % matches.length : 0];
+      lastParcelClick = event.latlng;
+      await selectParcel(target.feature.id, target.tile, matches);
+    } catch (error) {
+      if (version === parcelClickVersion) showMessage(`Could not load parcels at this location (${error.message}).`);
+    }
+  }
 
   function parcelStyle(feature) {
     const { groups } = memberGroups(feature.properties.apn, null);
@@ -154,7 +182,7 @@
     osm.addTo(map);
     outlineGroup = L.layerGroup().addTo(map);
     parcelLayer = L.geoJSON(null, { style: parcelStyle, onEachFeature: (feature, layer) => {
-      layer.on("click", () => selectParcel(feature.id));
+      layer.on("click", (event) => onParcelClick(event, feature));
     } }).addTo(map);
     L.control.layers({ "Streets": osm, "Imagery": imagery }, { "Parcels": parcelLayer, "District outlines": outlineGroup }).addTo(map);
     L.control.scale().addTo(map);
@@ -181,7 +209,7 @@
     if (state.tilesLoaded.has(id)) return Promise.resolve();
     if (!state.tilesLoading.has(id)) {
       state.tilesLoading.set(id, getJSON(`data/tiles/${id}.geojson`).then((data) => {
-        for (const feature of data.features) state.featureById.set(String(feature.id), { feature, tile: id });
+        for (const feature of data.features) state.featureById.set(String(feature.id), parcelHit.prepare(feature, id));
         parcelLayer.addData(data);
         state.tilesLoaded.set(id, true);
       }));
@@ -304,6 +332,9 @@
   }
 
   async function goToRow(row) {
+    ++parcelClickVersion;
+    ++parcelSelectionVersion;
+    lastParcelClick = null;
     const [id, , , tile, bounds] = row;
     if (bounds) map.fitBounds([[bounds[1], bounds[0]], [bounds[3], bounds[2]]], { maxZoom: 18 });
     if (tile !== "no-geometry") await loadTile(tile);
@@ -337,13 +368,27 @@
     setPanelOpen(true);
   }
 
-  async function selectParcel(id, tileHint) {
+  async function selectParcel(id, tileHint, overlaps = null) {
+    const selectionVersion = ++parcelSelectionVersion;
     const known = state.featureById.get(String(id));
     const tile = tileHint || (known && known.tile);
     if (!tile) return;
     const attrs = (await tileAttributes(tile))[String(id)] || {};
     const apn = attrs[state.manifest.apn_field] ?? (known && known.feature.properties.apn);
-    state.selected = { id, tile, attrs, apn, feature: known && known.feature };
+    if (overlaps === null && known) {
+      const point = parcelHit.representativePoint(known.feature.geometry);
+      if (point) {
+        await Promise.all(state.manifest.tiles.filter((entry) => parcelHit.inBounds(point, entry.bounds))
+          .map((entry) => loadTile(entry.id)));
+        overlaps = parcelHit.find(point, state.featureById.values(), normalizeApn);
+      }
+    }
+    const overlapChoices = await Promise.all((overlaps || []).map(async (entry) => {
+      const properties = (await tileAttributes(entry.tile))[String(entry.feature.id)] || {};
+      return { ...entry, attrs: properties };
+    }));
+    if (selectionVersion !== parcelSelectionVersion) return;
+    state.selected = { id, tile, attrs, apn, feature: known && known.feature, overlaps: overlapChoices };
     if (selectedLayer) selectedLayer.remove();
     if (known && known.feature.geometry) {
       selectedLayer = L.geoJSON(known.feature, { interactive: false,
@@ -370,6 +415,33 @@
     if (Object.values(amounts).some((amount) => typeof amount === "number")) {
       body.push(el("div", { class: "parcel-total" }, el("span", {}, "Listed annual assessments"),
         el("strong", {}, money(listedTotal)), el("small", {}, "Official roll amounts · Not the full property tax bill")));
+    }
+    if (state.selected.overlaps.length > 1) {
+      body.push(el("section", { class: "overlap-chooser", "aria-label": "Properties at this location" },
+        el("h3", {}, `${state.selected.overlaps.length} properties at this location`),
+        el("p", { class: "muted" }, "Units or shared areas overlap here. Choose a property below, or click the same map location again to cycle."),
+        el("div", { class: "overlap-list" }, state.selected.overlaps.map((entry) => {
+          const itemApn = entry.attrs[state.manifest.apn_field] ?? entry.feature.properties.apn;
+          const itemAddress = state.manifest.address_field ? entry.attrs[state.manifest.address_field] : null;
+          const active = String(entry.feature.id) === String(state.selected.id)
+            || (normalizeApn(apn) && normalizeApn(itemApn) === normalizeApn(apn));
+          const labels = (state.manifest.label_fields || []).map((field) => entry.attrs[field]).filter(Boolean);
+          return el("button", { type: "button", class: `overlap-option ghost${active ? " active" : ""}`,
+            "aria-current": active ? "true" : null,
+            onclick: async () => {
+              ++parcelClickVersion;
+              try {
+                await selectParcel(entry.feature.id, entry.tile, state.selected.overlaps);
+                const currentOption = $("panel-body").querySelector('.overlap-option[aria-current="true"]');
+                if (currentOption) currentOption.focus({ preventScroll: true });
+              } catch (error) {
+                showMessage(`Could not load parcel (${error.message}).`);
+              }
+            } },
+          el("strong", {}, itemAddress || `APN ${formatApn(itemApn)}`),
+          el("span", {}, `APN ${formatApn(itemApn)}${active ? " · Viewing" : ""}`),
+          labels.length ? el("small", {}, labels.join(" · ")) : null);
+        }))));
     }
     body.push(el("h3", {}, "Districts", el("span", { class: "count" }, districts.length)));
     if (!districts.length) body.push(el("p", { class: "muted" }, "Not in any mapped district."));
@@ -398,6 +470,9 @@
     $("panel-body").replaceChildren(...body);
     $("open-panel").textContent = "Parcel details";
     setPanelOpen(true);
+    const overlapList = $("panel-body").querySelector(".overlap-list");
+    const currentOption = overlapList && overlapList.querySelector('[aria-current="true"]');
+    if (currentOption) overlapList.scrollTop = Math.max(0, currentOption.offsetTop - overlapList.clientHeight + currentOption.offsetHeight);
   }
 
   function copyLink() {

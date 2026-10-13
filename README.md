@@ -21,6 +21,12 @@ The map stays full-width until a parcel is selected. Parcel details can be
 hidden and reopened without losing the selection. Calculators keep the
 estimate visible while you edit, group public-data inputs and district
 membership into expandable sections, and offer a reset for what-if scenarios.
+Clicking overlapping parcel footprints (such as condominium units or shared
+areas) opens a property chooser. Smaller footprints are selected first;
+clicking the same location again cycles through the properties. Each selection
+keeps its own APN, official assessments, calculator inputs, and shareable link.
+Search results and APN links also show the chooser when other properties
+overlap an interior point of the selected footprint.
 
 Version 1 ships the MCP server, the skills, a CLI and the site generator.
 The server is deterministic: it stores, extracts, searches, computes and

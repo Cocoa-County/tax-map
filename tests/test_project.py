@@ -134,6 +134,7 @@ def test_rolls_formulas_outlines_site(mapped):
     assert (site / "formula-display.js").exists()
     html = (site / "index.html").read_text(encoding="utf-8")
     assert 'src="formula-display.js"' in html
+    assert 'src="parcel-hit.js"' in html and (site / "parcel-hit.js").exists()
     assert 'id="open-panel"' in html and 'id="close-panel"' in html
     assert 'aria-label="Parcel details" hidden' in html
     assert 'role="combobox"' in html and 'id="search-status"' in html
