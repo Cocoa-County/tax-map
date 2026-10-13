@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Turn public records into transparent tax and assessment maps. AI-assisted research, cited explanations, and a public app your community controls.">
+  <meta name="theme-color" content="#087f79">
+  <title>taxmap | Public records, made useful</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="taxmap home"><span class="brand-mark" aria-hidden="true">t</span>taxmap</a>
+    <nav aria-label="Main navigation">
+      <a href="#how-it-works">How it works</a>
+      <a href="concord/">Explore Concord <span aria-hidden="true">&nearr;</span></a>
+      <a class="nav-source" href="https://github.com/Cocoa-County/tax-map">GitHub</a>
+    </nav>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Public records. Clear explanations. Community ownership.</p>
+        <h1>Your city publishes the evidence.<br><em>Make it useful.</em></h1>
+        <p class="lead">Turn public documents into an interactive tax and assessment map people can explore, understand, and verify.</p>
+        <p class="hero-detail">AI helps with the research. taxmap connects the sources, checks the numbers, and builds a public app. Your community stays in control.</p>
+        <div class="actions">
+          <a class="button" href="concord/">Explore the Concord map <span aria-hidden="true">&rarr;</span></a>
+          <a class="button secondary" href="https://github.com/Cocoa-County/tax-map#use-with-an-agent-mcp">Start a city project</a>
+        </div>
+        <p class="fine">Built for civic technologists and community groups. No application backend required for the published site.</p>
+      </div>
+      <aside class="preview" aria-label="Example of an assessment explanation">
+        <div class="preview-top"><span class="status-dot" aria-hidden="true"></span> A bill line, explained</div>
+        <div class="map-art" aria-hidden="true">
+          <span class="parcel p1"></span><span class="parcel p2"></span><span class="parcel p3"></span>
+          <span class="parcel p4"></span><span class="parcel p5"></span><span class="parcel p6"></span>
+          <span class="map-label">Concord &middot; Downtown</span>
+        </div>
+        <div class="preview-body">
+          <p class="eyebrow">Look for on your bill</p>
+          <p class="bill-name"><code>MH</code> CONCORD DNTWN LMD</p>
+          <h2>Downtown Landscape Maintenance District</h2>
+          <p>Connect an abbreviated county bill label to its district, assessment method, and supporting records.</p>
+          <a href="concord/#apn=112101025">Explore a real parcel <span aria-hidden="true">&rarr;</span></a>
+          <p class="fine">Illustration, not a live bill. The county bill is authoritative.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="questions" aria-labelledby="questions-title">
+      <p class="eyebrow">Start with a public question</p>
+      <h2 id="questions-title">The answer should not require a PDF scavenger hunt.</h2>
+      <div class="question-grid">
+        <p>&ldquo;What am I paying for?&rdquo;</p>
+        <p>&ldquo;Which district includes my property?&rdquo;</p>
+        <p>&ldquo;How was this assessment calculated?&rdquo;</p>
+      </div>
+      <p>The evidence may already be in reports, resolutions, assessment rolls, and parcel data. taxmap gives an AI agent a repeatable workflow for connecting those records&mdash;with citations and checks, not just plausible answers.</p>
+    </section>
+
+    <section class="section" id="how-it-works" aria-labelledby="martinez-title">
+      <div class="section-heading">
+        <p class="eyebrow">A new-city walkthrough</p>
+        <h2 id="martinez-title">Imagine starting in Martinez.</h2>
+        <p>Choose one documented assessment district or public question. Build a useful explanation, then grow as the evidence supports it.</p>
+      </div>
+      <ol class="steps">
+        <li><span class="step-number" aria-hidden="true">01</span><div><h3>Bring the records together</h3><p>Create a dedicated city project. Add official reports, adopted resolutions, assessment rolls, and available parcel GIS. Keep notes and pictures as context, distinct from authoritative evidence.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">02</span><div><h3>Give your agent a mission</h3><p>taxmap supplies agent skills and an MCP server for working with documents, GIS, formulas, and checks. The agent researches and interprets; the tools record its work in reviewable files.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">03</span><div><h3>Review the evidence and the gaps</h3><p>Check roll totals and parcel joins. Compare calculations with official amounts. Keep missing inputs, uncertain sources, and mismatches visible instead of hiding them.</p></div></li>
+        <li><span class="step-number" aria-hidden="true">04</span><div><h3>Publish something neighbors can use</h3><p>Preview a searchable map with district explanations, sourced calculators, and verified county bill links where available. Approve the public fields, then publish a static site.</p></div></li>
+      </ol>
+      <div class="agent-prompt">
+        <p class="eyebrow">Start the conversation</p>
+        <blockquote>&ldquo;Help our community build a Martinez assessment map. Find authoritative sources, show coverage gaps, connect the adopted rolls to parcels, and explain the calculations with citations. Build a preview for our review before publishing.&rdquo;</blockquote>
+      </div>
+      <p class="fine">Martinez is an illustrative workflow, not a completed app. Its sources, GIS coverage, districts, and bill mappings still need to be researched and verified.</p>
+    </section>
+
+    <section class="features section" aria-labelledby="features-title">
+      <div class="section-heading"><p class="eyebrow">More than a number</p><h2 id="features-title">An explanation people can explore.</h2></div>
+      <div class="feature-grid">
+        <article><span class="feature-symbol" aria-hidden="true">&oplus;</span><h3>Find a property</h3><p>Search by address or parcel number. Choose between overlapping properties, including units sharing a footprint.</p></article>
+        <article><span class="feature-symbol" aria-hidden="true">Aa</span><h3>Understand the charge</h3><p>Connect full district names to verified bill descriptions and codes. Follow links to the official county bill.</p></article>
+        <article><span class="feature-symbol" aria-hidden="true">=</span><h3>Explore the calculation</h3><p>Readable equations, explained inputs, and what-if scenarios. Estimates stay distinct from official roll amounts.</p></article>
+        <article><span class="feature-symbol" aria-hidden="true">&sect;</span><h3>Follow the evidence</h3><p>Trace supporting values to cited sources and document pages. Share a parcel view to start with the same information.</p></article>
+      </div>
+    </section>
+
+    <section class="proof section" aria-labelledby="proof-title">
+      <div><p class="eyebrow">Working today</p><h2 id="proof-title">See it in Concord.</h2><p>The Concord example connects FY 2026&ndash;27 assessment records to a public parcel map, complete with explanations, calculators, and county bill links.</p><a class="button" href="concord/">Open the live example <span aria-hidden="true">&rarr;</span></a></div>
+      <div>
+        <dl class="stats"><div><dt>Assessment districts</dt><dd>4</dd></div><div><dt>Checked assessment rolls</dt><dd>3</dd></div><div><dt>Parcel entries across those rolls</dt><dd>1,671</dd></div></dl>
+        <p class="fine">Some formulas reproduce the rolls; others depend on inputs the available parcel data cannot fully supply. The limitations remain explicit. The map covers its modeled districts, not every property-tax charge.</p>
+      </div>
+    </section>
+
+    <section class="section ownership" aria-labelledby="ownership-title">
+      <p class="eyebrow">Trust is part of the product</p>
+      <h2 id="ownership-title">AI helps do the work.<br>It does not become the authority.</h2>
+      <div class="ownership-grid">
+        <div><h3>Your project stays yours</h3><p>Sources, rolls, formulas, GIS, and explanations live in ordinary files you can inspect, version, and maintain&mdash;not only in a conversation.</p></div>
+        <div><h3>Your community decides what is public</h3><p>Review sources, publication rights, and privacy before deploying. Publish approved fields, not private correspondence or owner information by default.</p></div>
+        <div><h3>Your app is portable</h3><p>Rebuild and publish the static site on GitHub Pages or another web host. Research and building use the Python tools and an MCP-capable agent.</p></div>
+      </div>
+      <p class="fine">Rolls and county bills are authoritative. Derived outlines are approximate, not legal boundaries. AI-assisted research still requires human review.</p>
+    </section>
+
+    <section class="closing" aria-labelledby="closing-title">
+      <p class="eyebrow">One question. One district. A useful first app.</p>
+      <h2 id="closing-title">Make public information<br>publicly understandable.</h2>
+      <div class="actions"><a class="button" href="https://github.com/Cocoa-County/tax-map#use-with-an-agent-mcp">Start your community's project</a><a class="button secondary" href="concord/">Explore Concord first</a></div>
+      <p class="fine">Today, taxmap focuses on tax and special-assessment transparency. Broader evidence-backed civic applications are a direction for extension, not a feature already promised.</p>
+    </section>
+  </main>
+  <footer><a class="brand" href="./">taxmap</a><span>Public records, made useful.</span><a href="https://github.com/Cocoa-County/tax-map">Source &amp; documentation</a></footer>
+</body>
+</html>

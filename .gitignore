@@ -5,6 +5,7 @@ __pycache__/
 .pytest_cache/
 build/
 dist/
+_pages/
 
 # taxmap project caches and bulky downloads
 .taxmap/

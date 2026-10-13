@@ -146,6 +146,27 @@ platform. It has four FY 2026-27 districts, three verified rolls (1,671
 parcels), formulas with full EDU schedules, and outlines that reproduce the
 original project exactly. See its [README](examples/concord/README.md).
 
+## Public website and GitHub Pages
+
+- [Landing page](https://cocoa-county.github.io/tax-map/)
+- [Concord example map](https://cocoa-county.github.io/tax-map/concord/)
+
+The landing page source is in [website/](website/). The
+[Pages workflow](.github/workflows/pages.yml) builds Concord from this checkout,
+downloads its configured public parcel layer (cached between builds), and
+publishes both sites in one artifact. Pushes to `main` deploy automatically;
+`workflow_dispatch` also allows a manual rebuild. Parcel geometry and generated
+map files are not committed.
+
+In GitHub **Settings > Pages**, select **GitHub Actions** as the source.
+The repository site serves the landing page at `/tax-map/` and the example at
+`/tax-map/concord/`. Relative links keep both working under the repository prefix.
+If the parcel download or model validation fails, the deployment fails rather
+than publishing an incomplete map; the previous deployment remains available.
+
+For a separate city's project repository, use the standalone
+[Pages workflow template](templates/github-pages.yml).
+
 ## Development
 
 ```powershell
