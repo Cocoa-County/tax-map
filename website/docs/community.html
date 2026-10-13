@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="A non-technical guide to reading and building evidence-backed tax maps."><title>Community guide | taxmap</title><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="docs.css"></head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="../">taxmap</a><nav aria-label="Main navigation"><a href="./">Documentation</a><a href="../concord/">Concord map</a><a href="https://github.com/Cocoa-County/tax-map">GitHub</a></nav></header>
+<main id="main" class="docs-layout">
+<aside class="docs-sidebar"><nav aria-label="Documentation guides"><a href="./">Documentation home</a><a href="community.html" aria-current="page">Non-technical guide</a><a href="developers.html">Developer guide</a><a href="agents.html">Agent guide</a></nav><nav class="toc" aria-label="On this page"><a href="#reading">Read the map</a><a href="#start">Start a city project</a><a href="#review">Review the results</a><a href="#publish">Publish and maintain</a><a href="#questions">Common questions</a></nav></aside>
+<article class="docs-article">
+<p class="eyebrow">01 / Non-technical documentation</p><h1>A public map you can understand and check.</h1>
+<p class="lead">taxmap helps communities connect public assessment records to properties, explain charges, and show where the information came from.</p>
+<p>You do not need to code to explore a published map. Creating one currently requires a technical collaborator or an AI agent connected to the taxmap tools. It is a research workflow, not an upload-and-instantly-finished service.</p>
+<section id="reading"><h2>How to read the map</h2>
+<ol><li><strong>Find a property.</strong> Search by address or assessor parcel number (APN), or zoom in and click a parcel. If footprints overlap, choose the correct property from the list; clicking the same location again cycles between properties.</li>
+<li><strong>Read the district cards.</strong> These show membership in the modeled districts. A displayed official roll amount comes from an assessment roll, not a live lookup of the property's balance.</li>
+<li><strong>Compare with the county bill.</strong> Where configured, open the PDF or accessible bill link. Match both the special-assessment description and code. A reference label does not prove a charge on that particular parcel.</li>
+<li><strong>Open a calculator.</strong> Inputs may be prefilled from public data. Change them to explore a scenario; reset restores the original inputs. Changes do not alter a bill or the project data.</li>
+<li><strong>Follow the sources.</strong> District details and calculators cite supporting documents. Check the fiscal year and the cited page. Use the parcel's Copy link action to share your view.</li></ol>
+<div class="callout"><strong>Three different things:</strong> the adopted roll lists official assessment amounts; a calculator explains or estimates a method; the county bill shows the actual billed charges. The map does not replace the bill and may not model every tax.</div>
+<p>Outlines built from parcels are approximate, not legal boundary surveys. A current county bill can refer to a different fiscal year from the map.</p></section>
+<section id="start"><h2>Start a project for your city</h2>
+<p>Begin with one question or one documented district. For a Martinez project, first establish which official records and parcel data are available; do not assume the Concord districts or formulas apply.</p>
+<ol><li><strong>Define the question.</strong> Identify the city, district, year, audience, and what the map should explain.</li><li><strong>Gather the records.</strong> Look for final engineer's reports, adopted resolutions, assessment rolls, and official GIS. Meeting notes, chats, photos, and preliminary documents can provide context, but do not establish an adopted charge by themselves.</li><li><strong>Ask for a source inventory.</strong> Have your collaborator or agent list what is verified, what is preliminary, and what is missing before modeling assessments.</li><li><strong>Build a small preview.</strong> Connect the roll to parcels, explain the formula, and attach citations. Expand only after you can verify the first result.</li></ol>
+<div class="agent-prompt"><h3>A useful request to your agent</h3><blockquote>Help us build a taxmap project for our city. Find authoritative records, show coverage gaps, and connect adopted rolls to parcels. Cite the evidence, keep estimates separate from official amounts, and build a preview for review. Do not publish personal information or deploy without our approval.</blockquote></div>
+<p>Your collaborator can follow the <a href="developers.html#quickstart">developer setup</a> and the agent can use the <a href="agents.html">agent playbook</a>.</p></section>
+<section id="review"><h2>What to review before trusting a result</h2>
+<ul><li>Are the sources final or adopted, and do they cover the intended year?</li><li>Do the roll's row count and total agree with the document?</li><li>Did the parcel identifiers match? Are duplicates or unmatched records explained?</li><li>Do the calculations agree with the roll? If not, is the reason stated rather than concealed?</li><li>Are bill codes verified from official records, not guessed from an abbreviation?</li><li>Are missing inputs and approximate boundaries clearly labeled?</li></ul>
+<p>Ask for a validation summary, not just a polished screenshot. In Concord, some formulas reproduce the roll while others depend on missing or proxy inputs; that distinction matters.</p></section>
+<section id="publish"><h2>Publish responsibly, then maintain it</h2>
+<p>Approve which parcel fields and documents will be public. Exclude owner names, mailing addresses, private correspondence, and other unnecessary personal data. Check redistribution rights before copying documents into the public site.</p>
+<p>The built site can be hosted on GitHub Pages or another ordinary web host. The build environment still needs the taxmap software. The project files retain the evidence and model so a future maintainer can inspect and rebuild them.</p>
+<p>For a new fiscal year, review new adopted documents, update the model and rolls, rerun checks, and rebuild. The tools do not automatically discover every annual change. A deployment trigger is not a substitute for reviewing new records.</p></section>
+<section id="questions"><h2>Common questions</h2>
+<h3>Does this change my taxes or make payments?</h3><p>No. Calculators are explanations and what-if tools. Payment and authoritative billing remain with the county.</p>
+<h3>Why is a charge on my bill absent from the map?</h3><p>The map covers only its modeled districts. Other special taxes, assessments, and ad valorem taxes may be outside its scope.</p>
+<h3>What does a missing value mean?</h3><p>It can mean missing source data, an unmatched parcel, incomplete coverage, or no published roll. Do not interpret it as a confirmed zero charge.</p>
+<h3>Is this an official city application?</h3><p>The Concord example is an unofficial research map. Do not assume endorsement. Use the adopted records and county bill as the authorities.</p>
+<h3>Can it build other kinds of city apps?</h3><p>The current public app focuses on tax and special-assessment maps. Broader transparency applications would require additional development.</p>
+<p><a class="button" href="../concord/">Explore the Concord example &rarr;</a></p></section>
+</article></main>
+<footer><a class="brand" href="../">taxmap</a><a href="./">All documentation</a><a href="developers.html">Next: developer guide &rarr;</a></footer>
+</body></html>

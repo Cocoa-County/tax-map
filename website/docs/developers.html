@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Install taxmap, configure city projects, validate models, and deploy static maps."><title>Developer guide | taxmap</title><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="docs.css"></head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header"><a class="brand" href="../">taxmap</a><nav aria-label="Main navigation"><a href="./">Documentation</a><a href="../concord/">Concord map</a><a href="https://github.com/Cocoa-County/tax-map">GitHub</a></nav></header>
+<main id="main" class="docs-layout">
+<aside class="docs-sidebar"><nav aria-label="Documentation guides"><a href="./">Documentation home</a><a href="community.html">Non-technical guide</a><a href="developers.html" aria-current="page">Developer guide</a><a href="agents.html">Agent guide</a></nav><nav class="toc" aria-label="On this page"><a href="#quickstart">Install and create</a><a href="#model">Project and model</a><a href="#workflow">Data workflow</a><a href="#mcp">Connect an agent</a><a href="#testing">Development and tests</a><a href="#deploy">Deploy</a><a href="#troubleshoot">Troubleshooting</a></nav></aside>
+<article class="docs-article">
+<p class="eyebrow">02 / Standard developer documentation</p><h1>Build a reproducible city project.</h1><p class="lead">Python tools and plain project files power the research workflow. A static Leaflet application delivers the public result.</p>
+<section id="quickstart"><h2>Install and create a project</h2><p>Requires Python 3.10 or newer and Git. Node.js is needed for JavaScript parity tests, not to serve the generated map. These commands use Windows PowerShell from the repository root:</p>
+<pre><code>git clone https://github.com/Cocoa-County/tax-map.git
+cd tax-map
+python -m venv .venv
+.\.venv\Scripts\pip install -e ".[dev]"
+.\.venv\Scripts\taxmap init projects\martinez --name martinez `
+  --jurisdiction "City of Martinez" --county "Contra Costa" `
+  --state CA --fiscal-year "2026-27"
+.\.venv\Scripts\taxmap --project projects\martinez validate</code></pre>
+<p>On macOS/Linux, use <code>.venv/bin/pip</code> and <code>.venv/bin/taxmap</code>, and use shell-appropriate paths and line continuation. The Martinez command only initializes an empty project; it does not research or populate city data.</p>
+<p>The example fiscal year must be changed to the year supported by your sources. Use <code>taxmap &lt;command&gt; --help</code> for command options. Prefer an explicit <code>--project</code> to avoid editing another project by accident.</p></section>
+<section id="model"><h2>Project files are the source of truth</h2>
+<pre><code>taxmap.yaml                 jurisdiction, APN rules, layers, site
+resources.yaml              source registry and original URLs
+resources/                  ingested files
+model/sources.csv           research inventory and findings
+model/districts/*.yaml       membership, zones, bill labels, evidence
+model/rolls/*.csv|yaml        per-parcel amounts and roll metadata
+model/formulas/*.yaml        inputs, constants, lookups, expressions
+model/notes/*.md             published explainers
+gis/                        feature layers and district outlines
+derived/                    rebuildable extractions
+.taxmap/                    rebuildable search/provenance cache
+site/                       generated public map</code></pre>
+<p>Configure <code>taxmap.yaml</code> and model files directly, or use MCP tools. Schemas reject unknown fields. See the <a href="https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/domain/models.py">typed models</a> for the authoritative field reference and the <a href="https://github.com/Cocoa-County/tax-map/tree/main/examples/concord/model">Concord model</a> for complete examples.</p>
+<h3>Configure publication explicitly</h3><pre><code>site:
+  title: Martinez Assessment Map
+  subtitle: Public records, explained
+  publish_fields:
+    - APN
+    - ADDRESS
+  disclaimer: Unofficial map. The adopted roll and county bill are authoritative.</code></pre>
+<p>Replace <code>APN</code> and <code>ADDRESS</code> with verified layer fields. Include fields needed for calculator prefilling without publishing unnecessary personal data. Nested configuration objects are replaced as a whole by MCP <code>project_configure</code>; preserve existing settings when updating them.</p>
+<h3>Evidence and formulas</h3><p>Evidence has <code>resource</code>, optional 1-based PDF <code>page</code>, <code>locator</code>, <code>quote</code>, and <code>note</code>. Put printed page numbers in the locator. Formula expressions use a parsed language, not Python or JavaScript code; Python and browser evaluators must stay equivalent.</p>
+<p>District <code>bill_labels</code> hold exact code/description pairs with a verification year and evidence. <code>site.parcel_links</code> supports URL-encoded <code>{apn}</code> and <code>{apn_display}</code> templates with fixed HTTP(S) hosts. Verify endpoints and fiscal-year behavior before configuring links.</p></section>
+<section id="workflow"><h2>Acquire, model, validate, build</h2>
+<p>These commands illustrate the sequence. Replace file paths, resource IDs, and the layer URL with verified inputs. Create the referenced district/formula definitions before final validation.</p>
+<pre><code>taxmap --project projects\martinez add C:\records\report.pdf --title "Adopted report"
+taxmap --project projects\martinez extract RESOURCE_ID
+taxmap --project projects\martinez search "assessment roll"
+taxmap --project projects\martinez gis describe VERIFIED_LAYER_URL
+taxmap --project projects\martinez gis download parcels --url VERIFIED_LAYER_URL --kind parcels
+taxmap --project projects\martinez roll import district-2026-27 C:\records\roll.csv --district district
+taxmap --project projects\martinez roll summary district-2026-27
+taxmap --project projects\martinez roll join district-2026-27
+taxmap --project projects\martinez check FORMULA_ID
+taxmap --project projects\martinez outlines
+taxmap --project projects\martinez validate
+taxmap --project projects\martinez build
+taxmap --project projects\martinez serve --port 8000</code></pre>
+<p>For these shorter commands, activate the virtual environment or replace <code>taxmap</code> with its executable path. Open <code>http://localhost:8000/</code>; <code>file://</code> cannot load the map data correctly.</p>
+<p>ArcGIS downloads are resumable and rate-limited. For a local WGS84 GeoJSON layer, use <code>gis import</code>. Verify APN normalization, address fields, coverage, and calculator inputs. Supply stated totals/counts when importing rolls, then inspect summary checks and parcel joins.</p>
+<div class="callout">Never tune a constant merely to force a match. Keep adopted roll values authoritative and explain formula mismatches, proxy inputs, and missing data.</div></section>
+<section id="mcp"><h2>Connect an AI agent</h2><p>Run the installed stdio server with an explicit project:</p>
+<pre><code>.\.venv\Scripts\taxmap-mcp --project projects\martinez</code></pre>
+<p>In your MCP client's configuration, set the command to the virtual environment's <code>taxmap-mcp</code> executable and pass <code>--project</code> plus the project path as arguments. <code>TAXMAP_PROJECT</code> is an alternative. The agent can also call <code>project_open</code> or <code>project_init</code>.</p>
+<p>The repository's <a href="https://github.com/Cocoa-County/tax-map/blob/main/.vscode/mcp.json">VS Code configuration</a> initially points to Concord. Change it for a different project. Provide the <a href="agents.html">agent playbook</a>, <a href="https://github.com/Cocoa-County/tax-map/blob/main/AGENTS.md">agent guide</a>, and <a href="https://github.com/Cocoa-County/tax-map/tree/main/skills">skills</a> through your client's supported context/skill mechanism. A folder's presence alone does not guarantee automatic skill discovery.</p></section>
+<section id="testing"><h2>Develop and test</h2>
+<p>The CLI and MCP server call shared modules under <code>src/taxmap</code>: project storage, ingestion, extraction, indexing, GIS, assessments, formulas, and site generation. The server performs deterministic operations; interpretation belongs to the agent.</p>
+<pre><code>.\.venv\Scripts\python -m pytest -q</code></pre>
+<p>Tests cover models, integrations, MCP, geometry, rendering, and formula parity. Install Node.js to run the parity cases. Concord parcel-dependent tests run when its downloaded layer exists; tests that do not need geometry still validate its committed models.</p>
+<p>For frontend changes, check desktop/mobile layouts, keyboard access, search, overlap selection, calculator updates, citations, and deployment under a repository path such as <code>/tax-map/concord/</code>. Keep both formula implementations aligned and add parity cases for semantic changes.</p></section>
+<section id="deploy"><h2>Publish with GitHub Pages</h2>
+<p>This repository's <a href="https://github.com/Cocoa-County/tax-map/blob/main/.github/workflows/pages.yml">Pages workflow</a> installs taxmap, downloads Concord parcels, validates its model, builds its map, and combines it with the landing page and documentation. Pushes to <code>main</code> or manual workflow dispatch deploy the result.</p>
+<p>For a standalone city project repository, copy the <a href="https://github.com/Cocoa-County/tax-map/blob/main/templates/github-pages.yml">workflow template</a> into <code>.github/workflows/pages.yml</code>. It assumes <code>taxmap.yaml</code> is at the repository root and a configured parcel layer is named <code>parcels</code>. Adjust paths or download steps if your project differs.</p>
+<ol><li>Commit project configuration, approved sources, models, and required GIS definitions. Avoid committing large parcel downloads or generated caches.</li><li>Check that the GitHub plan and repository visibility support Pages.</li><li>Choose <strong>GitHub Actions</strong> in repository Settings &gt; Pages.</li><li>Run the workflow and inspect validation/build warnings and deployment status.</li><li>Verify the actual public URL, a parcel deep link, calculator, and source links.</li></ol>
+<p>Keep links relative for repository-prefix hosting. Failed downloads or validation must stop deployment, rather than publishing an incomplete replacement. A manual rebuild does not automatically refresh adopted reports or review annual model changes.</p></section>
+<section id="troubleshoot"><h2>Troubleshooting</h2>
+<ul><li><strong>No project open:</strong> pass <code>--project</code> or call <code>project_open</code>; confirm the folder contains <code>taxmap.yaml</code>.</li><li><strong>Unmatched roll APNs:</strong> inspect normalization and coverage; check retired parcels and duplicates rather than discarding records silently.</li><li><strong>Calculator cannot prefill:</strong> verify source fields and publication allow-list; read build warnings. Missing data is not zero unless the documented method says so.</li><li><strong>Unreadable PDF:</strong> inspect rendered pages or obtain a better source. Text extraction failure does not prove a fact is absent.</li><li><strong>Blank map:</strong> serve over HTTP and check data requests, paths, and console errors.</li><li><strong>Pages unavailable:</strong> check permissions, repository visibility/plan, Pages source, and Actions logs.</li></ul>
+<p>See <a href="https://github.com/Cocoa-County/tax-map">the repository</a> for CLI help, issue reporting, and the latest schemas.</p></section>
+</article></main><footer><a class="brand" href="../">taxmap</a><a href="./">All documentation</a><a href="agents.html">Next: agent guide &rarr;</a></footer>
+</body></html>

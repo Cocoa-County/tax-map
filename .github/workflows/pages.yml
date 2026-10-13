@@ -37,7 +37,7 @@ jobs:
       - name: Assemble public website
         run: |
           mkdir -p _pages/concord
-          cp website/index.html website/style.css _pages/
+          cp -R website/. _pages/
           cp -R examples/concord/site/. _pages/concord/
           touch _pages/.nojekyll
       - uses: actions/configure-pages@v5

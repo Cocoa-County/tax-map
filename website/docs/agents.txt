@@ -1,0 +1,106 @@
+# taxmap agent playbook
+
+Purpose: build evidence-backed tax and special-assessment maps. This is not a
+general-purpose city dashboard generator. The agent interprets records; the
+MCP server performs deterministic operations. Use the connected server's live
+tool schemas for exact parameters and its installed version.
+
+## Start
+Confirm jurisdiction, fiscal year, scope, project path, and publication intent.
+Call project_open(path) or project_init(...), then project_info().
+Check the returned project root before writing. The repository's default VS Code
+configuration points to Concord. Never write a new city's data there by accident.
+project_configure shallow-merges top-level keys; nested objects replace existing
+values. Preserve existing nested settings when changing APN/layer/site options.
+
+## Workflow
+1. Register files/URLs/context through resource_add_file, resource_add_url,
+   resource_add_chat, resource_add_note. Preserve origin URLs. A link-only
+   resource is a reference, not an immutable snapshot.
+2. Read/extract through resource_read, resource_search, extract_text,
+   extract_tables, render_page_image. No text layer means inspect visually or
+   use suitable OCR; it does not mean the document contains no relevant facts.
+3. Record the source inventory with source_upsert. Distinguish lead, screened,
+   verified, rejected, and unreadable sources. Model final/adopted records;
+   label preliminary/proposed material explicitly.
+4. Inspect GIS with arcgis_describe, acquire with arcgis_download_layer or
+   layer_import, verify fields/coverage with layer_info and layer_query.
+   Imported GeoJSON must be WGS84. Check APN normalization and input attributes.
+5. Use roll_import with stated total/count when available. Inspect roll_summary
+   and roll_join_parcels. Report duplicates, unparsed amounts, unmatched APNs,
+   and discrepancies; do not silently drop problematic records.
+6. Write districts/zones/membership and methods through district_upsert and
+   formula_upsert. Declare input sources, constants, lookups, expressions,
+   applicability, tolerance, caveats, and citations. Read the live models;
+   do not invent expression functions or schema fields.
+7. Use formula_evaluate and formula_validate to quantify differences from
+   official rolls. Never tune constants simply to force agreement.
+8. Build approximate outlines with district_outline_build. Run project_validate,
+   inspect errors/warnings, then site_build and site_serve. Stop the preview
+   with site_serve(stop=true) when review is finished.
+
+## Evidence contract
+Evidence shape:
+{"resource":"adopted-report","page":15,"locator":"Part E, printed p. 11",
+ "quote":"Short supporting excerpt","note":"Relevant limitation"}
+page is a 1-based PDF page. Put printed page numbers in locator.
+Cite rates, constants, lookups, totals, rolls, membership, and bill label pairs.
+Use evidence_for to inspect provenance. index_rebuild refreshes the derived
+search/provenance cache, including after external edits.
+Chats, notes, images, and preliminary documents are not automatically
+authoritative just because they were ingested.
+
+## Official amount versus estimate
+Adopted rolls and county bills remain authoritative. Formulas explain/estimate.
+Missing data is not zero unless the documented method explicitly warrants it.
+Disclose proxy inputs and incomplete coverage. Do not interpret unmatched data,
+portal failures, or extraction errors as confirmed absence of an assessment.
+District bill_labels contain exact code/description pairs, verification year,
+optional note, and evidence. Match BOTH code and description.
+A district-level label does not prove a charge on a selected parcel.
+An ambiguous label does not identify a benefit zone: Concord's
+JV / KIRKWOOD LMD also appears on Ygnacio Woods bills.
+site.parcel_links accepts fixed-host HTTP(S) URL templates with {apn} or
+{apn_display}. Verify actual endpoints and county-controlled bill years.
+Do not bulk-fetch county bills unnecessarily or bypass portal rate limits.
+
+## Failure handling
+Report tool/network failures explicitly. Respect download rate limits.
+For total/count discrepancies, inspect transcription, duplicates, rounding,
+and scope. For APN join failures, inspect normalization, coverage, and retired
+parcels. For formula mismatches, report match counts, differences, and caveats.
+Do not publish a success-shaped fallback or hide unresolved errors.
+Read build warnings, especially hidden calculator fields and missing outlines.
+
+## Publication
+Use site.publish_fields as an explicit allow-list. Exclude owner information
+and private correspondence unless the user specifically approves publication.
+Verify redistribution rights before copying documents into the public site.
+Derived parcel outlines are approximate, not legal boundary surveys.
+Do not deploy publicly without approval. Build success is not approval.
+A new fiscal year requires source/model review, not just rebuilding old data.
+
+## Done criteria and handoff
+- Correct project root and agreed scope.
+- Source inventory with verified final records and supporting citations.
+- Roll counts/totals checked, parcel joins quantified, anomalies disclosed.
+- Formula comparisons quantified; missing inputs/approximations explained.
+- No unresolved project_validate errors; site_build warnings reviewed.
+- Browser checks: representative APNs, calculations/reset, source links,
+  overlap selection where applicable, and mobile layout.
+- Publication allow-list, disclaimer, rights, and deployment approval reviewed.
+- If deployed, verify actual public URLs; otherwise provide a preview.
+Handoff: project path, sources, modeled coverage, checks, limitations,
+preview/public URL, and update instructions.
+
+## Skills and reference
+https://github.com/Cocoa-County/tax-map/blob/main/AGENTS.md
+https://github.com/Cocoa-County/tax-map/tree/main/skills
+Skills: taxmap-project-setup, ingest-resources, screen-sources,
+acquire-parcel-gis, extract-assessment-roll, build-districts,
+transcribe-assessment-formula, validate-formulas, build-map-site,
+write-transparency-brief.
+https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/domain/models.py
+https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/mcp/server.py
+MCP resources: taxmap://project, taxmap://resource/{id},
+taxmap://resource/{id}/page/{n}, taxmap://model/{kind}/{id}.

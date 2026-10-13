@@ -150,6 +150,10 @@ original project exactly. See its [README](examples/concord/README.md).
 
 - [Landing page](https://cocoa-county.github.io/tax-map/)
 - [Concord example map](https://cocoa-county.github.io/tax-map/concord/)
+- [Documentation](https://cocoa-county.github.io/tax-map/docs/): full
+  non-technical, developer, and agent guides. Agents can read the
+  [plain-text playbook](https://cocoa-county.github.io/tax-map/docs/agents.txt)
+  and [documentation index](https://cocoa-county.github.io/tax-map/llms.txt).
 
 The landing page source is in [website/](website/). The
 [Pages workflow](.github/workflows/pages.yml) builds Concord from this checkout,
