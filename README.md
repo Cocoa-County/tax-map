@@ -162,6 +162,13 @@ publishes both sites in one artifact. Pushes to `main` deploy automatically;
 `workflow_dispatch` also allows a manual rebuild. Parcel geometry and generated
 map files are not committed.
 
+The landing page and documentation use Cocoa County's community/open-source
+identity from the [organization profile](https://github.com/Cocoa-County/.github)
+and the blue (`#1f78b4`) and neutral-panel styling of
+[CocoaCountyMap](https://github.com/Cocoa-County/CocoaCountyMap).
+This is a project-local adaptation, not a shared official design-system package.
+The generic map generator and Concord district colors remain unchanged.
+
 In GitHub **Settings > Pages**, select **GitHub Actions** as the source.
 The repository site serves the landing page at `/tax-map/` and the example at
 `/tax-map/concord/`. Relative links keep both working under the repository prefix.

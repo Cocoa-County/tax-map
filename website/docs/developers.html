@@ -3,7 +3,7 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Install taxmap, configure city projects, validate models, and deploy static maps."><title>Developer guide | taxmap</title><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="docs.css"></head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header"><a class="brand" href="../">taxmap</a><nav aria-label="Main navigation"><a href="./">Documentation</a><a href="../concord/">Concord map</a><a href="https://github.com/Cocoa-County/tax-map">GitHub</a></nav></header>
+<header class="site-header"><a class="brand" href="../">Cocoa County<small>taxmap documentation</small></a><nav aria-label="Main navigation"><a href="./">Documentation</a><a href="../concord/">Concord map</a><a href="https://github.com/Cocoa-County/tax-map">GitHub</a></nav></header>
 <main id="main" class="docs-layout">
 <aside class="docs-sidebar"><nav aria-label="Documentation guides"><a href="./">Documentation home</a><a href="community.html">Non-technical guide</a><a href="developers.html" aria-current="page">Developer guide</a><a href="agents.html">Agent guide</a></nav><nav class="toc" aria-label="On this page"><a href="#quickstart">Install and create</a><a href="#model">Project and model</a><a href="#workflow">Data workflow</a><a href="#mcp">Connect an agent</a><a href="#testing">Development and tests</a><a href="#deploy">Deploy</a><a href="#troubleshoot">Troubleshooting</a></nav></aside>
 <article class="docs-article">
@@ -78,5 +78,5 @@ taxmap --project projects\martinez serve --port 8000</code></pre>
 <section id="troubleshoot"><h2>Troubleshooting</h2>
 <ul><li><strong>No project open:</strong> pass <code>--project</code> or call <code>project_open</code>; confirm the folder contains <code>taxmap.yaml</code>.</li><li><strong>Unmatched roll APNs:</strong> inspect normalization and coverage; check retired parcels and duplicates rather than discarding records silently.</li><li><strong>Calculator cannot prefill:</strong> verify source fields and publication allow-list; read build warnings. Missing data is not zero unless the documented method says so.</li><li><strong>Unreadable PDF:</strong> inspect rendered pages or obtain a better source. Text extraction failure does not prove a fact is absent.</li><li><strong>Blank map:</strong> serve over HTTP and check data requests, paths, and console errors.</li><li><strong>Pages unavailable:</strong> check permissions, repository visibility/plan, Pages source, and Actions logs.</li></ul>
 <p>See <a href="https://github.com/Cocoa-County/tax-map">the repository</a> for CLI help, issue reporting, and the latest schemas.</p></section>
-</article></main><footer><a class="brand" href="../">taxmap</a><a href="./">All documentation</a><a href="agents.html">Next: agent guide &rarr;</a></footer>
+</article></main><footer><a class="brand" href="https://github.com/Cocoa-County">Cocoa County<small>Community-driven government innovation</small></a><a href="./">All documentation</a><a href="agents.html">Next: agent guide &rarr;</a></footer>
 </body></html>
