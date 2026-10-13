@@ -7,7 +7,7 @@ tool schemas for exact parameters and its installed version.
 
 ## Start
 For a new local workspace, follow the bootstrap request and client references
-in get-started.html. Detect OS, permissions, and research/vision capabilities.
+in community.html. Detect OS, permissions, and research/vision capabilities.
 Use a separate taxmap tools checkout and city project; preserve existing files
 and record the tools revision. Read the applicable skills explicitly.
 Install runtime dependencies in a dedicated venv. Check prerequisites first;

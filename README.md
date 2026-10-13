@@ -86,7 +86,7 @@ checks, while the agent reads, decides and writes.
 ## Install
 
 **New to terminals or building with AI?** Follow
-[Start with an agent](website/docs/get-started.html): install and sign into
+[non-technical guide](website/docs/community.html): install and sign into
 Codex, Claude Code, or GitHub Copilot CLI, open a dedicated workspace, and paste
 one project request. The agent handles local taxmap installation, MCP setup,
 research, validation, and a preview. Permissions, possible client restarts,
@@ -159,7 +159,8 @@ original project exactly. See its [README](examples/concord/README.md).
 - [Landing page](https://cocoa-county.github.io/tax-map/)
 - [Concord example map](https://cocoa-county.github.io/tax-map/concord/)
 - [Documentation](https://cocoa-county.github.io/tax-map/docs/): full
-  non-technical, developer, and agent guides. Agents can read the
+  [app user guide](website/docs/users.html) and separate non-technical project
+  creation, developer, and agent guides. Agents can read the
   [plain-text playbook](https://cocoa-county.github.io/tax-map/docs/agents.txt)
   and [documentation index](https://cocoa-county.github.io/tax-map/llms.txt).
 
