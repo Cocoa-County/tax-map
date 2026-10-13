@@ -16,7 +16,7 @@
     for (const [key, value] of Object.entries(attrs || {})) {
       if (value === null || value === undefined || value === false) continue;
       if (key === "class") node.className = value;
-      else if (key === "html") node.innerHTML = value; // only for pre-sanitized notes HTML
+      else if (key === "html") node.innerHTML = value; // sanitized notes or escaped MathML
       else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
       else node.setAttribute(key, value === true ? "" : value);
     }
@@ -369,6 +369,43 @@
     const official = selected ? memberGroups(selected.apn, selected.attrs).amounts[formula.district] : undefined;
     const form = el("form", { class: "calc-inputs", onsubmit: (e) => e.preventDefault() });
     const output = el("div");
+    const tooltip = el("div", { id: "formula-tooltip", class: "formula-tooltip", role: "tooltip", hidden: true });
+    let activeSymbol;
+    function hideTooltip() {
+      if (activeSymbol) activeSymbol.removeAttribute("aria-describedby");
+      activeSymbol = null;
+      tooltip.hidden = true;
+    }
+    function showTooltip(event) {
+      const symbol = event.target.closest(".formula-symbol");
+      if (!symbol) return;
+      hideTooltip();
+      activeSymbol = symbol;
+      tooltip.textContent = symbol.getAttribute("aria-label");
+      symbol.setAttribute("aria-describedby", tooltip.id);
+      tooltip.hidden = false;
+      const rect = symbol.getBoundingClientRect();
+      const width = tooltip.offsetWidth;
+      tooltip.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - width - 8))}px`;
+      tooltip.style.top = `${Math.max(8, Math.min(rect.bottom + 8, window.innerHeight - tooltip.offsetHeight - 8))}px`;
+    }
+    output.addEventListener("pointerover", showTooltip);
+    output.addEventListener("focusin", showTooltip);
+    output.addEventListener("pointerout", (event) => {
+      if (activeSymbol && (activeSymbol.contains(event.relatedTarget) || activeSymbol.matches(":focus"))) return;
+      hideTooltip();
+    });
+    output.addEventListener("focusout", hideTooltip);
+    output.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !tooltip.hidden) {
+        event.preventDefault();
+        hideTooltip();
+      }
+    });
+    $("modal").onscroll = () => {
+      if (activeSymbol && activeSymbol.matches(":focus")) showTooltip({ target: activeSymbol });
+      else hideTooltip();
+    };
     const fields = {};
     for (const spec of formula.inputs) {
       const value = values[spec.name];
@@ -389,26 +426,47 @@
       return out;
     }
     function recompute() {
-      const result = F.evaluate(formula, currentValues());
+      hideTooltip();
+      const inputValues = currentValues();
+      const result = F.evaluate(formula, inputValues);
+      const display = window.TaxmapFormulaDisplay;
+      const symbols = display.symbols(formula, inputValues, result);
+      function equationBlock(ast, name, value, label) {
+        return el("section", { class: "formula-block" },
+          el("h4", {}, label),
+          el("div", { class: "formula-equation", html: display.equation(ast, symbols, { name, label }) }),
+          el("div", { class: "formula-equation live", html: display.equation(ast, symbols,
+            { name, value, substitute: true, label: `${label}, with current values` }) }));
+      }
       const parts = [];
       if (!result.applicable) parts.push(el("p", { class: "calc-result" }, "Not applicable"), el("p", { class: "muted" }, `Condition: ${formula.applies_when}`));
       else if (result.value === null) parts.push(el("p", { class: "warn" }, result.missing || result.error));
-      else parts.push(el("p", { class: "calc-result" }, money(result.value)));
+      else parts.push(el("div", { class: "calc-result" }, el("span", {}, "Estimated annual assessment"), el("strong", {}, money(result.value))));
       if (typeof official === "number" && result.value !== null && result.value !== undefined) {
         const diff = result.value - official;
         const match = Math.abs(diff) <= (formula.tolerance || 0.01) + 1e-9;
         parts.push(el("p", { class: match ? "ok" : "bad" }, `Official roll: ${money(official)} — `,
           match ? "matches" : `differs by ${money(diff)}`));
       }
-      if (formula.terms.length) {
-        parts.push(el("h3", {}, "Steps"), el("table", { class: "grid" }, formula.terms.map((t) => el("tr", {},
-          el("td", {}, t.label || t.name, el("div", { class: "expression" }, t.expression)),
-          el("td", { class: "num" }, numberText(result.terms[t.name]))))));
-      }
+      parts.push(equationBlock(formula.ast, null, result.applicable ? result.value : null, "Assessment formula"));
+      if (formula.terms.length) parts.push(el("details", { open: true }, el("summary", {}, "Calculation steps"),
+        formula.terms.map((t) => equationBlock(t.ast, t.name, result.terms[t.name], t.label || t.name))));
+      parts.push(el("details", {}, el("summary", {}, "What the symbols mean"),
+        el("p", { class: "muted" }, "Blue: inputs · Amber: adopted constants · Green: calculated values. Focus or hover a symbol for its explanation."),
+        el("table", { class: "grid symbol-glossary" },
+          el("tr", {}, el("th", {}, "Symbol"), el("th", {}, "Meaning"), el("th", { class: "num" }, "Current value")),
+          Object.entries(symbols).map(([name, entry]) => el("tr", {},
+            el("td", { class: `symbol-${entry.kind}` }, name),
+            el("td", {}, entry.label || name, entry.description ? el("div", { class: "muted" }, entry.description) : null),
+            el("td", { class: "num" }, entry.kind === "lookup" ? "Table" : numberText(entry.value),
+              entry.unit ? ` ${entry.unit}` : ""))))));
       if (result.lookups) {
         parts.push(el("h3", {}, "Table lookups"), el("ul", {}, Object.entries(result.lookups).map(([name, hit]) =>
           el("li", {}, `${formula.lookups[name].label || name}: key ${hit.key} → ${numberText(hit.value)}`,
-            hit.label ? ` (${hit.label})` : ""))));
+            hit.label ? ` (${hit.label})` : "",
+            Object.keys(hit.details || {}).length ? el("table", { class: "kv" },
+              Object.entries(hit.details).map(([key, value]) => el("tr", {},
+                el("th", {}, key), el("td", {}, numberText(value))))) : null))));
       }
       output.replaceChildren(...parts);
     }
@@ -417,8 +475,9 @@
       formula.description ? el("p", {}, formula.description) : null,
       selected ? el("p", { class: "muted" }, `Parcel APN ${formatApn(selected.apn)}. Values are prefilled from public data; edit them to explore what-if scenarios.`)
         : el("p", { class: "muted" }, "Enter values to estimate an assessment."),
-      form, output,
-      el("h3", {}, "Formula"), el("div", { class: "expression" }, formula.expression),
+      el("div", { class: "calculator-layout" }, el("section", { class: "calculator-input-panel" }, el("h3", {}, "Parcel inputs"), form),
+        el("section", { class: "calculator-formulas", "aria-live": "polite" }, output)),
+      el("details", {}, el("summary", {}, "Expression source"), el("div", { class: "expression" }, formula.expression)),
       formula.applies_when ? el("p", { class: "muted" }, `Applies when: ${formula.applies_when}`) : null,
       constants.length ? el("details", {}, el("summary", {}, "Constants"), el("table", { class: "grid" }, constants.map(([name, c]) =>
         el("tr", {}, el("td", {}, c.label || name), el("td", { class: "num" }, numberText(c.value), c.unit ? ` ${c.unit}` : ""),
@@ -429,7 +488,8 @@
             table.entries.map((e) => el("tr", {}, el("td", {}, e.keys), el("td", {}, e.label || ""), el("td", { class: "num" }, numberText(e.value)))))))) : null,
       formula.caveats && formula.caveats.length ? el("div", { class: "warn" }, el("strong", {}, "Caveats"),
         el("ul", {}, formula.caveats.map((c) => el("li", {}, c)))) : null,
-      el("h3", {}, "Sources"), evidenceList(formula.evidence) || el("p", { class: "muted" }, "No citations recorded."));
+      el("h3", {}, "Sources"), evidenceList(formula.evidence) || el("p", { class: "muted" }, "No citations recorded."),
+      tooltip);
     recompute();
     openModal(formula.name, body);
     setHash({ apn: selected && selected.apn, calc: formulaId });

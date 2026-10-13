@@ -13,7 +13,8 @@ using the **taxmap MCP server** and **agent skills** turns them into:
   stated totals and joined to parcels.
 - **GIS layers:** parcels and approximate district outlines.
 - **A static map site:** parcel search, per-parcel districts and amounts,
-  calculator modals that explain each charge, district explainers and a
+  calculator modals with typeset equations, live numeric substitutions,
+  color-coded symbol explanations and calculation steps, district explainers and a
   source list. It needs no backend.
 
 Version 1 ships the MCP server, the skills, a CLI and the site generator.
