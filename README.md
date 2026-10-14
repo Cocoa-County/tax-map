@@ -130,8 +130,12 @@ essential blockers, not every optional setting.
 Review one consolidated proposal of exact fields, resource IDs, extra roll
 columns and public explanations before previewing. Incomplete coverage and
 source discrepancies stay visible; missing evidence is never filled with
-invented values. Nothing is uploaded or deployed automatically. Host tool
-permissions remain separate. For a deliberate setup-only walkthrough, say
+invented values. When research finds eligible new/corrected reusable resources,
+the same review includes a separate optional sharing choice, explaining how
+your contribution makes taxmap more powerful for the whole community.
+Declining never blocks your app. Nothing is uploaded or deployed without
+explicit permission. Host tool permissions remain separate.
+For a deliberate setup-only walkthrough, say
 **"Create a new taxmap project. Walk me through the setup."**
 Individual skills, CLI/MCP operations and editable project files remain
 available for a hands-on process; using the CLI directly does not require AI.
@@ -179,12 +183,19 @@ The plugin includes two additional skills:
   research, inherit matching county resources, recheck endpoints and record
   limitations. Missing/unreachable entries do not block official research.
 - `contribute-jurisdiction-resources`: prepare a minimal public-safe correction
-  or addition and, with approval, submit a fork-based pull request using the
-  user's authorized GitHub tools. Maintainers approve and merge; the skill
+  or addition as a standard part of the one-request build, offer it alongside
+  preview review, and, with separate explicit approval, submit a fork-based
+  pull request using the user's authorized GitHub tools. Maintainers approve
+  and merge; the skill
   never self-approves, auto-merges or pushes contributions directly to main.
 
 Reading needs no GitHub login. Submitting needs authorized GitHub tools and
-publication permission, separate from local preview approval. No credentials
+publication permission, separate from local preview approval. The offer shows
+the exact public metadata and destination, explains the community benefit and
+has no preselected consent. It is skipped when no eligible changes exist;
+declined/deferred choices are saved privately and respected on resume.
+Approved submissions follow preview delivery; failures never block the app.
+Standalone contribution requests remain supported. No credentials
 are stored in taxmap and no additional MCP registration is required. If tools
 are unavailable, the skill provides a patch/manual PR handoff, not a false
 submission claim. Catalog verification is a dated endpoint check, not proof of

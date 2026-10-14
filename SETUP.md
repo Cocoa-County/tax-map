@@ -153,6 +153,10 @@ These skills use host web/GitHub capabilities, not an extra MCP server or
 credentials managed by taxmap. Reading is public; fork/PR submission requires
 the user's authorized GitHub tools and approval. Never install/sign into those
 tools merely to finish taxmap setup, or submit a contribution automatically.
+During a one-request app build, offering eligible new/corrected metadata is
+standard: explain the community benefit and ask a separate explicit sharing
+choice alongside preview approval. No preselected consent; declining or
+unavailable GitHub tools never blocks the app. Setup alone does not submit data.
 
 ## 5. Activate, check readiness and save the handoff
 

@@ -1,6 +1,6 @@
 ---
 name: build-taxmap-app
-description: Research and build a new taxmap app from one request such as "Build a taxmap app for Martinez, CA", or resume a guided build. Derive optional settings and continue through research, one exact content review, and a verified local preview. Use for app-generation intent; use taxmap-project-setup only for an explicit setup walkthrough.
+description: Research and build a new taxmap app from one request such as "Build a taxmap app for Martinez, CA", or resume a guided build. Derive optional settings, offer eligible shared-resource contributions alongside one exact content review, and deliver a verified local preview. Sharing requires a separate explicit choice. Use taxmap-project-setup only for an explicit setup walkthrough.
 ---
 
 # Build an app from one request
@@ -41,6 +41,9 @@ Load `find-jurisdiction-resources` first: consult the shared catalog at a record
 revision for matching city and parent-county portals, bill templates and GIS.
 Reverify candidates for this project; catalog metadata is a lead, not adoption
 evidence. Missing/unreachable catalog entries must not block official research.
+Collect eligible new or corrected reusable resources locally as research proceeds.
+Load `contribute-jurisdiction-resources` to prepare a deduplicated public-safe
+proposal before the content review; the user need not ask separately.
 
 Load and follow the existing `screen-sources`, `ingest-resources`,
 `acquire-parcel-gis`, `extract-assessment-roll`, `build-districts`,
@@ -98,8 +101,10 @@ model entities. Do not turn missing charges into zero. A mismatch may support
    inline links or prose. Familiarity with a source is not permission.
 3. Present one consolidated user review of exact fields, per-roll columns,
    resource IDs/titles/origins, official parcel links, document-copy policy, public notes and material
-   model prose. Describe any omitted sources and limitations. Do not approve
-   your own proposal. Host permission prompts remain independent.
+   model prose. Describe any omitted sources and limitations. Include the
+   standard community contribution offer below when eligible changes exist,
+   with separate explicit choices for preview approval and public sharing.
+   Do not approve your own proposal. Host permission prompts remain independent.
 4. Only after the user approves that export, call
    `app_review(approve=<digest>)` without a new site object. If the user denies
    a subset, propose reduced settings and obtain approval for the revised
@@ -107,6 +112,48 @@ model entities. Do not turn missing charges into zero. A mismatch may support
 5. An unchanged export can be resumed without another approval. Content
    changes invalidate the digest and need review of the changed content.
    Approval allows a localhost preview only, never commit, upload or deployment.
+
+## Standard community contribution offer
+
+Offering eligible additions/corrections is a standard part of every guided
+build, not an extra request the user must discover. Submission remains opt-in.
+
+- Compare candidates with current upstream entries, inherit county resources
+  without duplicating them in city files, and verify official purpose/scope.
+  Follow `contribute-jurisdiction-resources` for the exact allowed metadata.
+  If nothing eligible is new or changed, note that briefly without a permission
+  prompt. If the comparison cannot be completed, record it as deferred.
+- Show the exact proposed public metadata/diff, destination
+  `Cocoa-County/taxmap-resources`, verification limitations and PR workflow.
+  Explain the benefit in plain language, for example:
+  "Sharing these verified official links helps make taxmap more powerful for
+  the whole community: future users can find reliable resources faster.
+  May I submit the metadata shown above as a public pull request to
+  Cocoa-County/taxmap-resources? This shares only reusable portals, GIS service
+  URLs and bill templates, not your project files, reports or parcel records.
+  Your app works the same if you decline."
+- In the consolidated review, ask two independent questions: approve this
+  local preview, and share these catalog changes? Offer "Share" and
+  "Not now" for sharing, with no preselected consent. A preview-only answer,
+  missing sharing choice or ambiguous combined "yes" is not sharing permission.
+  Continue the approved preview and defer sharing unless explicitly authorized.
+- Save the exact proposal and separate sharing decision/status locally in
+  `derived/catalog-contribution.json`; reference the existing artifact via
+  `app_status`. Track no eligible changes, offered, declined, deferred,
+  approved, submitted or failed, plus a verified PR URL or unresolved blocker
+  when applicable. Keep this artifact private; never add it to site notes or
+  upload it. Catalog approval is not the `app_review` export digest.
+- On resume, respect a declined/deferred choice and do not repeat an unchanged
+  offer. Check an existing submitted PR before creating another. A materially
+  changed proposal needs fresh sharing approval; do not broaden prior consent.
+- Deliver the approved preview first, then use
+  `contribute-jurisdiction-resources` to submit approved changes without another
+  generic "continue" request. Submission includes the approved metadata,
+  contributor fork/branch, commit, push and PR only, not app deployment.
+  Missing auth/tools, checks or PR failures never block the app. Preserve the
+  exact blocker and offer a patch/manual handoff; do not install/sign into
+  GitHub tools without separate permission. Report submitted, declined,
+  deferred, failed or no eligible changes accurately in the handoff.
 
 ## Deliver and resume
 

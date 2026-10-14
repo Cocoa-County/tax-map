@@ -106,6 +106,36 @@ def test_catalog_discovery_entry_points(entry_point):
     assert "`find-jurisdiction-resources`" in text
 
 
+def test_bundled_standard_community_contribution_offer(tmp_path):
+    plugin = builder.build_plugin(tmp_path / "bundle", Path(sys.executable), "test-revision")
+    expectations = {
+        "build-taxmap-app": [
+            "## Standard community contribution offer", "two independent questions",
+            "no preselected consent", 'ambiguous combined "yes"',
+            "derived/catalog-contribution.json", "declined/deferred",
+            "fresh sharing approval", "preview first", "failures never block the app",
+        ],
+        "find-jurisdiction-resources": [
+            "## Standard offer, optional submission",
+            "without waiting for a separate user request",
+            "separate explicit sharing choice", "when nothing eligible changed",
+            "declined/deferred", "never require a contribution",
+        ],
+        "contribute-jurisdiction-resources": [
+            "standard contribution offer", "separate explicit sharing choice",
+            "no preselected consent", 'ambiguous combined "yes"',
+            "derived/catalog-contribution.json", "declined/deferred",
+            "fresh approval", "preview first", "failures must not block",
+        ],
+    }
+    for name, phrases in expectations.items():
+        text = " ".join((plugin / "skills" / name / "SKILL.md").read_text(
+            encoding="utf-8",
+        ).split())
+        for phrase in ["whole community", *phrases]:
+            assert phrase in text, (name, phrase)
+
+
 def test_bundled_guidance_resolves_links_and_checkout_assets(tmp_path):
     plugin = builder.build_plugin(tmp_path / "bundle", Path(sys.executable), "test-revision")
     for path in plugin.rglob("*.md"):
@@ -184,7 +214,13 @@ def test_bundled_mcp_without_project(tmp_path, monkeypatch):
                                        env=server["env"] | {"PYTHONPATH": str(ROOT / "src")})
         async with stdio_client(params) as (read, write):
             async with ClientSession(read, write) as session:
-                await session.initialize()
+                initialized = await session.initialize()
+                instructions = " ".join(initialized.instructions.split())
+                assert "offer eligible catalog additions/corrections" in instructions
+                assert "whole community" in instructions
+                assert "separate explicit sharing choice" in instructions
+                assert "preview approval never permits sharing" in instructions
+                assert "failures never block the app" in instructions
                 tools = {tool.name for tool in (await session.list_tools()).tools}
                 assert {"project_init", "project_open", "project_info", "app_start", "app_review",
                         "app_check", "app_preview"} <= tools

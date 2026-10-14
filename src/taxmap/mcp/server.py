@@ -31,8 +31,15 @@ Before discovery, load find-jurisdiction-resources to check the shared
 Cocoa-County/taxmap-resources catalog; reverify leads for the project.
 Before preview, account for official bill links in site.parcel_links or explain
 their omission, APN format and county year limitations.
-Requested catalog contributions use contribute-jurisdiction-resources and the
-host's authorized GitHub tools: approved fork-based PRs only; never auto-merge.
+During one-request builds, use contribute-jurisdiction-resources to prepare and
+offer eligible catalog additions/corrections alongside the content review.
+Explain that sharing helps make taxmap more powerful for the whole community.
+Show the exact public metadata/destination and ask a separate explicit sharing
+choice; no preselected consent, and preview approval never permits sharing.
+Skip the prompt if nothing eligible changed; respect saved declined/deferred
+choices. After approval, deliver the preview then submit using the host's
+authorized GitHub tools: fork-based PRs only; never auto-merge.
+Sharing is optional and failures never block the app. No new catalog MCP.
 For a one-request app, load build-taxmap-app: app_start -> research/model using
 the tools below -> app_status/app_check -> app_review -> explicit user approval
 via app_review(approve=digest) -> app_preview. Derive optional setup defaults;

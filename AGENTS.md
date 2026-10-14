@@ -36,12 +36,22 @@ adoption or publication approval. Continue research if the catalog is unavailabl
 Before preview, propose verified official bill links in site.parcel_links or
 record why none are included, including APN/year limitations.
 
-Use `contribute-jurisdiction-resources` for requested public catalog additions
-or corrections. Review the exact metadata, obtain publishing approval and use
+During every one-request build, use `contribute-jurisdiction-resources` to
+prepare eligible new/corrected catalog metadata and offer sharing alongside
+the consolidated preview review; do not wait for a separate contribution request.
+Explain that sharing helps make taxmap more powerful for the whole community.
+Show the exact public proposal/destination and ask a separate explicit sharing
+choice with no preselected consent. No eligible changes means no sharing prompt.
+Save the proposal/decision privately in derived/catalog-contribution.json;
+respect declined/deferred choices on resume and avoid duplicate PRs.
+After explicit approval, deliver the preview and use
 the host's authorized GitHub tools to submit a fork-based PR. No specific
 documents, individual bills or private project data. Never self-approve,
 auto-merge, merge or push contributions directly to catalog main; maintainers
-approve and merge. Reading/building an app never implies permission to contribute.
+approve and merge. Reading/building or approving a preview never implies sharing
+permission. Contribution failures or declining never block the app; provide an
+honest patch/manual handoff if tools are unavailable. Standalone requests still
+use the same contribution skill.
 
 For manual or step-by-step work, the individual skills in [skills/](skills/)
 remain available. `build-taxmap-app` coordinates the relevant stages for a

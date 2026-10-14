@@ -84,8 +84,23 @@ official discovery if unavailable. Keep specific documents in this project.
 Before preview, propose verified site.parcel_links with APN/year caveats or
 record why official bill links are unavailable, not found or omitted. Include
 exact link labels/hosts/templates in content review. Do not initiate payments.
-Public catalog contributions require separate approval and a fork-based PR via
-contribute-jurisdiction-resources; maintainers handle approval and merging.
+As a standard part of this one-request build, use
+contribute-jurisdiction-resources to prepare eligible new/corrected catalog
+metadata without waiting for me to request it. Alongside the consolidated
+preview review, show the exact proposed public metadata/diff and destination,
+and ask a separate explicit sharing choice with no preselected consent.
+Explain that sharing helps make taxmap more powerful for the whole community:
+future users find reliable official resources faster. Only reusable metadata
+is shared, not project files, reports or parcel records. Declining does not
+affect the app. If nothing eligible changed, do not ask for sharing permission.
+Preview approval, a missing sharing answer or an ambiguous combined "yes"
+never authorizes submission. Save the proposal and decision privately in
+derived/catalog-contribution.json; respect declined/deferred choices on resume
+and avoid duplicate PRs. After sharing approval, deliver the preview then submit
+the approved fork-based PR without another generic continuation request;
+maintainers handle approval and merging. Missing GitHub tools/auth or submission
+failures must not block the app; preserve the blocker and provide a patch/manual
+handoff. Installing/signing into tools requires separate permission.
 
 Use taxmap's skills and live MCP schemas to configure the project, inventory
 sources, store document snapshots with origin URLs, find official parcel GIS,

@@ -24,8 +24,12 @@
 - [Shared jurisdiction resources](https://github.com/Cocoa-County/taxmap-resources):
   reusable official city/county websites, agenda/minute portals, GIS services and
   bill templates, not specific documents or individual bills. The lookup skill
-  reverifies matching leads; requested contributions use the contribution skill,
-  approved fork-based PRs and maintainer review/merge. No automatic publication.
+  reverifies matching leads. One-request builds offer eligible additions/corrections
+  alongside preview review, explaining the community benefit and asking a separate
+  explicit sharing choice with no preselected consent. No changes means no prompt;
+  declined/deferred choices are respected on resume and never block the app.
+  Approved sharing uses the contribution skill, fork-based PRs and maintainer
+  review/merge. Preview approval never permits sharing. No automatic publication.
 - [Repository](https://github.com/Cocoa-County/tax-map)
 - [Agent instructions](https://github.com/Cocoa-County/tax-map/blob/main/AGENTS.md)
 - [CLI tools bootstrap](https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md):

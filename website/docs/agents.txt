@@ -105,16 +105,30 @@ is not a reason to silently omit bill links. Review exact labels, hosts/template
 and year caveats with the export. Never initiate payments or copy private bills.
 Record catalog revision, entry IDs and endpoint checks in project artifacts.
 
-Use contribute-jurisdiction-resources for requested catalog additions/corrections.
-Read current catalog contributor rules/schema, show the minimal public-safe diff,
-obtain publishing approval and use the host's authorized GitHub tools to create
-a contributor-fork branch and PR to catalog main. Run its validator and tests.
+During every one-request build, use contribute-jurisdiction-resources to prepare
+eligible catalog additions/corrections and offer sharing alongside preview review
+without waiting for a separate request. Show the exact public-safe metadata/diff
+and destination. Explain that sharing helps make taxmap more powerful for the
+whole community: future users find reliable official resources faster.
+Ask a separate explicit sharing choice with no preselected consent; preview
+approval, an omitted sharing answer or an ambiguous combined "yes" never permits
+submission. Skip the prompt if nothing eligible changed. Save the exact proposal
+and decision privately in derived/catalog-contribution.json and reference it via
+app_status. Respect declined/deferred choices on resume, check existing PRs to
+avoid duplicates, and seek fresh approval for materially changed proposals.
+After sharing approval, deliver the preview then use the host's authorized GitHub
+tools to create a contributor-fork branch and PR without another generic
+continuation question. Read current contributor rules/schema; run the catalog's
+validator and tests. Standalone contribution requests remain supported.
 Maintainers approve/merge; never self-approve, auto-merge or push contributions
 directly to main. No specific documents, meetings, individual bill URLs, sample
 APNs, owner/payment information, credentials or project artifacts belong there.
 No new MCP registration or credentials managed by taxmap. Missing auth/tools
 means a patch/manual handoff, not a submitted-PR claim. Do not require a catalog
 contribution to finish an app or infer publication permission from preview approval.
+Declining, missing tools and submission failures never block the app; record the
+actual contribution status and exact blocker in the private handoff. Tool
+installation/login requires separate permission.
 
 ## Workflow
 1. Register files/URLs/context through resource_add_file, resource_add_url,

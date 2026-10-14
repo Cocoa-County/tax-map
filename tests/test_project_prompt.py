@@ -57,6 +57,16 @@ def test_default_prompt_context_and_fiscal_year(tmp_path, year):
     assert "find-jurisdiction-resources" in request
     assert "site.parcel_links" in request
     assert "fork-based PR" in request
+    contribution = " ".join(request.split())
+    assert "without waiting for me to request it" in contribution
+    assert "whole community" in contribution
+    assert "separate explicit sharing choice with no preselected consent" in contribution
+    assert 'an ambiguous combined "yes" never authorizes submission' in contribution
+    assert "If nothing eligible changed, do not ask" in contribution
+    assert "derived/catalog-contribution.json" in contribution
+    assert "respect declined/deferred choices on resume" in contribution
+    assert "deliver the preview then submit" in contribution
+    assert "failures must not block the app" in contribution
     assert "$context" not in request and "$fiscal_year_instruction" not in request
     assert not (root / "model" / "notes" / PROMPT_FILE).exists()
 

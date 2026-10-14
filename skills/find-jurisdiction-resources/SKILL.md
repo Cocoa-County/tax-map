@@ -69,10 +69,17 @@ disposition in project research notes or derived/catalog-lookup.json. Guided
 work can reference that existing artifact via app_status. Do not upload those
 project files to the catalog.
 
-## Optional contributions
+## Standard offer, optional submission
 
 If reusable information is new, stale or wrong, keep a local proposed correction.
-Use contribute-jurisdiction-resources when the user requests or approves a
-public catalog contribution. Do not interrupt ordinary app generation to
-require a PR, and do not infer publication permission from research or preview
-approval. Catalog maintainers decide approval and merging.
+During a one-request build, use `contribute-jurisdiction-resources` to prepare
+eligible additions/corrections and offer them alongside the consolidated content
+review without waiting for a separate user request. Explain that sharing helps
+make taxmap more powerful for the whole community by improving future discovery.
+Show the exact public proposal and destination, and obtain a separate explicit
+sharing choice; preview approval is not permission to submit. Skip the prompt
+when nothing eligible changed. Respect saved declined/deferred decisions on
+resume and never require a contribution to finish an app.
+
+Use the same contribution skill for standalone requests. Submit only approved
+metadata through a fork-based PR; catalog maintainers decide approval and merging.

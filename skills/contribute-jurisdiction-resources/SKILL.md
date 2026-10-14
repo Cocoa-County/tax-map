@@ -1,13 +1,15 @@
 ---
 name: contribute-jurisdiction-resources
-description: Propose additions or corrections to Cocoa-County/taxmap-resources through a fork and pull request using the user's authorized GitHub tools. Include only reusable official jurisdiction portals, GIS services and bill templates; never specific documents, parcel records or credentials. Maintainers approve and merge.
+description: Prepare the standard community-sharing offer during a one-request build or handle a standalone catalog contribution. Submit only explicitly approved additions or corrections to Cocoa-County/taxmap-resources through a fork and pull request using authorized GitHub tools. Never share specific documents, parcel records or credentials. Maintainers approve and merge.
 ---
 
 # Contribute reusable resources through a pull request
 
 Upstream is https://github.com/Cocoa-County/taxmap-resources; base branch is main.
-Use this for a requested catalog contribution, not an automatic side effect of
-building an app. No taxmap project or new MCP registration is needed.
+Use this to prepare the standard contribution offer in a one-request build,
+or for a standalone request. Preparing and offering are automatic workflow
+steps when eligible changes exist; public submission always needs explicit
+sharing permission. No taxmap project or new MCP registration is needed.
 
 ## Prepare a minimal, public-safe proposal
 
@@ -26,9 +28,21 @@ building an app. No taxmap project or new MCP registration is needed.
    to metadata, verification references, commit messages and the PR body.
    Do not copy a project's resources.yaml, research notes or generated export.
 4. Show the exact proposed metadata/diff, verification claims and intended
-   public destination. Obtain approval to publish that change. A specific user
-   request to submit an already-shown proposal can provide that approval;
-   general research or local preview approval cannot.
+   public destination. Explain that sharing helps make taxmap more powerful
+   for the whole community: future users discover reliable official resources
+   faster. State that only this reusable metadata will be public, not project
+   files, reports or parcel records, and declining does not affect the app.
+   Obtain a separate explicit sharing choice with no preselected consent.
+   During guided builds include it alongside the preview review, not a second
+   setup questionnaire. A specific user request to submit an already-shown
+   proposal can provide that approval; general research, preview approval,
+   an omitted sharing answer or an ambiguous combined "yes" cannot.
+5. In a guided project, save the exact proposal and decision/status privately
+   in derived/catalog-contribution.json, following build-taxmap-app. Respect
+   declined/deferred decisions on resume and check existing PRs before creating
+   duplicates. If nothing eligible changed, skip the prompt. If current entries
+   cannot be compared, defer the offer rather than guessing. A material change
+   to the approved proposal requires fresh approval.
 
 ## Submit with the host's GitHub capabilities
 
@@ -37,6 +51,9 @@ GitHub credentials. Check the actual tool schemas/help and authorized account,
 repository permissions and fork identity. Never read/print tokens or add an
 authentication bypass, installation hook or separate taxmap MCP connection.
 Install/sign into tools only with separate permission.
+After explicit sharing approval, carry out the approved fork/branch, commit,
+push and PR without another generic continuation question. In guided builds,
+deliver the approved app preview first; catalog submission and failures must not block it.
 
 1. Find or create the contributor's fork. Use an approved separate checkout
    or the host's file/commit APIs. Never reuse a city project or overwrite a
@@ -65,6 +82,7 @@ Install/sign into tools only with separate permission.
    changed files. Report the URL and pending maintainer review. Never approve
    your own PR, enable auto-merge, merge it, or push a contribution to upstream
    main, even if the authorized account has maintainer permissions.
+   Record the verified PR URL/status in the guided project's private handoff.
 
 If authentication, fork creation, checks or PR creation fails, preserve the
 exact error and local branch/patch; report what remains. Provide manual
