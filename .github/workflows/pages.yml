@@ -30,6 +30,8 @@ jobs:
           key: concord-parcels-v1-${{ hashFiles('examples/concord/taxmap.yaml') }}
       - name: Download Concord parcels
         run: taxmap --project examples/concord gis download parcels
+      - name: Download Concord city boundary
+        run: taxmap --project examples/concord gis download city-boundary --where "NAME = 'Concord'"
       - name: Validate Concord
         run: taxmap --project examples/concord validate
       - name: Build Concord map

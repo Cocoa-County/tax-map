@@ -165,6 +165,12 @@ details summary { cursor: pointer; padding: 8px 0; font-size: .85rem; font-weigh
 .taxmap-mug { position: relative; display: inline-block; width: 34px; height: 24px; flex: none; }
 .taxmap-mug::before { content: ""; position: absolute; width: 25px; height: 20px; left: 0; top: 2px; border-radius: 3px 3px 10px 10px; background: linear-gradient(110deg, #cf584d, #a13232); box-shadow: inset 2px 0 3px #ffffff30, 0 2px 3px #482e2420; }
 .taxmap-mug::after { content: ""; position: absolute; width: 8px; height: 10px; left: 22px; top: 4px; border: 3px solid #b53e38; border-left: 0; border-radius: 0 8px 8px 0; }
+.mug-steam { position: absolute; left: 3px; top: -19px; width: 22px; height: 20px; pointer-events: none; }
+.mug-steam span { position: absolute; bottom: 0; width: 5px; height: 13px; border-left: 2px solid var(--muted); border-radius: 50%; opacity: 0; animation: cocoa-steam 3.6s ease-out infinite; }
+.mug-steam span:nth-child(1) { left: 1px; animation-delay: -2.4s; }
+.mug-steam span:nth-child(2) { left: 8px; animation-delay: -1.2s; }
+.mug-steam span:nth-child(3) { left: 15px; }
+@keyframes cocoa-steam { 0% { transform: translateY(5px) scale(.7); opacity: 0; } 25% { opacity: .5; } 70% { opacity: .3; } 100% { transform: translate(3px, -7px) scale(1.15); opacity: 0; } }
 
 @media (max-width: 760px) {
   .topbar { grid-template-columns: minmax(0, 1fr) auto; padding: 8px 12px; gap: 8px; }
@@ -194,4 +200,5 @@ details summary { cursor: pointer; padding: 8px 0; font-size: .85rem; font-weigh
 }
 @media (prefers-reduced-motion: reduce) {
   button { transition: none; }
+  .mug-steam span { animation: none; opacity: .3; }
 }

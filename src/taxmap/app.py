@@ -342,6 +342,8 @@ def _proposal(project: Project, site: SiteConfig, output: Path) -> tuple[AppRevi
                   "and roll notes. Withheld resources must not be reintroduced through prose or inline links. "
                   "Approval permits local preview only, not upload, commit or deployment.",
     }
+    if config.get("jurisdiction_boundary"):
+        manifest["public_model_files"].append("data/jurisdiction.geojson")
     # Warnings are handoff details, not export content; permission covers exported content and policy.
     digest = _digest({"files": manifest["files"], "site": site.model_dump(mode="json")})
     return AppReview(digest=digest, site=site, manifest=manifest), report, built

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from taxmap.formula import FormulaError, compile_formula
+from taxmap.gis import jurisdiction_boundary
 from taxmap.project import Project, ProjectError
 from taxmap.util import sha256_file
 
@@ -10,6 +11,10 @@ from taxmap.util import sha256_file
 def validate_project(project: Project, check_hashes: bool = True) -> dict:
     errors: list[str] = []
     warnings: list[str] = []
+    try:
+        jurisdiction_boundary(project)
+    except ProjectError as error:
+        errors.append(str(error))
     try:
         resources = project.resources()
     except Exception as error:

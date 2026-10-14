@@ -11,7 +11,7 @@ using the **taxmap MCP server** and **agent skills** turns them into:
   formulas. Every number points to the page it came from.
 - **Checked rolls:** per-parcel amounts compared with the document's stated
   totals and joined to parcels, with unresolved discrepancies disclosed.
-- **GIS layers:** parcels and approximate district outlines.
+- **GIS layers:** parcels, official jurisdiction boundaries and approximate district outlines.
 - **A static map site:** parcel search, per-parcel districts and amounts,
   calculator modals with typeset equations, live numeric substitutions,
   color-coded symbol explanations and calculation steps, district explainers and a
@@ -23,6 +23,9 @@ using the **taxmap MCP server** and **agent skills** turns them into:
   map" or press Escape to dismiss it; any deep link then opens without a tour.
   Credits and LinkedIn, GitHub and taxmap source-code icon buttons sit below a
   horizontal divider, separate from the map information and Explore button.
+  The title-modal mug has the website header's animated steam; reduced-motion
+  preferences show static steam instead.
+  The website, documentation and generated apps share a red-mug SVG favicon.
 
 The map stays full-width until a parcel is selected. Parcel details can be
 hidden and reopened without losing the selection. Calculators keep the
@@ -34,6 +37,40 @@ clicking the same location again cycles through the properties. Each selection
 keeps its own APN, official assessments, calculator inputs, and shareable link.
 Search results and APN links also show the chooser when other properties
 overlap an interior point of the selected footprint.
+
+Parcels and selected highlights are visible only at or above `site.minimum_zoom`
+(default 15). Zooming out hides their geometry, not the selection or details;
+zooming back in restores cached parcels and respects the Parcels overlay toggle.
+
+To show the main city/region boundary, download or import a verified official
+WGS84 Polygon/MultiPolygon layer with `kind: boundary`, filtered to the intended
+jurisdiction, then select it explicitly:
+
+```yaml
+layers:
+  city:
+    kind: boundary
+    path: gis/city/features.geojson
+site:
+  jurisdiction_boundary: city
+```
+
+For example, use `arcgis_download_layer(name="city", url=<official layer URL>,
+kind="boundary", where=<jurisdiction filter>)` or
+`layer_import(name="city", path=<local WGS84 GeoJSON>, kind="boundary")`, then
+`project_configure` to set `site.jurisdiction_boundary` while preserving other
+site settings. Record the official source and verification in the research
+inventory. The boundary is an unfilled, dashed overlay visible by default at
+every zoom, with its own toggle; its extent sets the initial map view. It does
+not clip parcels or change assessment membership. Without a selected boundary,
+the initial view still uses parcel bounds. Invalid or missing selected boundary
+data is an error, not a reason to invent an outline.
+
+Boundary exports contain geometry only, with no source attributes or feature
+IDs. The exact geometry and jurisdiction label are included in guided content
+review; changes require renewed approval. Source-resource publication still
+requires approval through `site.publish_resources`. Rebuild existing sites
+after configuring the boundary or upgrading to get these map behaviors.
 
 Configure official per-parcel links under `site.parcel_links`:
 
@@ -450,7 +487,8 @@ original project exactly. See its [README](examples/concord/README.md).
 
 The landing page source is in [website/](website/). The
 [Pages workflow](.github/workflows/pages.yml) builds Concord from this checkout,
-downloads its configured public parcel layer (cached between builds), and
+downloads its configured public parcel layer (cached between builds) and
+official city-limit boundary, and
 publishes both sites in one artifact. Pushes to `main` deploy automatically;
 `workflow_dispatch` also allows a manual rebuild. Parcel geometry and generated
 map files are not committed.

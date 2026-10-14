@@ -44,6 +44,26 @@ convert shapefiles first.
 4. After rolls exist, run `roll_join_parcels`. A low match rate usually
    means the wrong APN field or `apn.normalize` mode.
 
+## 4. Main jurisdiction boundary
+
+Find and verify an official city/region boundary as well as parcels. Distinguish
+legal jurisdiction boundaries from postal cities, county limits and assessment
+districts. Filter a multi-jurisdiction service to the requested region before
+downloading; do not assume the only boundary layer is the main jurisdiction.
+
+Use `arcgis_download_layer` or `layer_import` with `kind: boundary`. Check
+Polygon/MultiPolygon geometry, WGS84 coordinates, and the intended scope with
+`layer_info` and `layer_query`. Record source provenance and verification in
+`source_upsert`. Set `site.jurisdiction_boundary` to the layer name through
+`project_configure`, preserving the other site settings.
+
+The map exports only this selected boundary's geometry, shows it as a separate
+outline at all zoom levels, and uses its extent for the initial view. It does
+not clip parcels or alter membership. Include the exact geometry in content
+review; approving resource metadata is a separate existing publication choice.
+If no official boundary is available, leave the selector unset and record the
+gap rather than deriving a supposedly official outline from parcels.
+
 ## Notes
 
 - Parcel layers usually include condominium stacks (identical polygons).

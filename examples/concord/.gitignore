@@ -4,4 +4,5 @@ derived/
 gis/*/batches/
 # ~100 MB; rebuild with scripts/import_parcels.py or `taxmap gis download parcels`
 gis/parcels/
+gis/city-boundary/
 site/

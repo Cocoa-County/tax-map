@@ -92,6 +92,37 @@ def combined_bounds(bounds: list[list[float]]) -> list[float] | None:
             max(b[2] for b in bounds), max(b[3] for b in bounds)]
 
 
+def jurisdiction_boundary(project: Project) -> tuple[dict, list[float]] | None:
+    name = project.config.site.jurisdiction_boundary
+    if name is None:
+        return None
+    config = project.config.layers.get(name)
+    if config is None or config.kind != "boundary":
+        raise ProjectError(f"site.jurisdiction_boundary: {name!r} must name a configured boundary layer")
+    from shapely.errors import GEOSException
+    from shapely.geometry import shape
+
+    features, bounds = [], []
+    for position, feature in enumerate(load_layer(project, name)["features"], start=1):
+        geometry = feature.get("geometry")
+        if not geometry or geometry.get("type") not in {"Polygon", "MultiPolygon"}:
+            raise ProjectError(f"Boundary {name!r} feature {position}: expected Polygon or MultiPolygon")
+        geometry = {"type": geometry["type"], "coordinates": geometry.get("coordinates")}
+        try:
+            extent = geometry_bounds(geometry)
+            polygon = shape(geometry)
+        except (KeyError, TypeError, ValueError, IndexError, GEOSException) as error:
+            raise ProjectError(f"Boundary {name!r} feature {position}: invalid geometry ({error})") from error
+        if extent is None or polygon.is_empty or not polygon.is_valid:
+            raise ProjectError(f"Boundary {name!r} feature {position}: empty or invalid polygon")
+        bounds.append(extent)
+        features.append({"type": "Feature", "geometry": geometry, "properties": {}})
+    extent = combined_bounds(bounds)
+    if extent is None:
+        raise ProjectError(f"Boundary {name!r} has no polygon features")
+    return {"type": "FeatureCollection", "features": features}, extent
+
+
 def layer_info(project: Project, name: str, sample_values: int = 4) -> dict:
     data = load_layer(project, name)
     features = data["features"]

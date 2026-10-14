@@ -61,6 +61,10 @@ Use their existing tools rather than inventing a parallel ETL engine.
 - Configure APNs from actual GIS and roll identifiers. Verify check digits
   explicitly when relevant; never strip an arbitrary trailing digit globally.
   Distinguish legal boundaries, postal cities and tax-year coverage.
+- Obtain a verified official main city/region boundary through
+  `acquire-parcel-gis`, filter it to the requested jurisdiction, and select its
+  layer explicitly in `site.jurisdiction_boundary`. Record unavailable official
+  geometry as a gap; never substitute an invented boundary or clip parcels.
 - Verify official tax-bill links, including representative parcel identity,
   APN format and county year behavior. Propose site.parcel_links or record why
   links are unavailable, not found or deliberately omitted. Partial assessment
@@ -91,7 +95,9 @@ model entities. Do not turn missing charges into zero. A mismatch may support
    including the APN, exact `publish_resources` IDs, and necessary
    `publish_roll_fields` by roll ID. Include verified `parcel_links` labels,
    hosts/templates and year caveats. Leave `copy_documents` false unless
-   separately justified and approved. Exclude owners and mailing addresses.
+   separately justified and approved. Include `jurisdiction_boundary` when
+   configured and review its exact exported geometry and jurisdiction label.
+   Exclude owners and mailing addresses.
 2. The helper prepares an unserved private export and returns its manifest,
    digest, field samples, exact resource metadata, all public pages and caveats.
    Read the public model JSON files under returned `public_model_root`;

@@ -29,6 +29,7 @@ From the repository root, after `pip install -e .`:
 ```powershell
 cd examples/concord
 taxmap gis download parcels      # pages the City's ArcGIS parcel layer
+taxmap gis download city-boundary --where "NAME = 'Concord'"
 # or, offline from a concord-lnl checkout:
 python scripts/import_parcels.py path\to\concord-lnl
 
@@ -37,6 +38,11 @@ taxmap outlines                  # regenerate gis/districts/outlines.geojson
 taxmap build
 taxmap serve --port 8765         # open http://localhost:8765
 ```
+
+The official city-limit geometry is a rebuildable cache under
+`gis/city-boundary/`, not committed. `site.jurisdiction_boundary` selects it for
+the all-zoom outline and initial view; it does not clip parcels. The Pages
+workflow downloads both configured GIS layers before building.
 
 ## Validation results
 

@@ -3,7 +3,7 @@
   "use strict";
 
   const state = {
-    config: null, manifest: null, districts: null, formulas: {}, sources: null,
+    config: null, manifest: null, districts: null, formulas: {}, sources: null, boundary: null,
     tilesLoaded: new Map(), tilesLoading: new Map(), attributes: new Map(), featureById: new Map(),
     search: null, selected: null, outlineLayers: new Map(), visibleOutlines: new Set(), groupInfo: new Map(),
   };
@@ -180,13 +180,23 @@
     const imagery = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
       maxZoom: 20, maxNativeZoom: 19, attribution: "Imagery &copy; Esri" });
     osm.addTo(map);
+    map.createPane("parcels");
+    map.getPane("parcels").style.zIndex = "410";
+    syncParcelVisibility();
     outlineGroup = L.layerGroup().addTo(map);
-    parcelLayer = L.geoJSON(null, { style: parcelStyle, onEachFeature: (feature, layer) => {
+    parcelLayer = L.geoJSON(null, { pane: "parcels", style: parcelStyle, onEachFeature: (feature, layer) => {
       layer.on("click", (event) => onParcelClick(event, feature));
     } }).addTo(map);
-    L.control.layers({ "Streets": osm, "Imagery": imagery }, { "Parcels": parcelLayer, "District outlines": outlineGroup }).addTo(map);
+    const overlays = { "Parcels": parcelLayer, "District outlines": outlineGroup };
+    if (state.boundary) {
+      const boundaryLayer = L.geoJSON(state.boundary, { interactive: false,
+        style: { color: "#0f172a", weight: 3, dashArray: "10 5", fill: false } }).addTo(map);
+      overlays[`${state.config.jurisdiction_boundary.title} boundary`] = boundaryLayer;
+    }
+    L.control.layers({ "Streets": osm, "Imagery": imagery }, overlays).addTo(map);
     L.control.scale().addTo(map);
-    const b = state.manifest.bounds;
+    const b = state.config.jurisdiction_boundary ? state.config.jurisdiction_boundary.bounds : state.manifest.bounds;
+    map.on("zoomend", syncParcelVisibility);
     map.fitBounds([[b[1], b[0]], [b[3], b[2]]]);
     map.on("moveend", loadVisibleTiles);
     loadVisibleTiles();
@@ -198,11 +208,16 @@
   }
 
   function loadVisibleTiles() {
-    const allowed = map.getZoom() >= state.manifest.minimum_zoom;
-    $("zoom-hint").hidden = allowed;
-    if (!allowed) return;
+    syncParcelVisibility();
+    if (map.getZoom() < state.manifest.minimum_zoom) return;
     const view = viewBounds();
     for (const tile of state.manifest.tiles) if (intersects(tile.bounds, view)) loadTile(tile.id);
+  }
+
+  function syncParcelVisibility() {
+    const allowed = map.getZoom() >= state.manifest.minimum_zoom;
+    map.getPane("parcels").style.display = allowed ? "" : "none";
+    $("zoom-hint").hidden = allowed;
   }
 
   function loadTile(id) {
@@ -391,7 +406,7 @@
     state.selected = { id, tile, attrs, apn, feature: known && known.feature, overlaps: overlapChoices };
     if (selectedLayer) selectedLayer.remove();
     if (known && known.feature.geometry) {
-      selectedLayer = L.geoJSON(known.feature, { interactive: false,
+      selectedLayer = L.geoJSON(known.feature, { pane: "parcels", interactive: false,
         style: { color: "#f59e0b", weight: 3, fillOpacity: .1 } }).addTo(map);
     }
     setHash({ apn });
@@ -812,6 +827,7 @@
         getJSON("data/config.json"), getJSON("data/manifest.json"), getJSON("data/districts.json"),
         getJSON("data/formulas.json"), getJSON("data/sources.json")]);
       Object.assign(state, { config, manifest, districts, sources });
+      if (config.jurisdiction_boundary) state.boundary = await getJSON(config.jurisdiction_boundary.url);
       for (const f of formulas.formulas) state.formulas[f.id] = f;
     } catch (error) {
       showMessage(`Could not load map data (${error.message}). Serve this folder over HTTP.`);

@@ -87,6 +87,7 @@ class ParcelLink(Model):
 class SiteConfig(Model):
     title: str | None = None
     subtitle: str | None = None
+    jurisdiction_boundary: str | None = Field(None, description="Name of the boundary layer for the main jurisdiction outline and initial view")
     minimum_zoom: int = 15
     chunk_degrees: float = 0.005
     publish_fields: list[str] | None = Field(None, description="Allow-list of parcel attributes to publish (None = all)")

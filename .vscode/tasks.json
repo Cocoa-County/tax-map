@@ -1,0 +1,20 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Rebuild Concord map",
+			"type": "shell",
+			"command": "$env:PYTHONPATH = (Join-Path $PWD src); python -m taxmap.cli --project examples\\concord validate; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m taxmap.cli --project examples\\concord outlines; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; python -m taxmap.cli --project examples\\concord build",
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Preview Concord map",
+			"type": "shell",
+			"command": "$env:PYTHONPATH = (Join-Path $PWD src); python -m taxmap.cli --project examples\\concord serve --port 8765",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

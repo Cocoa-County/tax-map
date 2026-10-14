@@ -1,4 +1,6 @@
 import json
+from pathlib import Path
+import xml.etree.ElementTree as ET
 
 import pytest
 
@@ -35,6 +37,78 @@ def minimal_pdf(pages: list[str]) -> bytes:
 
 def square(x, y, size=0.0005):
     return {"type": "Polygon", "coordinates": [[[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]]]}
+
+
+def import_boundary(project, tmp_path, geometry=None):
+    path = tmp_path / "boundary.geojson"
+    path.write_text(json.dumps({"type": "FeatureCollection", "features": [{
+        "type": "Feature", "id": "private-id", "properties": {"OWNER": "Private"},
+        "geometry": square(-122.03, 37.97),
+    }]}), encoding="utf-8")
+    gis.import_layer(project, "city", path, kind="boundary")
+    if geometry is not None:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["features"][0]["geometry"] = geometry
+        project.layer_path("city").write_text(json.dumps(data), encoding="utf-8")
+    project.config.site.jurisdiction_boundary = "city"
+    project.save_config()
+
+
+@pytest.mark.parametrize("kind", ["Polygon", "MultiPolygon"])
+def test_jurisdiction_boundary_export(mapped, tmp_path, kind):
+    geometry = square(-122.03, 37.97)
+    if kind == "MultiPolygon":
+        geometry = {"type": kind, "coordinates": [geometry["coordinates"]]}
+    import_boundary(mapped, tmp_path, geometry)
+    result = build_site(mapped)
+    data = mapped.root / "site" / "data"
+    boundary = json.loads((data / "jurisdiction.geojson").read_text(encoding="utf-8"))
+    assert boundary["features"] == [{"type": "Feature", "geometry": geometry, "properties": {}}]
+    config = json.loads((data / "config.json").read_text(encoding="utf-8"))
+    assert config["jurisdiction_boundary"] == {
+        "layer": "city", "title": "Town of Demo", "bounds": gis.geometry_bounds(geometry),
+        "url": "data/jurisdiction.geojson",
+    }
+    assert result["parcels"] == 4  # The fourth parcel is outside the selected boundary.
+    assert validate_project(mapped)["ok"]
+    mapped.config.site.jurisdiction_boundary = None
+    mapped.save_config()
+    build_site(mapped)
+    assert not (data / "jurisdiction.geojson").exists()
+    assert json.loads((data / "config.json").read_text(encoding="utf-8"))["jurisdiction_boundary"] is None
+
+
+@pytest.mark.parametrize("layer", ["missing", "parcels"])
+def test_boundary_reference_must_name_boundary_layer(mapped, layer):
+    mapped.config.site.jurisdiction_boundary = layer
+    with pytest.raises(ProjectError, match="configured boundary layer"):
+        build_site(mapped)
+    assert not validate_project(mapped)["ok"]
+
+
+@pytest.mark.parametrize("geometry", [
+    {"type": "Point", "coordinates": [-122, 38]},
+    {"type": "Polygon", "coordinates": []},
+    {"type": "Polygon", "coordinates": [[[0, 0], [1, 1], [1, 0], [0, 1], [0, 0]]]},
+    {"type": "Polygon", "coordinates": [[[200, 0], [201, 0], [201, 1], [200, 0]]]},
+    {"type": "Polygon", "coordinates": None},
+])
+def test_boundary_rejects_unusable_geometry(mapped, tmp_path, geometry):
+    import_boundary(mapped, tmp_path, geometry)
+    with pytest.raises(ProjectError):
+        build_site(mapped)
+    assert not validate_project(mapped)["ok"]
+
+
+def test_boundary_rejects_missing_or_empty_data(mapped, tmp_path):
+    import_boundary(mapped, tmp_path)
+    path = mapped.layer_path("city")
+    path.unlink()
+    with pytest.raises(ProjectError, match="no data"):
+        build_site(mapped)
+    path.write_text('{"type":"FeatureCollection","features":[]}', encoding="utf-8")
+    with pytest.raises(ProjectError, match="no polygon features"):
+        build_site(mapped)
 
 
 @pytest.fixture
@@ -136,6 +210,16 @@ def test_rolls_formulas_outlines_site(mapped):
     assert (site / "index.html").exists() and (site / "formula.js").exists()
     assert (site / "formula-display.js").exists()
     html = (site / "index.html").read_text(encoding="utf-8")
+    assert '<link rel="icon" type="image/svg+xml" href="favicon.svg">' in html
+    favicon = (site / "favicon.svg").read_bytes()
+    website = Path(__file__).resolve().parents[1] / "website"
+    assert favicon == (website / "favicon.svg").read_bytes()
+    svg = ET.fromstring(favicon)
+    assert svg.tag == "{http://www.w3.org/2000/svg}svg"
+    assert svg.attrib["viewBox"] == "0 0 32 32"
+    for page in website.rglob("*.html"):
+        href = "favicon.svg" if page.parent == website else "../favicon.svg"
+        assert f'<link rel="icon" type="image/svg+xml" href="{href}">' in page.read_text(encoding="utf-8")
     assert 'src="formula-display.js"' in html
     assert 'src="parcel-hit.js"' in html and (site / "parcel-hit.js").exists()
     assert 'id="open-panel"' in html and 'id="close-panel"' in html
@@ -145,6 +229,17 @@ def test_rolls_formulas_outlines_site(mapped):
     assert 'aria-label="Built with taxmap by Cocoa County"' in html
     assert 'href="https://cocoa-county.github.io/tax-map/"' in html
     assert 'class="taxmap-mug" aria-hidden="true"' in html
+    assert html.count('class="mug-steam"') == 1
+    intro = html.split('id="title-modal"', 1)[1].split('</dialog>', 1)[0]
+    assert '<span class="mug-steam"><span></span><span></span><span></span></span>' in intro
+    css = (site / "style.css").read_text(encoding="utf-8")
+    website_css = (Path(__file__).resolve().parents[1] / "website" / "style.css").read_text(encoding="utf-8")
+    steam_rules = [line for line in website_css.splitlines()
+                   if line.startswith((".mug-steam span", "@keyframes cocoa-steam"))]
+    assert len(steam_rules) == 5
+    assert all(rule in css for rule in steam_rules)
+    assert ".mug-steam span { animation: none; opacity: .3; }" in css.split(
+        "@media (prefers-reduced-motion: reduce)", 1)[1]
     assert 'taxmap <small>by Cocoa County</small>' in html
     assert html.index('taxmap <small>by Cocoa County</small>') < html.index('class="taxmap-mug"')
     assert 'id="title-modal"' in html and 'aria-labelledby="intro-title"' in html

@@ -211,6 +211,34 @@ def test_private_data_edits_do_not_need_reapproval(modeled):
     assert app.status(project)["approval_current"]
 
 
+def test_boundary_geometry_is_reviewed_and_changes_invalidate_approval(modeled, tmp_path):
+    project, resource = modeled
+    geometry = read_json(project.layer_path("parcels"))["features"][0]["geometry"]
+    path = tmp_path / "city.geojson"
+    write_json(path, {"type": "FeatureCollection", "features": [{
+        "type": "Feature", "properties": {"PRIVATE": "withheld"}, "geometry": geometry,
+    }]})
+    gis.import_layer(project, "city", path, kind="boundary")
+    original = approve(project, resource, jurisdiction_boundary="city")
+    assert "data/jurisdiction.geojson" in original["manifest"]["public_model_files"]
+    assert original["manifest"]["public_config"]["jurisdiction_boundary"]["layer"] == "city"
+    assert app.status(project)["approval_current"]
+    path = project.layer_path("city")
+    data = read_json(path)
+    data["features"][0]["properties"]["PRIVATE"] = "still-private"
+    write_json(path, data)
+    assert app.status(project)["approval_current"]
+    for point in data["features"][0]["geometry"]["coordinates"][0]:
+        point[0] += .01
+    write_json(path, data)
+    assert not app.status(project)["approval_current"]
+    with pytest.raises(ProjectError, match="changed since review"):
+        app.review(project, approve=original["digest"])
+    updated = app.review(project)
+    assert "data/jurisdiction.geojson" in updated["changed_files"]
+    assert updated["digest"] != original["digest"]
+
+
 def test_denied_resources_and_fields_stay_withheld(modeled):
     project, resource = modeled
     approve(project, resource, publish_resources=[], publish_fields=["APN"])

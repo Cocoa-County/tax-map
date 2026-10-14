@@ -22,24 +22,17 @@ layers:
     address_field: full_address_display
     label_fields:
     - USE_DESC
+  city-boundary:
+    title: Concord City Limit
+    kind: boundary
+    source:
+      url: https://gis.cityofconcord.org/gsrv1/rest/services/PublicGISBasemap/MapServer/10
+      where: NAME = 'Concord'
+    id_field: OBJECTID
 site:
-  parcel_links:
-  - label: County tax bill (PDF)
-    url_template: https://taxcolp.cccttc.us/PTS_TaxbillsPdfCY?APN={apn_display}
-  - label: Accessible bill
-    url_template: https://taxcolp.cccttc.us/PTS_TaxbillsHtmlCY?APN={apn_display}
+  jurisdiction_boundary: city-boundary
   title: Concord Assessment Districts
   subtitle: FY 2026-27 landscape and lighting assessments
-  publish_resources:
-  - citywide-lighting-report-2026-27
-  - council-minutes-2026-05-26
-  - county-bill-downtown-2026-27
-  - county-bill-kirkwood-2026-27
-  - county-bill-pine-hollow-2026-27
-  - county-bill-ygnacio-woods-2026-27
-  - district-3-report-2026-27
-  - downtown-report-2026-27
-  - pine-hollow-report-2026-27
   publish_fields:
   - APN
   - full_address_display
@@ -57,5 +50,20 @@ site:
   - BOUNDARYID
   - s_city
   - assr_url
+  publish_resources:
+  - citywide-lighting-report-2026-27
+  - council-minutes-2026-05-26
+  - county-bill-downtown-2026-27
+  - county-bill-kirkwood-2026-27
+  - county-bill-pine-hollow-2026-27
+  - county-bill-ygnacio-woods-2026-27
+  - district-3-report-2026-27
+  - downtown-report-2026-27
+  - pine-hollow-report-2026-27
   disclaimer: Unofficial research map. Amounts come from the City's FY 2026-27 Engineer's Reports; the
     County tax bill is authoritative. Calculator results are estimates.
+  parcel_links:
+  - label: County tax bill (PDF)
+    url_template: https://taxcolp.cccttc.us/PTS_TaxbillsPdfCY?APN={apn_display}
+  - label: Accessible bill
+    url_template: https://taxcolp.cccttc.us/PTS_TaxbillsHtmlCY?APN={apn_display}

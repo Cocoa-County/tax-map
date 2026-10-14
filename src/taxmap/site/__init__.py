@@ -15,7 +15,7 @@ from pathlib import Path
 
 from taxmap.assess import AssessmentContext
 from taxmap.formula import compile_formula
-from taxmap.gis import ADDRESS_FIELD_PATTERN, apn_field, combined_bounds, detect_field, geometry_bounds, load_layer
+from taxmap.gis import ADDRESS_FIELD_PATTERN, apn_field, combined_bounds, detect_field, geometry_bounds, jurisdiction_boundary, load_layer
 from taxmap.project import Project, ProjectError
 from taxmap.site.markdown import markdown_to_html
 from taxmap.util import now_iso, read_json, to_number, write_json, write_text
@@ -155,6 +155,19 @@ def build_site(project: Project, output: str | None = None) -> dict:
     site_root = project.path(output or "site")
     data_dir = site_root / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
+    boundary = jurisdiction_boundary(project)
+    boundary_path = data_dir / "jurisdiction.geojson"
+    boundary_config = None
+    if boundary is not None:
+        geometry, bounds = boundary
+        write_json(boundary_path, geometry)
+        boundary_config = {
+            "layer": project.config.site.jurisdiction_boundary,
+            "title": project.config.jurisdiction.name,
+            "bounds": bounds, "url": "data/jurisdiction.geojson",
+        }
+    elif boundary_path.exists():
+        boundary_path.unlink()
     warnings: list[str] = []
     approved = set(project.config.site.publish_resources)
     unknown = approved - {r.id for r in project.resources()}
@@ -289,11 +302,12 @@ def build_site(project: Project, output: str | None = None) -> dict:
         "title": project.config.site.title or project.config.title or project.config.name,
         "subtitle": project.config.site.subtitle or jurisdiction.name,
         "disclaimer": project.config.site.disclaimer or (
-            "Unofficial map built from public records. Outlines are approximate. The adopted assessment roll "
+            "Unofficial map built from public records. District outlines are approximate. The adopted assessment roll "
             "and county tax bill are authoritative."),
         "jurisdiction": jurisdiction.dump(), "fiscal_year": project.config.fiscal_year,
         "apn_display_pattern": project.config.apn.display_pattern, "pages": pages, "built_at": now_iso(),
         "parcel_links": [link.dump() for link in project.config.site.parcel_links],
+        "jurisdiction_boundary": boundary_config,
     })
 
     static = _static_dir()

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="mug" x2="1" y2=".2">
+      <stop stop-color="#cf584d"/>
+      <stop offset="1" stop-color="#a13232"/>
+    </linearGradient>
+  </defs>
+  <path d="M23 12h2a6 6 0 0 1 0 12h-3" fill="none" stroke="#b53e38" stroke-width="4"/>
+  <path d="M3 9h21v13a8 8 0 0 1-8 8h-5a8 8 0 0 1-8-8Z" fill="url(#mug)"/>
+  <path d="M8 7c-3-2 2-3 0-5m6 5c-3-2 2-3 0-5m6 5c-3-2 2-3 0-5" fill="none" stroke="#8b8178" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
