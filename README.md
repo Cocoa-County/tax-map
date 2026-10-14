@@ -15,7 +15,9 @@ using the **taxmap MCP server** and **agent skills** turns them into:
 - **A static map site:** parcel search, per-parcel districts and amounts,
   calculator modals with typeset equations, live numeric substitutions,
   color-coded symbol explanations and calculation steps, district explainers and a
-  source list. It needs no backend.
+  source list. It needs no backend. Generated apps include a linked
+  "taxmap by Cocoa County" footer attribution with the Cocoa County mug logo,
+  alongside the project's disclaimer. Rebuild existing sites to add it.
 
 The map stays full-width until a parcel is selected. Parcel details can be
 hidden and reopened without losing the selection. Calculators keep the

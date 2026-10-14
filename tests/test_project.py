@@ -141,6 +141,12 @@ def test_rolls_formulas_outlines_site(mapped):
     assert 'id="open-panel"' in html and 'id="close-panel"' in html
     assert 'aria-label="Parcel details" hidden' in html
     assert 'role="combobox"' in html and 'id="search-status"' in html
+    assert '<span id="disclaimer" class="disclaimer"></span>' in html
+    assert 'aria-label="Built with taxmap by Cocoa County"' in html
+    assert 'href="https://cocoa-county.github.io/tax-map/"' in html
+    assert 'class="taxmap-mug" aria-hidden="true"' in html
+    assert 'taxmap <small>by Cocoa County</small>' in html
+    assert html.index('taxmap <small>by Cocoa County</small>') < html.index('class="taxmap-mug"')
     published = "".join(p.read_text(encoding="utf-8") for p in (site / "data").rglob("*.json"))
     published += "".join(p.read_text(encoding="utf-8") for p in (site / "data").rglob("*.geojson"))
     assert "Private" not in published
