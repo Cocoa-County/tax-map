@@ -10,6 +10,10 @@ For a new local workspace, follow the bootstrap request and client references
 in community.html. Detect OS, permissions, and research/vision capabilities.
 Use a separate taxmap tools checkout and city project; preserve existing files
 and record the tools revision. Read the applicable skills explicitly.
+If the user ran the one-command installer, inspect taxmap-install.json and
+taxmap.yaml, confirm the intended project root, and reuse its .venv and
+.taxmap-tools source/skills. Do not create a duplicate checkout or run init
+again. The installer does not install an agent or register an MCP connection.
 Install runtime dependencies in a dedicated venv. Check prerequisites first;
 request approval for system installations and explain manual authentication.
 Initialize the project with the venv's taxmap init before launching MCP with

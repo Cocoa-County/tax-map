@@ -85,13 +85,69 @@ checks, while the agent reads, decides and writes.
 
 ## Install
 
+### One-command project setup
+
+Download and run the interactive installer; no repository clone, Git, or
+administrator terminal is required.
+
+**Windows PowerShell:**
+
+```powershell
+$p = Join-Path $env:TEMP ("taxmap-" + [guid]::NewGuid() + ".ps1"); try { Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Cocoa-County/tax-map/main/scripts/install.ps1 -OutFile $p -ErrorAction Stop; & $p } finally { if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p } }
+```
+
+**macOS/Linux Bash:**
+
+```bash
+( f="$(mktemp)" || exit; trap 'rm -f "$f"' EXIT; curl -fsSL https://raw.githubusercontent.com/Cocoa-County/tax-map/main/scripts/install.sh -o "$f" && bash "$f" )
+```
+
+These URLs work after the scripts are merged to `main`. The installer asks
+for project name, exact folder location, and jurisdiction, with optional map
+title, county, state, and fiscal year. The default is a new folder under
+`~/taxmap-projects`; existing non-empty folders are refused. Review the
+settings and confirm before project files are created.
+
+taxmap and **all runtime dependencies** are installed in the project's
+`.venv`; a separate `.taxmap-tools` folder holds the source and agent skills.
+If Python 3.10+ with venv/pip is missing, a separate confirmation offers
+user-scoped [uv](https://docs.astral.sh/uv/reference/installer/) and managed
+Python 3.13 under `~/.local/share/taxmap/bootstrap`. No global Python or shell
+profiles are changed. Downloads require internet access to GitHub, PyPI,
+and (for bootstrap) Astral's official distribution services.
+
+**Only run downloaded code you trust.** To inspect first, download
+[the PowerShell script](scripts/install.ps1) or [the Bash script](scripts/install.sh)
+to a file, review it and [the shared wizard](scripts/setup_project.py), then
+run `& .\install.ps1` or `bash ./install.sh`. The launcher also downloads
+matching setup/source files and may run Astral's installer. To pin the
+repository revision, replace `main` in the download URL with a full commit
+SHA and set `TAXMAP_REF` to that same SHA before running.
+
+If your organization's PowerShell execution policy blocks scripts, follow
+its approved process; the installer does not bypass policy or request
+elevation. Download failures and installation errors stop setup explicitly.
+Any partial project is left for inspection: retry in a new empty folder
+instead of overwriting it. uv/Python may remain in the user bootstrap folder
+if project setup is cancelled; do not remove managed Python while an
+installed environment depends on it.
+
+Success creates an **empty project**, records installation paths and the
+tools revision in `taxmap-install.json`, and prints exact CLI and MCP
+commands. It does not install/sign into an AI agent, register MCP, research
+records, or publish anything. Keep the environment and tools folders in
+place; they are excluded from project Git tracking.
+
+### Agent-managed or manual setup
+
 **New to terminals or building with AI?** Follow
 [non-technical guide](website/docs/community.html): install and sign into
 Codex, Claude Code, or GitHub Copilot CLI, open a dedicated workspace, and paste
-one project request. The agent handles local taxmap installation, MCP setup,
+one project request. Use the installer above first, or let the agent handle
+local taxmap installation, MCP setup,
 research, validation, and a preview. Permissions, possible client restarts,
-missing data, and publication approval remain explicit. No hosted backend or
-new installer is required.
+missing data, and publication approval remain explicit. No hosted backend is
+required. For repository development:
 
 ```powershell
 python -m venv .venv

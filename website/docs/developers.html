@@ -8,7 +8,9 @@
 <aside class="docs-sidebar"><nav aria-label="Documentation guides"><a href="./">Documentation home</a><a href="users.html">App user guide</a><a href="community.html">Non-technical guide</a><a href="developers.html" aria-current="page">Developer guide</a><a href="agents.html">Agent guide</a></nav><nav class="toc" aria-label="On this page"><a href="#quickstart">Install and create</a><a href="#model">Project and model</a><a href="#workflow">Data workflow</a><a href="#mcp">Connect an agent</a><a href="#testing">Development and tests</a><a href="#deploy">Deploy</a><a href="#troubleshoot">Troubleshooting</a></nav></aside>
 <article class="docs-article">
 <p class="eyebrow">02 / Standard developer documentation</p><h1>Build a reproducible city project.</h1><p class="lead">Python tools and plain project files power the research workflow. A static Leaflet application delivers the public result.</p>
-<section id="quickstart"><h2>Install and create a project</h2><p>Requires Python 3.10 or newer and Git. Node.js is needed for JavaScript parity tests, not to serve the generated map. These commands use Windows PowerShell from the repository root:</p>
+<section id="quickstart"><h2>Install and create a project</h2>
+<p>For a new map project without cloning the repository, use the <a href="community.html#project-install">one-command interactive installer</a> for Windows PowerShell or macOS/Linux Bash. It prompts for name, custom destination, and jurisdiction, offers optional project settings, bootstraps Python with permission if needed, and installs every runtime dependency in the project's <code>.venv</code>. It refuses non-empty destinations, records its source revision in <code>taxmap-install.json</code>, and prints exact CLI/MCP commands. AI-agent installation and MCP registration remain separate.</p>
+<p>For repository development, the manual workflow below requires Python 3.10 or newer and Git. Node.js is needed for JavaScript parity tests, not to serve the generated map. These commands use Windows PowerShell from the repository root:</p>
 <pre><code>git clone https://github.com/Cocoa-County/tax-map.git
 cd tax-map
 python -m venv .venv
