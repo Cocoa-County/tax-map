@@ -15,8 +15,9 @@ description: Generate, preview and publish the static parcel map (search, distri
    - compiled formulas
    - sources
    - pages from `model/notes/*.md`
-3. Read the `warnings`. A warning that a field required by a formula is
-   hidden means the calculator cannot prefill that input.
+3. Read the `warnings`. Excluded parcel/roll fields are not added back for
+   calculators; those inputs cannot prefill. Unapproved citations and research
+   inventory rows are withheld. Resolve or explain these gaps before publishing.
 4. `site_serve` (default port 8000) and open `http://localhost:8000/`. The
    site needs HTTP; opening the file directly will not work. Call
    `site_serve` with `stop: true` when done.
@@ -29,7 +30,8 @@ description: Generate, preview and publish the static parcel map (search, distri
   result is compared with the roll, and every constant shows a citation.
 - The Districts modal has outlines labelled approximate and notes that
   render.
-- The Sources modal lists every verified source.
+- The Sources modal lists the approved resources and their linked inventory
+  rows; review missing public citations without exposing private resources.
 - The disclaimer is visible.
 - Deep links work: `#apn=...`, `#calc=<formula>`, `#district=<id>`,
   `#page=<note>`.
@@ -43,7 +45,18 @@ at `templates/github-pages.yml`.
 Before publishing, confirm with the user:
 
 - `site.publish_fields` contains no personal data they do not want public.
+  Include the APN field; builds fail if it is excluded because search and
+  assessment joins require public APNs. `hide_fields` takes precedence.
+- `site.publish_resources` lists only explicitly approved resource IDs.
+  It defaults to empty, including for existing projects without this setting.
+  Citations do not implicitly approve resources. URL-only inventory rows
+  must first be linked to an approved resource.
+- `site.publish_roll_fields` lists approved extra columns by roll ID;
+  assessment amounts and APN joins are always public. Review all model prose
+  and `model/notes` pages, which are public independently of resource approval.
 - `site.disclaimer` says the map is unofficial and that the tax bill or roll
   is authoritative.
-- `site.copy_documents: true` only if redistribution of the documents is
-  allowed.
+- `site.copy_documents: true` only if redistribution of approved documents is
+  allowed. Rebuilding removes previous generated document copies when approval
+  is revoked or copying is disabled; existing deployments need rebuilding and
+  redeployment to remove old published content.

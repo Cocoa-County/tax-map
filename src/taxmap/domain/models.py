@@ -91,7 +91,9 @@ class SiteConfig(Model):
     chunk_degrees: float = 0.005
     publish_fields: list[str] | None = Field(None, description="Allow-list of parcel attributes to publish (None = all)")
     hide_fields: list[str] = Field(default_factory=list, description="Deny-list applied after the allow-list")
-    copy_documents: bool = Field(False, description="Copy referenced documents into the site for offline citations")
+    publish_resources: list[str] = Field(default_factory=list, description="Approved resource IDs for public metadata, citations and document copies (default: none)")
+    publish_roll_fields: dict[str, list[str]] = Field(default_factory=dict, description="Approved extra columns by roll ID; assessment amounts and APN joins are always public")
+    copy_documents: bool = Field(False, description="Copy only approved resources into the site for offline citations")
     disclaimer: str | None = None
     base_url: str | None = None
     parcel_links: list[ParcelLink] = Field(default_factory=list, description="External official parcel links")

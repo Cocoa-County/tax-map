@@ -240,6 +240,38 @@ Point your agent at [AGENTS.md](AGENTS.md) and the [skills](skills/).
 | [build-map-site](skills/build-map-site/SKILL.md) | Build, preview, publish the map |
 | [write-transparency-brief](skills/write-transparency-brief/SKILL.md) | Plain-language, cited explanations |
 
+## Publication controls
+
+Before building a public site, review these settings in `taxmap.yaml`:
+
+- `site.publish_fields`: a strict parcel-attribute allow-list (`null` means
+  all fields). Required calculator, search and label fields are **not** added
+  back. `site.hide_fields` takes precedence. The parcel APN must be approved:
+  builds fail if it is excluded because public search and assessment joins
+  require APNs. Excluded addresses are omitted from the search index too.
+- `site.publish_resources`: approved resource IDs, defaulting to `[]`.
+  Only approved resources' metadata and citation text, and research inventory
+  rows linked to them, are published. Ingesting or citing a resource does not
+  approve publication. Link URL-only inventory rows to an approved resource.
+- `site.copy_documents`: default `false`; when enabled, copies only approved
+  resources. Review privacy and redistribution rights before approval.
+  Rebuilds remove previous generated copies when approval is revoked or copying
+  is disabled, preserving unrelated files.
+- `site.publish_roll_fields`: extra approved roll columns, keyed by roll ID,
+  defaulting to `{}`. Assessment amounts and APN joins are always public;
+  other columns need explicit approval, including calculator inputs.
+
+Model descriptions, roll notes and `model/notes/*.md` are public prose, not
+private resources; review them separately. Build warnings report excluded
+calculator inputs and withheld citations/inventory rows.
+
+**Existing projects:** without `publish_resources`, no resource metadata,
+citations or documents are exported. Review and add approved IDs rather than
+automatically approving the registry. Approve necessary extra roll columns
+explicitly. Existing generated project requests are not rewritten: replace
+old independent-MCP instructions with the plugin-managed `project_open` flow.
+Previously deployed content is not removed until you rebuild and redeploy.
+
 ## CLI
 
 ```text

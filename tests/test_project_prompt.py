@@ -38,6 +38,11 @@ def test_default_prompt_context_and_fiscal_year(tmp_path, year):
     assert "1-based PDF page" in request
     assert "localhost-only" in request
     assert "excluding owner names" in request
+    assert "Reuse the live plugin-managed MCP connection" in request
+    assert "Call project_open" in request and "root with project_info" in request
+    assert "Do not register a separate" in request
+    assert "Launch taxmap-mcp with --project" not in request
+    assert "site.publish_resources" in request
     assert "$context" not in request and "$fiscal_year_instruction" not in request
     assert not (root / "model" / "notes" / PROMPT_FILE).exists()
 

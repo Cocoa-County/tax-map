@@ -30,6 +30,16 @@ site:
     url_template: https://taxcolp.cccttc.us/PTS_TaxbillsHtmlCY?APN={apn_display}
   title: Concord Assessment Districts
   subtitle: FY 2026-27 landscape and lighting assessments
+  publish_resources:
+  - citywide-lighting-report-2026-27
+  - council-minutes-2026-05-26
+  - county-bill-downtown-2026-27
+  - county-bill-kirkwood-2026-27
+  - county-bill-pine-hollow-2026-27
+  - county-bill-ygnacio-woods-2026-27
+  - district-3-report-2026-27
+  - downtown-report-2026-27
+  - pine-hollow-report-2026-27
   publish_fields:
   - APN
   - full_address_display

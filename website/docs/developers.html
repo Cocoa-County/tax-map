@@ -48,8 +48,14 @@ site/                       generated public map</code></pre>
   publish_fields:
     - APN
     - ADDRESS
+  publish_resources:
+    - adopted-report
+  publish_roll_fields: {}
+  copy_documents: false
   disclaimer: Unofficial map. The adopted roll and county bill are authoritative.</code></pre>
-<p>Replace <code>APN</code> and <code>ADDRESS</code> with verified layer fields. Include fields needed for calculator prefilling without publishing unnecessary personal data. Nested configuration objects are replaced as a whole by MCP <code>project_configure</code>; preserve existing settings when updating them.</p>
+<p>Replace <code>APN</code> and <code>ADDRESS</code> with verified layer fields and <code>adopted-report</code> with an explicitly approved resource ID. The parcel allow-list is strict: excluded fields are not added back for calculators, search or labels, and <code>hide_fields</code> takes precedence. APNs are required for the public map; excluding them fails the build. Excluded addresses are omitted from search too.</p>
+<p><code>publish_resources</code> defaults to an empty list, including in existing projects. Only approved resources' metadata, citation text and linked research inventory rows are exported. Ingesting or citing is not approval; URL-only inventory rows must first link to an approved resource. <code>copy_documents</code> copies only approved resources after rights/privacy review. Rebuilding removes prior generated copies when approval is revoked or copying is disabled; redeploy to remove previously published content.</p>
+<p>Only assessment amounts and APN joins are public from rolls by default. Approve extra columns, including calculator inputs, with <code>publish_roll_fields: {ROLL_ID: [COLUMN]}</code>. Review model prose, roll notes and published explainers separately. Inspect build warnings for withheld citations and missing prefills. Nested configuration objects are replaced as a whole by MCP <code>project_configure</code>; preserve existing settings when updating them.</p>
 <h3>Evidence and formulas</h3><p>Evidence has <code>resource</code>, optional 1-based PDF <code>page</code>, <code>locator</code>, <code>quote</code>, and <code>note</code>. Put printed page numbers in the locator. Formula expressions use a parsed language, not Python or JavaScript code; Python and browser evaluators must stay equivalent.</p>
 <p>District <code>bill_labels</code> hold exact code/description pairs with a verification year and evidence. <code>site.parcel_links</code> supports URL-encoded <code>{apn}</code> and <code>{apn_display}</code> templates with fixed HTTP(S) hosts. Verify endpoints and fiscal-year behavior before configuring links.</p></section>
 <section id="workflow"><h2>Acquire, model, validate, build</h2>

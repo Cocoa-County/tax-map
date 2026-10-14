@@ -40,4 +40,9 @@ Give each resource a clear `title`. Add `tags` such as `engineers-report`,
 - Never edit files under `resources/`. If a document changes, add the new
   version as a new resource.
 - Chats and notes can hold personal information. Ask before ingesting
-  private correspondence; such resources are not published unless cited.
+  private correspondence. Ingestion and citation do not authorize publication.
+  Resources remain private unless their IDs are explicitly approved in
+  `site.publish_resources`. Approval exposes metadata and citation text;
+  `site.copy_documents: true` also copies approved local files. Review linked
+  research inventory rows before approving a resource. Keep private prose
+  out of model descriptions and `model/notes`, which are public site content.

@@ -49,7 +49,11 @@ Steps 4–7 can run in any order once sources are verified.
   documents. Label preliminary or proposal material as such.
 - **Privacy.** Don't publish owner names or private correspondence unless
   the user explicitly decides to. Use `site.publish_fields` as an
-  allow-list.
+  allow-list, including the APN needed for public map joins. Resources are
+  private by default, even when cited: get approval for specific IDs in
+  `site.publish_resources` before exporting metadata, citations or copies.
+  Review linked research inventory rows, extra roll columns
+  (`site.publish_roll_fields`), model prose and published notes separately.
 - **Be honest about approximations.** Outlines are approximate. Calculators
   with missing inputs give estimates. Say so in caveats and notes.
 

@@ -55,14 +55,16 @@ Record the tools revision. Do not install development dependencies or Node.js
 solely for taxmap. Do not bypass permissions or require administrator access
 without explaining why.
 
-Configure a uniquely named local stdio MCP server using my client's supported
-mechanism. Use verified absolute executable and project paths, preserve
-existing configuration, and do not reuse the repository's Concord default.
-Launch taxmap-mcp with --project followed by this existing project path.
-Verify tools are actually available and confirm the root with project_info
-before model writes. Configuration alone is not a working connection, and
-the CLI does not expose every MCP operation. If a client restart or manual
-step is necessary, save progress and give exact reconnect/resume instructions.
+Reuse the live plugin-managed MCP connection. Do not register a separate
+MCP server, add loose skill copies, or pin the plugin to a project with
+--project or TAXMAP_PROJECT: those changes bypass the plugin lifecycle.
+Call project_open with the absolute project_path above, then confirm the
+root with project_info before model writes. Configuration alone is not a
+working connection, and the CLI does not expose every MCP operation.
+If plugin tools are unavailable, follow SETUP.md from the verified tools
+checkout with permission, preserve this initialized project, and stop for
+the user to restart the CLI. In the fresh session, reopen this project;
+do not create another one. Save exact reconnect/resume instructions.
 
 ## Research and build
 
@@ -87,7 +89,13 @@ Run project validation, inspect errors and build warnings, and resolve or
 explicitly report problems. A successful build is not proof of accurate
 sources or complete research. Use an explicit public-field allow-list
 excluding owner names and unnecessary personal data. Review document
-redistribution rights before copying documents into the generated site.
+redistribution rights and obtain approval for specific resource IDs in
+site.publish_resources before publishing metadata, citations or document
+copies. Resources are private by default even when cited. Keep research
+inventory rows linked to approved resources; URL-only rows are not published.
+Approve extra roll columns with site.publish_roll_fields only when needed.
+Parcel APNs and roll assessment amounts are public map requirements.
+Review model/notes pages and all model prose separately: they are public.
 Keep this request and its local paths out of published site notes.
 
 Build the site and start a localhost-only preview on an available port.

@@ -40,9 +40,14 @@ Markdown and GeoJSON, so commits and diffs show exactly what changed.
      `none` only when letters or separators are significant.
    - `projected_crs`: a meter-based EPSG code for the area (e.g. 26910 for
      UTM zone 10N). If unset, a UTM zone is derived from the data.
-   - `site`: `{title, subtitle, disclaimer, publish_fields}`. Use
-     `publish_fields` as an allow-list. Leave out owner names, mailing
+   - `site`: `{title, subtitle, disclaimer, publish_fields, publish_resources}`.
+     Use `publish_fields` as a strict allow-list including the parcel APN
+     field (required for the public map). Leave out owner names, mailing
      addresses and other personal data unless the user decides otherwise.
+     `publish_resources` defaults to `[]`; ask before adding approved IDs.
+     Only approved resources' metadata, citations and linked inventory rows
+     are exported. Approve extra roll columns with `publish_roll_fields`
+     keyed by roll ID; assessment amounts and APN joins are always public.
 5. **Parcel layer.** When the user asks to continue building and you know
    the parcel service, run `acquire-parcel-gis`. Every map feature depends on it.
 6. Call `project_info` and `project_validate` to confirm. Report empty-project

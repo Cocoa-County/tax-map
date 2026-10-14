@@ -121,9 +121,21 @@ Do not publish a success-shaped fallback or hide unresolved errors.
 Read build warnings, especially hidden calculator fields and missing outlines.
 
 ## Publication
-Use site.publish_fields as an explicit allow-list. Exclude owner information
+Use site.publish_fields as a strict allow-list. Include the parcel APN required
+for public search and assessment joins; excluding it fails the build.
+hide_fields takes precedence, and excluded calculator/search/label fields
+are not added back. Exclude owner information
 and private correspondence unless the user specifically approves publication.
 Verify redistribution rights before copying documents into the public site.
+Resources are private by default even when cited. Obtain approval for IDs in
+site.publish_resources before exporting metadata, citation text or document
+copies. Review linked inventory rows; URL-only rows are not exported.
+site.copy_documents copies only approved resources. Rebuilding removes
+previous generated copies when approval is revoked or copying is disabled.
+Existing deployments require rebuilding and redeployment to remove old content.
+Use site.publish_roll_fields, keyed by roll ID, for approved extra roll columns.
+Assessment amounts and APN joins are always public. Review all model prose,
+roll notes and model/notes pages separately; they are public content.
 Derived parcel outlines are approximate, not legal boundary surveys.
 Do not deploy publicly without approval. Build success is not approval.
 A new fiscal year requires source/model review, not just rebuilding old data.

@@ -15,6 +15,9 @@ def validate_project(project: Project, check_hashes: bool = True) -> dict:
     except Exception as error:
         return {"ok": False, "errors": [f"resources.yaml: {error}"], "warnings": []}
     resource_ids = {r.id for r in resources}
+    for resource_id in project.config.site.publish_resources:
+        if resource_id not in resource_ids:
+            errors.append(f"site.publish_resources: unknown resource {resource_id!r}")
     for resource in resources:
         if not resource.path:
             if not resource.origin_url:
@@ -54,6 +57,9 @@ def validate_project(project: Project, check_hashes: bool = True) -> dict:
         errors.append("sources.csv: duplicate source ids")
 
     roll_ids = {r.id for r in rolls}
+    for roll_id in project.config.site.publish_roll_fields:
+        if roll_id not in roll_ids:
+            errors.append(f"site.publish_roll_fields: unknown roll {roll_id!r}")
     district_ids = {d.id for d in districts}
     group_ids = set(district_ids)
     formula_ids = {f.id for f in formulas}

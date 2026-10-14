@@ -30,13 +30,12 @@ def _static_dir() -> Path:
 def _published_fields(project: Project, all_fields: list[str], required: set[str]) -> tuple[list[str], list[str]]:
     site = project.config.site
     allowed = list(all_fields) if site.publish_fields is None else [f for f in all_fields if f in site.publish_fields]
-    for field in required:
-        if field in all_fields and field not in allowed:
-            allowed.append(field)
     hidden = set(site.hide_fields)
-    warnings = [f"Field {f} is hidden but needed by a formula/search; calculators will not prefill it"
-                for f in sorted(required & hidden)]
-    return [f for f in allowed if f not in hidden], warnings
+    fields = [f for f in allowed if f not in hidden]
+    warnings = [f"Field {f} is excluded from publication but needed by a formula/search/label/membership; "
+                "it will not be published or prefilled"
+                for f in sorted((required & set(all_fields)) - set(fields))]
+    return fields, warnings
 
 
 def _build_parcels(project: Project, out: Path, required_fields: set[str]) -> tuple[dict, list[str]]:
@@ -60,6 +59,12 @@ def _build_parcels(project: Project, out: Path, required_fields: set[str]) -> tu
     label_fields = list(config.label_fields)
     fields, warnings = _published_fields(
         project, all_fields, required_fields | {apn_key} | ({address_key} if address_key else set()) | set(label_fields))
+    if apn_key not in fields:
+        raise ProjectError(f"Parcel APN field {apn_key!r} must be approved in site.publish_fields "
+                           "and not hidden: public parcel search and assessment joins require it")
+    address_key = address_key if address_key in fields else None
+    label_fields = [field for field in label_fields if field in fields]
+    id_key = id_key if id_key in fields else None
     cell = project.config.site.chunk_degrees
     groups: dict[str, list] = defaultdict(list)
     rows, null_ids, ids = [], [], set()
@@ -113,7 +118,18 @@ def _build_parcels(project: Project, out: Path, required_fields: set[str]) -> tu
 def _resource_links(project: Project, site_root: Path) -> dict[str, dict]:
     links = {}
     copy = project.config.site.copy_documents
+    approved = set(project.config.site.publish_resources)
+    previous = site_root / "data" / "sources.json"
+    if previous.exists():
+        for resource in read_json(previous).get("resources", {}).values():
+            url = resource.get("url") or ""
+            if url.startswith("docs/"):
+                target = project.path(project.rel(site_root / url))
+                if target.parent == site_root / "docs" and target.stem == resource["id"] and target.is_file():
+                    target.unlink()
     for resource in project.resources():
+        if resource.id not in approved:
+            continue
         url = resource.origin_url
         if copy and resource.path:
             source = project.path(resource.path)
@@ -127,8 +143,9 @@ def _resource_links(project: Project, site_root: Path) -> dict[str, dict]:
     return links
 
 
-def _evidence(items) -> list[dict]:
-    return [e.dump() for e in items]
+def _evidence(items, approved: set[str], withheld: set[str]) -> list[dict]:
+    withheld.update(e.resource for e in items if e.resource not in approved)
+    return [e.dump() for e in items if e.resource in approved]
 
 
 def build_site(project: Project, output: str | None = None) -> dict:
@@ -136,6 +153,17 @@ def build_site(project: Project, output: str | None = None) -> dict:
     data_dir = site_root / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
     warnings: list[str] = []
+    approved = set(project.config.site.publish_resources)
+    unknown = approved - {r.id for r in project.resources()}
+    if unknown:
+        raise ProjectError(f"site.publish_resources contains unknown resource IDs: {sorted(unknown)}")
+    unknown_rolls = set(project.config.site.publish_roll_fields) - {r.id for r in project.rolls()}
+    if unknown_rolls:
+        raise ProjectError(f"site.publish_roll_fields contains unknown roll IDs: {sorted(unknown_rolls)}")
+    withheld: set[str] = set()
+
+    def evidence(items):
+        return _evidence(items, approved, withheld)
 
     formulas = project.formulas()
     compiled = {f.id: compile_formula(f).data for f in formulas}
@@ -153,6 +181,7 @@ def build_site(project: Project, output: str | None = None) -> dict:
 
     manifest, parcel_warnings = _build_parcels(project, data_dir, required)
     warnings += parcel_warnings
+    published_fields = set(manifest["fields"])
 
     # Districts, zones, outlines, and the APN -> roll/membership index.
     outlines_path = project.root / "gis" / "districts" / "outlines.geojson"
@@ -174,7 +203,7 @@ def build_site(project: Project, output: str | None = None) -> dict:
         def rule(membership):
             if membership and membership.parent:
                 return {"type": "parent"}
-            if membership and membership.attribute:
+            if membership and membership.attribute and membership.attribute in published_fields:
                 return {"type": "attribute", "attribute": membership.attribute, "values": membership.values}
             return {"type": "list"}
 
@@ -183,7 +212,7 @@ def build_site(project: Project, output: str | None = None) -> dict:
             zones.append({"id": zone.id, "name": zone.name, "description": zone.description,
                           "color": zone.color or PALETTE[(n + m + 1) % len(PALETTE)],
                           "members": len(context.members.get(zone.id, ())), "rule": rule(zone.membership),
-                          "evidence": _evidence(zone.evidence)})
+                          "evidence": evidence(zone.evidence)})
         groups_out.append({
             "id": district.id, "name": district.name, "short_name": district.short_name or district.name,
             "fiscal_year": district.fiscal_year, "agency": district.agency, "color": color,
@@ -191,8 +220,8 @@ def build_site(project: Project, output: str | None = None) -> dict:
             "stated_count": district.parcel_count, "roll_total": round(roll_total, 2),
             "rolls": [r.id for r in rolls], "members": len(context.members.get(district.id, ())),
             "rule": rule(district.membership), "zones": zones, "formulas": district.formulas,
-            "notes_html": notes_html, "evidence": _evidence(district.evidence),
-            "bill_labels": [label.dump() for label in district.bill_labels],
+            "notes_html": notes_html, "evidence": evidence(district.evidence),
+            "bill_labels": [label.dump() | {"evidence": evidence(label.evidence)} for label in district.bill_labels],
         })
         list_groups = [district.id] if groups_out[-1]["rule"]["type"] == "list" else []
         list_groups += [z["id"] for z in zones if z["rule"]["type"] == "list"]
@@ -200,9 +229,11 @@ def build_site(project: Project, output: str | None = None) -> dict:
             for apn in context.members.get(group_id, ()):
                 apn_index[apn]["g"].append(group_id)
         for roll in rolls:
+            roll_fields = {roll.amount_column} | set(project.config.site.publish_roll_fields.get(roll.id, []))
             for apn, row in context.roll_rows[roll.id].items():
                 apn_index[apn]["a"][district.id] = to_number(row.get(roll.amount_column))
-                apn_index[apn]["r"][roll.id] = {c: v for c, v in row.items() if c != roll.apn_column}
+                apn_index[apn]["r"][roll.id] = {c: v for c, v in row.items()
+                                              if c != roll.apn_column and c in roll_fields}
     write_json(data_dir / "districts.json", {
         "districts": groups_out, "outlines": outlines,
         "apn_normalize": project.config.apn.normalize,
@@ -213,17 +244,34 @@ def build_site(project: Project, output: str | None = None) -> dict:
     formula_out = []
     for formula in formulas:
         data = dict(compiled[formula.id])
-        data["evidence"] = _evidence(formula.evidence)
-        data["constant_evidence"] = {k: _evidence(c.evidence) for k, c in formula.constants.items() if c.evidence}
+        data["evidence"] = evidence(formula.evidence)
+        data["constant_evidence"] = {k: evidence(c.evidence) for k, c in formula.constants.items() if c.evidence}
+        for spec in formula.inputs:
+            if spec.source and spec.source.roll:
+                roll = project.roll(spec.source.roll)
+                allowed = {roll.amount_column} | set(project.config.site.publish_roll_fields.get(roll.id, []))
+                if spec.source.column not in allowed:
+                    warnings.append(f"Formula {formula.id}: roll column {spec.source.roll}/{spec.source.column} "
+                                    "is excluded from publication; calculator will not prefill it")
         formula_out.append(data)
     write_json(data_dir / "formulas.json", {"formulas": formula_out})
 
     # Sources and evidence for transparency modals.
     links = _resource_links(project, site_root)
-    sources = [s.dump() | {"id": s.id, "title": s.title, "status": s.status} for s in project.sources()]
-    rolls_out = [{"id": r.id, "district": r.district, "fiscal_year": r.fiscal_year, "columns": r.columns,
-                  "notes": r.notes, "evidence": _evidence(r.evidence)} for r in context.rolls.values()]
+    sources = [s.dump() | {"id": s.id, "title": s.title, "status": s.status}
+               for s in project.sources() if s.resource in approved]
+    rolls_out = [{"id": r.id, "district": r.district, "fiscal_year": r.fiscal_year,
+                  "columns": {c: v for c, v in r.columns.items()
+                              if c in {r.amount_column} | set(project.config.site.publish_roll_fields.get(r.id, []))},
+                  "notes": r.notes, "evidence": evidence(r.evidence)} for r in context.rolls.values()]
     write_json(data_dir / "sources.json", {"resources": links, "sources": sources, "rolls": rolls_out})
+    if withheld:
+        warnings.append(f"Citations to unapproved resources were withheld: {sorted(withheld)}; "
+                        "review site.publish_resources before publication")
+    omitted_sources = sum(s.resource not in approved for s in project.sources())
+    if omitted_sources:
+        warnings.append(f"{omitted_sources} research inventory rows withheld; source rows require "
+                        "a resource approved in site.publish_resources")
 
     notes_dir = project.model_dir / "notes"
     pages = []
