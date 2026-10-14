@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from queue import Queue
+from queue import Empty, Queue
 import re
 import socket
 import subprocess
@@ -323,15 +323,22 @@ def test_standalone_restart_command_serves_saved_export(modeled):
     process = subprocess.Popen(result["restart_argv"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                text=True, env=os.environ | {"PYTHONUNBUFFERED": "1"})
     lines = Queue()
-    threading.Thread(target=lambda: lines.put(process.stdout.readline()), daemon=True).start()
+    reader = threading.Thread(target=lambda: lines.put(process.stdout.readline()), daemon=True)
+    reader.start()
     try:
-        match = re.search(r"http://127\.0\.0\.1:\d+/", lines.get(timeout=15))
+        try:
+            line = lines.get(timeout=60)
+        except Empty:
+            pytest.fail("Standalone preview did not report its URL within 60 seconds")
+        match = re.search(r"http://127\.0\.0\.1:\d+/", line)
         assert match is not None
         with urlopen(match[0] + "data/config.json", timeout=3) as response:
             assert json.load(response)["fiscal_year"] == "2026-27"
     finally:
         process.terminate()
-        process.communicate(timeout=10)
+        reader.join(timeout=10)
+        stdout, stderr = process.communicate(timeout=10)
+        print(f"Standalone preview stdout: {stdout}\nstderr: {stderr}")
 
 
 def test_occupied_port_is_not_interrupted(modeled):
