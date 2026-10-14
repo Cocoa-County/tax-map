@@ -147,6 +147,17 @@ def test_rolls_formulas_outlines_site(mapped):
     assert 'class="taxmap-mug" aria-hidden="true"' in html
     assert 'taxmap <small>by Cocoa County</small>' in html
     assert html.index('taxmap <small>by Cocoa County</small>') < html.index('class="taxmap-mug"')
+    assert 'id="title-modal"' in html and 'aria-labelledby="intro-title"' in html
+    assert 'Created by Nick Spinner' in html and 'Powered by' in html
+    assert 'autofocus>Explore the map</button>' in html
+    assert html.index('Explore the map</button>') < html.index('class="intro-divider"') < html.index('class="intro-powered"')
+    assert html.index('id="intro-disclaimer"') < html.index('class="intro-divider"')
+    assert 'aria-label="Creator and taxmap links"' in html
+    assert html.count('class="icon-button"') == 3
+    assert 'aria-label="Source Code"' in html
+    assert 'href="https://www.linkedin.com/in/spinnernicholas/"' in html
+    assert 'href="https://github.com/Spinnernicholas"' in html
+    assert 'href="https://github.com/Cocoa-County/tax-map"' in html
     published = "".join(p.read_text(encoding="utf-8") for p in (site / "data").rglob("*.json"))
     published += "".join(p.read_text(encoding="utf-8") for p in (site / "data").rglob("*.geojson"))
     assert "Private" not in published

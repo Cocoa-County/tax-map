@@ -18,6 +18,11 @@ using the **taxmap MCP server** and **agent skills** turns them into:
   source list. It needs no backend. Generated apps include a linked
   "taxmap by Cocoa County" footer attribution with the Cocoa County mug logo,
   alongside the project's disclaimer. Rebuild existing sites to add it.
+  On every load, a title modal shows the app title, subtitle, disclaimer,
+  powered-by attribution and "Created by Nick Spinner". Choose "Explore the
+  map" or press Escape to dismiss it; any deep link then opens without a tour.
+  Credits and LinkedIn, GitHub and taxmap source-code icon buttons sit below a
+  horizontal divider, separate from the map information and Explore button.
 
 The map stays full-width until a parcel is selected. Parcel details can be
 hidden and reopened without losing the selection. Calculators keep the

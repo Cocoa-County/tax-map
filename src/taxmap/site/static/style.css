@@ -98,6 +98,18 @@ details summary { cursor: pointer; padding: 8px 0; font-size: .85rem; font-weigh
 .modal { width: min(820px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 40px); border: 1px solid var(--line); border-radius: 16px; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,.3); overflow: hidden; }
 .modal[open] { display: flex; flex-direction: column; }
 .modal::backdrop { background: rgba(15,23,42,.45); }
+.title-modal { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: clamp(24px, 5vw, 44px); border: 1px solid var(--line); border-radius: 16px; background: #fff; color: var(--fg); text-align: center; overflow: auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.title-modal::backdrop { background: rgba(15,23,42,.65); }
+.title-modal h2 { margin: 0 0 12px; font-size: clamp(1.5rem, 5vw, 2rem); line-height: 1.2; overflow-wrap: anywhere; }
+#intro-subtitle { color: var(--muted); margin: 0 0 24px; }
+.intro-divider { border: 0; border-top: 1px solid var(--line); margin: 24px 0 20px; }
+.intro-powered { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 0; }
+.intro-credit { font-weight: 600; margin: 12px 0; }
+.intro-links { display: flex; justify-content: center; gap: 10px; }
+.intro-links a.icon-button { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: none; border-radius: 50%; background-color: #1f78b4; color: #fff; text-decoration: none; cursor: pointer; transition: background-color .2s, transform .2s; }
+.intro-links a.icon-button:hover { background-color: #1565a0; transform: scale(1.1); }
+.intro-links a.icon-button:focus-visible { outline: 2px solid #1565a0; outline-offset: 2px; }
+.title-modal form { margin-top: 24px; }
 .modal-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--line); background: #fff; flex-shrink: 0; }
 .modal-head h2 { margin: 0; font-size: 1.1rem; }
 .modal-body { padding: 16px 20px 24px; overflow: auto; min-height: 0; overscroll-behavior: contain; }

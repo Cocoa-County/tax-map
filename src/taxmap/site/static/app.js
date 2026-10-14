@@ -821,6 +821,9 @@
     $("title").textContent = state.config.title;
     $("subtitle").textContent = state.config.subtitle || "";
     $("disclaimer").textContent = state.config.disclaimer;
+    $("intro-title").textContent = state.config.title;
+    $("intro-subtitle").textContent = state.config.subtitle || "";
+    $("intro-disclaimer").textContent = state.config.disclaimer;
     for (const district of state.districts.districts) {
       state.groupInfo.set(district.id, { name: district.name, color: district.color, zone: false });
       if (district.rule.type === "list") state.visibleOutlines.add(district.id);
@@ -850,13 +853,24 @@
     $("modal").addEventListener("close", () => {
       if (state.selected) setHash({ apn: state.selected.apn }); else setHash({});
     });
-    window.addEventListener("hashchange", applyHash);
     $("panel-body").replaceChildren(
       el("p", { class: "eyebrow" }, "Explore your community"),
       el("h2", {}, "Explore parcels"),
       el("p", {}, "Search for an address or APN, or zoom in and click a parcel to see its districts, official assessment amounts, and calculators."),
       el("button", { type: "button", onclick: () => openModal("Districts", renderDistrictList()) }, "Browse districts"));
     setPanelOpen(false);
+    await new Promise((resolve) => {
+      $("title-modal").addEventListener("close", resolve, { once: true });
+      $("title-modal").addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          $("title-modal").close();
+        }
+      });
+      $("title-modal").showModal();
+    });
+    $("search-input").focus({ preventScroll: true });
+    window.addEventListener("hashchange", applyHash);
     await applyHash();
   }
 
