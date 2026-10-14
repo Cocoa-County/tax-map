@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -49,7 +50,10 @@ def import_boundary(project, tmp_path, geometry=None):
     if geometry is not None:
         data = json.loads(path.read_text(encoding="utf-8"))
         data["features"][0]["geometry"] = geometry
-        project.layer_path("city").write_text(json.dumps(data), encoding="utf-8")
+        target = project.layer_path("city")
+        previous = target.stat()
+        target.write_text(json.dumps(data), encoding="utf-8")
+        os.utime(target, ns=(previous.st_atime_ns, previous.st_mtime_ns + 1_000_000_000))
     project.config.site.jurisdiction_boundary = "city"
     project.save_config()
 
