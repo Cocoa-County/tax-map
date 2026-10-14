@@ -12,8 +12,8 @@ Markdown and GeoJSON, so commits and diffs show exactly what changed.
 ## Steps
 
 1. **Check the tools.** If an installed `TAXMAP-TOOLS.md` exists beside this
-   skill, read its tools location, AGENTS.md, and MCP registration. Otherwise
-   use the known repo tools location. Verify live `project_init`/`project_open`
+   skill, read its tools context and bundled `../../AGENTS.md`. Otherwise
+   use the known repo tools location and its AGENTS.md. Verify live `project_init`/`project_open`
    tools; copying skills or saving configuration is not proof of connection.
    If missing, follow the repo's SETUP.md and stop for the user to restart
    their CLI before creating a project.

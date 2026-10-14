@@ -9,11 +9,13 @@ tool schemas for exact parameters and its installed version.
 First-time CLI tools setup: download the repository into an approved stable
 tools location and follow its root SETUP.md:
 https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md
-Install runtime requirements and persistently register personal skills and
-projectless MCP for the chosen CLI, preserving existing configuration.
-Use the absolute tools-environment executable, no --project argument, and
-empty TAXMAP_PROJECT in the server environment. Do not reuse the Concord-pinned
-VS Code configuration. Verify initialize/list-tools without creating a project,
+Install runtime requirements and run scripts/build_plugin.py to generate a
+local plugin marketplace with all skills and projectless MCP. Install through
+the chosen CLI's persistent user-scope plugin manager, preserving configuration.
+The plugin's MCP uses the absolute tools-environment executable, no --project
+argument, and empty TAXMAP_PROJECT. Do not register independent MCP or loose
+skill copies. Do not reuse the Concord-pinned VS Code configuration.
+Verify initialize/list-tools without creating a project,
 save TAXMAP-SETUP.md, and STOP for the user to exit and restart the CLI.
 After restart, the user says: "Create a new taxmap project. Walk me through
 the setup." Load taxmap-project-setup and its installed TAXMAP-TOOLS.md, verify
@@ -47,6 +49,16 @@ Check the returned project root before writing. The repository's default VS Code
 configuration points to Concord. Never write a new city's data there by accident.
 project_configure shallow-merges top-level keys; nested objects replace existing
 values. Preserve existing nested settings when changing APN/layer/site options.
+
+## Plugin lifecycle
+Use taxmap-uninstall for guided disable, enable, uninstall or legacy cleanup.
+Follow the bundled UNINSTALL.md; if the plugin is disabled, use the fallback
+in the tools checkout: https://github.com/Cocoa-County/tax-map/blob/main/UNINSTALL.md
+Confirm exact ownership, plugin id and scope, then use native plugin management.
+Keep projects/data and shared runtimes. Remove legacy independent MCP/loose
+skills only with approval after checking cross-client use and user edits.
+Tools-environment cleanup is a separate decision; never delete a city project.
+Save the handoff before removing this skill, restart, and verify effective state.
 
 ## Workflow
 1. Register files/URLs/context through resource_add_file, resource_add_url,

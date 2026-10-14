@@ -6,6 +6,8 @@ __pycache__/
 build/
 dist/
 _pages/
+.taxmap-plugins/
+TAXMAP-SETUP.md
 
 # taxmap project caches and bulky downloads
 .taxmap/

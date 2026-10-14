@@ -6,9 +6,11 @@ assessment map project for a user, or changing this repository.
 ## Building a project
 
 For first-time CLI/tool installation, follow [SETUP.md](SETUP.md).
-That stage registers persistent skills and MCP without a city project, then
+That stage installs one persistent skills/MCP plugin without a city project, then
 stops for the user to restart their CLI. Create projects only in the fresh
 session after verifying the registered tools and project-setup skill.
+For disabling or removing the bundle, use `taxmap-uninstall` and
+[UNINSTALL.md](UNINSTALL.md). Preserve city projects and shared tools.
 
 You do the reasoning; the `taxmap` MCP server does deterministic work
 (storage, extraction, search, GIS, computation and checks). Record each

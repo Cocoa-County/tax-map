@@ -97,7 +97,7 @@ this into the agent:
 > to restart this CLI and ask it to create a new project.
 
 [SETUP.md](SETUP.md) gives the agent the technical workflow: install runtime
-requirements, register persistent user-scope skills and projectless MCP, check
+requirements, build/install a persistent user-scope skills/MCP plugin, check
 readiness, and save a handoff. After setup, **exit and restart the CLI**, then
 say:
 
@@ -108,6 +108,32 @@ verifies its root. No manual directory-creation command is needed. Research
 and a local preview follow when you ask to continue; publication requires
 separate approval. Follow the [non-technical guide](website/docs/community.html)
 for installation, sign-in, permissions, and review.
+
+### One plugin, all taxmap skills
+
+[plugin.json](plugin.json) and [skills/](skills/) are the shared source bundle.
+Setup runs [scripts/build_plugin.py](scripts/build_plugin.py) to generate a
+local marketplace with every skill, the uninstall skill, and projectless MCP
+using the installed environment's absolute executable path. It includes the
+portable Agent Plugins format for compatible Copilot/Codex versions and a
+Claude adapter. Install the generated bundle, not the raw source manifest,
+to get the machine-specific MCP connection.
+
+Use the chosen CLI's plugin manager to **disable, enable, or uninstall taxmap
+as one unit**. Restart to check the effective result. These actions preserve
+city projects; uninstalling a plugin does not remove the separate Python
+environment. Do not also register MCP or copy loose skills, since those would
+remain active independently.
+
+Ask your agent: **"Disable the taxmap plugin, keeping my projects and data."**
+For guided removal, ask it to use `taxmap-uninstall`. If already disabled,
+ask it to follow [UNINSTALL.md](UNINSTALL.md) in the tools checkout.
+That fallback also covers legacy skill/server cleanup, confirmations,
+cross-client dependencies, and optional tool-only cleanup.
+
+Bundle builds refuse existing destinations. Updates require a new build,
+approved marketplace refresh/reinstallation, and verification; they do not
+automatically migrate project data. See [SETUP.md](SETUP.md) for exact steps.
 
 ### Optional: one-command project installer
 

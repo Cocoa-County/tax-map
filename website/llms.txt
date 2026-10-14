@@ -22,8 +22,13 @@
 - [Repository](https://github.com/Cocoa-County/tax-map)
 - [Agent instructions](https://github.com/Cocoa-County/tax-map/blob/main/AGENTS.md)
 - [CLI tools bootstrap](https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md):
-  persistent personal skills and projectless MCP; stop for restart before
+  one persistent multi-skill plugin with projectless MCP; stop for restart before
   city project creation.
+- [Disconnect tools](https://github.com/Cocoa-County/tax-map/blob/main/UNINSTALL.md):
+  uninstall-skill fallback, native plugin enable/disable/removal, legacy cleanup,
+  and project/data preservation.
+- [Plugin source](https://github.com/Cocoa-County/tax-map/blob/main/plugin.json):
+  shared skill bundle; setup generates local machine-specific MCP and client adapters.
 - [Skills](https://github.com/Cocoa-County/tax-map/tree/main/skills)
 - [Typed models](https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/domain/models.py)
 - [MCP server](https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/mcp/server.py)
