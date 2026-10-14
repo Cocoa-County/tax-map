@@ -2,9 +2,11 @@ import asyncio
 import importlib.util
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import sysconfig
+from urllib.parse import unquote, urlsplit
 
 import pytest
 import yaml
@@ -89,6 +91,25 @@ def test_plugin_refuses_missing_executable(tmp_path):
     with pytest.raises(ValueError, match="executable not found"):
         builder.build_plugin(tmp_path / "bundle", tmp_path / "missing", "revision")
     assert not (tmp_path / "bundle").exists()
+
+
+def test_bundled_guidance_resolves_links_and_checkout_assets(tmp_path):
+    plugin = builder.build_plugin(tmp_path / "bundle", Path(sys.executable), "test-revision")
+    for path in plugin.rglob("*.md"):
+        text = path.read_text(encoding="utf-8")
+        for link in re.findall(r"\]\(([^)]+)\)", text):
+            url = urlsplit(link)
+            if url.scheme or url.netloc or not url.path:
+                continue
+            assert (path.parent / unquote(url.path)).exists(), (path.relative_to(plugin), link)
+    skill = plugin / "skills" / "build-map-site" / "SKILL.md"
+    text = skill.read_text(encoding="utf-8")
+    assert "../../taxmap-plugin.json" in text and "tools_root" in text
+    context = read_json(skill.parent / ".." / ".." / "taxmap-plugin.json")
+    template = Path(context["tools_root"]) / "templates" / "github-pages.yml"
+    assert template.is_file()
+    assert template.read_bytes() == (ROOT / "templates" / "github-pages.yml").read_bytes()
+    assert not (plugin / "templates").exists()
 
 
 def test_plugin_refuses_output_inside_source_skills():

@@ -61,8 +61,11 @@ persistent user scope so it is available outside this checkout before a
 project exists. Do not silently replace an existing `taxmap` plugin or
 `taxmap-local` marketplace with a different source.
 
-Use [scripts/build_plugin.py](scripts/build_plugin.py) with the installed
-environment's Python:
+Use `scripts/build_plugin.py` from the verified tools checkout with the
+installed environment's Python ([source reference](https://github.com/Cocoa-County/tax-map/blob/main/scripts/build_plugin.py)).
+When reading this document from an installed plugin, resolve the checkout
+through `tools_root` in the adjacent `taxmap-plugin.json`; do not resolve
+scripts relative to the plugin cache:
 
 ```text
 VENV_PYTHON ABSOLUTE_TOOLS_PATH/scripts/build_plugin.py --output NEW_BUNDLE_ROOT --mcp ABSOLUTE_MCP_EXECUTABLE --revision RESOLVED_REVISION
@@ -93,7 +96,8 @@ copied into the plugin.
 The generated MCP entry uses the absolute environment executable, no
 `--project` argument, and empty `TAXMAP_PROJECT` to clear inherited city
 settings. Do not change the user's global environment or reuse
-[.vscode/mcp.json](.vscode/mcp.json), which is VS Code-specific and Concord-pinned.
+[the repository's .vscode/mcp.json](https://github.com/Cocoa-County/tax-map/blob/main/.vscode/mcp.json),
+which is VS Code-specific and Concord-pinned.
 Do not commit generated machine paths. Do not add permission-bypass settings,
 installation hooks, or separate loose skill copies.
 

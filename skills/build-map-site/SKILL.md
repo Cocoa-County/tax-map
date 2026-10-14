@@ -39,8 +39,14 @@ description: Generate, preview and publish the static parcel map (search, distri
 ## Publish
 
 The site is static. Commit `site/` or build it in CI and deploy to GitHub
-Pages, Netlify or any web server. A Pages workflow template is in this repo
-at `templates/github-pages.yml`.
+Pages, Netlify or any web server. The Pages workflow template is
+`templates/github-pages.yml` in the tools checkout, not the city project or
+plugin cache. For an installed skill, read `../../taxmap-plugin.json` relative
+to this SKILL.md and resolve `tools_root`, then read the template there.
+For a source-checkout skill, use the repository root two levels above this
+skill. Verify the file exists before using it. If the checkout is unavailable,
+report the blocker and request approval before obtaining matching source;
+do not invent a workflow or silently fetch the latest revision.
 
 Before publishing, confirm with the user:
 

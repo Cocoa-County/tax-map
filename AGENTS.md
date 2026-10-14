@@ -77,7 +77,8 @@ Steps 4–7 can run in any order once sources are verified.
   - `cli.py`.
 - The formula semantics must stay identical in `src/taxmap/formula` and
   `src/taxmap/site/static/formula.js`. Add a parity case to
-  `tests/test_formula_parity.py` whenever you touch either one.
+  the shared `CASES` in `tests/test_formula.py` whenever you touch either one;
+  `test_js_parity` compares those cases against the browser evaluator.
 - Project files are the source of truth. Anything under `.taxmap/` or
   `derived/` must be rebuildable.
 - The MCP server must stay deterministic: no LLM calls, and no network

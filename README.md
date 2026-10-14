@@ -215,8 +215,24 @@ On macOS or Linux use `.venv/bin/pip`. Requires Python 3.10 or newer.
 
 ## Use with an agent (MCP)
 
-`.vscode/mcp.json` registers the server for VS Code. For other MCP clients,
-run:
+### Recommended: plugin-managed connection
+
+Follow [SETUP.md](SETUP.md) to install the single skills/MCP plugin, restart
+the CLI, and use its live `project_open` or `project_init` tools. The plugin
+owns the connection: do not also register an independent MCP server or copy
+loose skills. Its server starts without a pinned project.
+
+### Manual alternative: independently managed MCP
+
+For development or clients without the plugin format, explicitly choose and
+configure a separate stdio connection. This is not controlled by the plugin:
+disabling or uninstalling the plugin will not stop this server or remove
+independently installed skills. Avoid running both setups for the same work;
+review legacy entries with [UNINSTALL.md](UNINSTALL.md) before migrating.
+
+[.vscode/mcp.json](.vscode/mcp.json) is a Windows-specific development example
+pinned to Concord, not generic project setup. For another manual MCP client,
+configure its command and arguments to launch:
 
 ```text
 taxmap-mcp --project path/to/project
@@ -226,6 +242,8 @@ or set `TAXMAP_PROJECT`. The agent can also call `project_open` or
 `project_init`.
 
 Point your agent at [AGENTS.md](AGENTS.md) and the [skills](skills/).
+
+### Bundled skills
 
 | Skill | Purpose |
 |---|---|
@@ -239,6 +257,7 @@ Point your agent at [AGENTS.md](AGENTS.md) and the [skills](skills/).
 | [validate-formulas](skills/validate-formulas/SKILL.md) | Check formulas against rolls |
 | [build-map-site](skills/build-map-site/SKILL.md) | Build, preview, publish the map |
 | [write-transparency-brief](skills/write-transparency-brief/SKILL.md) | Plain-language, cited explanations |
+| [taxmap-uninstall](skills/taxmap-uninstall/SKILL.md) | Disable, re-enable, remove tools, and review legacy installations safely |
 
 ## Publication controls
 
