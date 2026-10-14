@@ -69,7 +69,8 @@ def build_plugin(output: Path, mcp_executable: Path, revision: str) -> Path:
         "The plugin manager owns the skills and MCP entry; do not register them separately.\n\n"
         "```json\n" + json.dumps(context, indent=2) + "\n```\n"
     )
-    for name in ["build-taxmap-app", "taxmap-project-setup", "taxmap-uninstall"]:
+    for name in ["build-taxmap-app", "taxmap-project-setup", "taxmap-uninstall",
+                 "find-jurisdiction-resources", "contribute-jurisdiction-resources"]:
         (plugin / "skills" / name / "TAXMAP-TOOLS.md").write_text(supporting, encoding="utf-8")
 
     entry = {"name": "taxmap", "source": "./taxmap", "version": manifest["version"],

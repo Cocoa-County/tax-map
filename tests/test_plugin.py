@@ -48,6 +48,7 @@ def test_plugin_bundle(tmp_path):
     assert {p.name for p in (plugin / "skills").iterdir()} == original_skills
     assert "taxmap-uninstall" in original_skills
     assert "build-taxmap-app" in original_skills
+    assert {"find-jurisdiction-resources", "contribute-jurisdiction-resources"} <= original_skills
     for name in original_skills:
         for original in (ROOT / "skills" / name).rglob("*"):
             if original.is_file():
@@ -64,7 +65,8 @@ def test_plugin_bundle(tmp_path):
     assert context["tools_root"] == str(ROOT)
     assert context["bundle_root"] == str(output)
     assert context["tools_revision"] == "a" * 40
-    for name in ["build-taxmap-app", "taxmap-project-setup", "taxmap-uninstall"]:
+    for name in ["build-taxmap-app", "taxmap-project-setup", "taxmap-uninstall",
+                 "find-jurisdiction-resources", "contribute-jurisdiction-resources"]:
         text = (plugin / "skills" / name / "TAXMAP-TOOLS.md").read_text(encoding="utf-8")
         assert json.loads(text.split("```json\n")[1].split("```")[0]) == context
     marketplace = read_json(output / ".claude-plugin" / "marketplace.json")
@@ -94,6 +96,14 @@ def test_plugin_refuses_missing_executable(tmp_path):
     with pytest.raises(ValueError, match="executable not found"):
         builder.build_plugin(tmp_path / "bundle", tmp_path / "missing", "revision")
     assert not (tmp_path / "bundle").exists()
+
+
+@pytest.mark.parametrize("entry_point", [
+    "build-taxmap-app", "acquire-parcel-gis", "screen-sources", "build-map-site",
+])
+def test_catalog_discovery_entry_points(entry_point):
+    text = (ROOT / "skills" / entry_point / "SKILL.md").read_text(encoding="utf-8")
+    assert "`find-jurisdiction-resources`" in text
 
 
 def test_bundled_guidance_resolves_links_and_checkout_assets(tmp_path):

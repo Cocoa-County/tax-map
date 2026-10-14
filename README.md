@@ -51,6 +51,12 @@ links, verified against the county lookup API. Bills open on the county site;
 availability and the current bill year may differ from the project's fiscal
 year. No bills or payment information are copied into the map.
 
+Use `find-jurisdiction-resources` to discover matching county bill templates
+and GIS/meeting portals in the shared catalog. Reverify parcel identity, APN
+format and county year behavior before proposing links; include the exact
+links in content approval. If none can be included, record why rather than
+silently omitting them because the assessment model is incomplete.
+
 Districts can define `bill_labels` to connect their full names with the exact
 description and code used in the county bill's **Special taxes and assessments**
 section:
@@ -73,7 +79,7 @@ both Kirkwood and Ygnacio Woods Unit II. Match **both** code and description;
 these reference labels do not prove a charge or change parcel membership.
 The map covers only its modeled districts, not every special tax on the bill.
 
-Version 1 ships the MCP server, the skills, a CLI and the site generator.
+taxmap ships the MCP server, the skills, a CLI and the site generator.
 The server is deterministic: it stores, extracts, searches, computes and
 checks, while the agent reads, decides and writes.
 
@@ -158,6 +164,32 @@ cross-client dependencies, and optional tool-only cleanup.
 Bundle builds refuse existing destinations. Updates require a new build,
 approved marketplace refresh/reinstallation, and verification; they do not
 automatically migrate project data. See [SETUP.md](SETUP.md) for exact steps.
+
+### Shared jurisdiction resources and contributions
+
+[Cocoa-County/taxmap-resources](https://github.com/Cocoa-County/taxmap-resources)
+is a separate, public catalog of reusable official tax-bill URL templates,
+parcel/assessment/boundary GIS services, city/county websites and agenda/minute
+portals. It does **not** store specific meetings, reports, individual bill URLs,
+downloaded data or private project evidence.
+
+The plugin includes two additional skills:
+
+- `find-jurisdiction-resources`: consult a recorded catalog revision before
+  research, inherit matching county resources, recheck endpoints and record
+  limitations. Missing/unreachable entries do not block official research.
+- `contribute-jurisdiction-resources`: prepare a minimal public-safe correction
+  or addition and, with approval, submit a fork-based pull request using the
+  user's authorized GitHub tools. Maintainers approve and merge; the skill
+  never self-approves, auto-merges or pushes contributions directly to main.
+
+Reading needs no GitHub login. Submitting needs authorized GitHub tools and
+publication permission, separate from local preview approval. No credentials
+are stored in taxmap and no additional MCP registration is required. If tools
+are unavailable, the skill provides a patch/manual PR handoff, not a false
+submission claim. Catalog verification is a dated endpoint check, not proof of
+document adoption, parcel applicability or tax-year matching. Project evidence
+and content approvals remain in the project.
 
 ### Optional: one-command project installer
 

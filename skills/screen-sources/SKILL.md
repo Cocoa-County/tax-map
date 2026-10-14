@@ -20,6 +20,11 @@ statuses:
 
 ## Procedure
 
+First use `find-jurisdiction-resources` for matching official city/county
+websites and agenda/minute portals. Catalog entries are reusable leads, not
+adopted evidence. Record the catalog revision and verify actual project
+documents independently. Continue official discovery when lookup is unavailable.
+
 1. **Search widely for leads.** Look for council or board agendas, minutes and
    attachments, Engineer's Reports, levy resolutions, Prop 218 notices, tax
    roll exports, CFD special tax reports, boundary diagrams and GIS services.

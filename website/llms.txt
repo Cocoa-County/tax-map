@@ -21,6 +21,11 @@
 - [Agent HTML guide](docs/agents.html): browsable tool-oriented instructions.
 
 ## Reference
+- [Shared jurisdiction resources](https://github.com/Cocoa-County/taxmap-resources):
+  reusable official city/county websites, agenda/minute portals, GIS services and
+  bill templates, not specific documents or individual bills. The lookup skill
+  reverifies matching leads; requested contributions use the contribution skill,
+  approved fork-based PRs and maintainer review/merge. No automatic publication.
 - [Repository](https://github.com/Cocoa-County/tax-map)
 - [Agent instructions](https://github.com/Cocoa-County/tax-map/blob/main/AGENTS.md)
 - [CLI tools bootstrap](https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md):

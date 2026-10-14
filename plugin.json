@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "taxmap",
-  "version": "0.2.0",
-  "description": "Evidence-backed tax and assessment maps: project setup, research, validation, previews, and safe cleanup.",
+  "version": "0.3.0",
+  "description": "Evidence-backed tax maps: shared resource discovery, guided apps, validation, previews, PR contributions, and safe cleanup.",
   "author": {"name": "Cocoa County"},
   "homepage": "https://cocoa-county.github.io/tax-map/",
   "repository": "https://github.com/Cocoa-County/tax-map",

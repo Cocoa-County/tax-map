@@ -28,6 +28,21 @@ Only interrupt for genuine ambiguity, permissions or essential blockers.
 Do not infer approval or bypass guided checks with low-level build tools.
 An explicit request to walk through setup still uses `taxmap-project-setup`.
 
+Before source/GIS discovery, use `find-jurisdiction-resources` to consult
+https://github.com/Cocoa-County/taxmap-resources at a recorded revision.
+Inherit matching county resources, reverify official endpoints and keep
+specific documents/evidence in the project. Catalog metadata is a lead, not
+adoption or publication approval. Continue research if the catalog is unavailable.
+Before preview, propose verified official bill links in site.parcel_links or
+record why none are included, including APN/year limitations.
+
+Use `contribute-jurisdiction-resources` for requested public catalog additions
+or corrections. Review the exact metadata, obtain publishing approval and use
+the host's authorized GitHub tools to submit a fork-based PR. No specific
+documents, individual bills or private project data. Never self-approve,
+auto-merge, merge or push contributions directly to catalog main; maintainers
+approve and merge. Reading/building an app never implies permission to contribute.
+
 For manual or step-by-step work, the individual skills in [skills/](skills/)
 remain available. `build-taxmap-app` coordinates the relevant stages for a
 one-request build:

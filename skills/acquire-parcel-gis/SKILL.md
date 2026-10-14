@@ -7,6 +7,11 @@ description: Find and download the parcel polygons (and optional boundary or ove
 
 ## 1. Find a service
 
+Use `find-jurisdiction-resources` first to check the shared catalog for the
+matching city and parent county. Recheck service metadata and scope rather
+than treating catalog verification as current or tax-year-specific. Record
+lookup limitations and continue official discovery if no usable entry exists.
+
 Look for the city or county GIS portal, an open-data hub, or the ArcGIS REST
 directory (`.../arcgis/rest/services`). Good signs: a layer named
 "Parcels" or "Assessor Parcels", polygon geometry, and an APN field.

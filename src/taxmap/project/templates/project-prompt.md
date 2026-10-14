@@ -76,6 +76,17 @@ and reopen this project afterward; do not create another one.
 
 ## Research and build
 
+Use find-jurisdiction-resources first to consult the shared
+https://github.com/Cocoa-County/taxmap-resources catalog at a recorded revision.
+Reverify matching city/county websites, meeting portals, GIS services and bill
+templates for this project. The catalog is a lead, not adopted evidence; continue
+official discovery if unavailable. Keep specific documents in this project.
+Before preview, propose verified site.parcel_links with APN/year caveats or
+record why official bill links are unavailable, not found or omitted. Include
+exact link labels/hosts/templates in content review. Do not initiate payments.
+Public catalog contributions require separate approval and a fork-based PR via
+contribute-jurisdiction-resources; maintainers handle approval and merging.
+
 Use taxmap's skills and live MCP schemas to configure the project, inventory
 sources, store document snapshots with origin URLs, find official parcel GIS,
 extract assessment rolls, and create cited districts, zones, and formulas.

@@ -27,6 +27,12 @@ from taxmap.validate import validate_project
 INSTRUCTIONS = """\
 taxmap turns a folder of public records (documents, web pages, chats, images, GIS data)
 into a cited model of tax/assessment districts and a static transparency map.
+Before discovery, load find-jurisdiction-resources to check the shared
+Cocoa-County/taxmap-resources catalog; reverify leads for the project.
+Before preview, account for official bill links in site.parcel_links or explain
+their omission, APN format and county year limitations.
+Requested catalog contributions use contribute-jurisdiction-resources and the
+host's authorized GitHub tools: approved fork-based PRs only; never auto-merge.
 For a one-request app, load build-taxmap-app: app_start -> research/model using
 the tools below -> app_status/app_check -> app_review -> explicit user approval
 via app_review(approve=digest) -> app_preview. Derive optional setup defaults;

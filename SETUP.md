@@ -96,8 +96,9 @@ The output is a local marketplace containing one `taxmap` plugin with:
   `.mcp.json` adapter.
 - Local marketplace catalogs for Codex and Claude/Copilot.
 - Bundled AGENTS.md, SETUP.md and UNINSTALL.md; `taxmap-plugin.json` records
-  paths/revision. Adjacent `TAXMAP-TOOLS.md` files support app generation, project setup and
-  cleanup in later sessions, even from outside the checkout.
+  paths/revision. Adjacent `TAXMAP-TOOLS.md` files support app generation,
+  project setup, shared-resource lookup/contributions and cleanup in later
+  sessions, even from outside the checkout.
 
 Bundled guidance remains readable after plugin-cache installation. Build and
 update commands use the original tools checkout recorded in
@@ -144,6 +145,14 @@ The server starts before any project exists. It exposes `app_start`,
 `project_open`; each process has its own active-project state. An explicit
 `project_info` root check is required after creating/opening a project.
 Do not promise concurrent multi-project routing through a single process.
+
+The bundle also includes `find-jurisdiction-resources` and
+`contribute-jurisdiction-resources` for the separate public
+[resource catalog](https://github.com/Cocoa-County/taxmap-resources).
+These skills use host web/GitHub capabilities, not an extra MCP server or
+credentials managed by taxmap. Reading is public; fork/PR submission requires
+the user's authorized GitHub tools and approval. Never install/sign into those
+tools merely to finish taxmap setup, or submit a contribution automatically.
 
 ## 5. Activate, check readiness and save the handoff
 

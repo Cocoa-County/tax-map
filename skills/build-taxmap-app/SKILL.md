@@ -37,6 +37,11 @@ If the user explicitly wants to walk through setup, use
 
 ## Research and model without unnecessary interruptions
 
+Load `find-jurisdiction-resources` first: consult the shared catalog at a recorded
+revision for matching city and parent-county portals, bill templates and GIS.
+Reverify candidates for this project; catalog metadata is a lead, not adoption
+evidence. Missing/unreachable catalog entries must not block official research.
+
 Load and follow the existing `screen-sources`, `ingest-resources`,
 `acquire-parcel-gis`, `extract-assessment-roll`, `build-districts`,
 `transcribe-assessment-formula`, and `validate-formulas` skills as applicable.
@@ -53,6 +58,10 @@ Use their existing tools rather than inventing a parallel ETL engine.
 - Configure APNs from actual GIS and roll identifiers. Verify check digits
   explicitly when relevant; never strip an arbitrary trailing digit globally.
   Distinguish legal boundaries, postal cities and tax-year coverage.
+- Verify official tax-bill links, including representative parcel identity,
+  APN format and county year behavior. Propose site.parcel_links or record why
+  links are unavailable, not found or deliberately omitted. Partial assessment
+  coverage is not a reason to silently omit official bill links.
 - Model only supported adopted amounts and membership. An annual-rate
   calculator is not necessarily an independently reconstructed engineering
   formula. Preserve printed discrepancies; never tune constants to hide them.
@@ -77,7 +86,8 @@ model entities. Do not turn missing charges into zero. A mismatch may support
 
 1. Propose a strict `site` object to `app_review`: parcel `publish_fields`
    including the APN, exact `publish_resources` IDs, and necessary
-   `publish_roll_fields` by roll ID. Leave `copy_documents` false unless
+   `publish_roll_fields` by roll ID. Include verified `parcel_links` labels,
+   hosts/templates and year caveats. Leave `copy_documents` false unless
    separately justified and approved. Exclude owners and mailing addresses.
 2. The helper prepares an unserved private export and returns its manifest,
    digest, field samples, exact resource metadata, all public pages and caveats.
@@ -87,7 +97,7 @@ model entities. Do not turn missing charges into zero. A mismatch may support
    Inspect copied documents if any. Do not reintroduce withheld sources via
    inline links or prose. Familiarity with a source is not permission.
 3. Present one consolidated user review of exact fields, per-roll columns,
-   resource IDs/titles/origins, document-copy policy, public notes and material
+   resource IDs/titles/origins, official parcel links, document-copy policy, public notes and material
    model prose. Describe any omitted sources and limitations. Do not approve
    your own proposal. Host permission prompts remain independent.
 4. Only after the user approves that export, call

@@ -54,6 +54,9 @@ def test_default_prompt_context_and_fiscal_year(tmp_path, year):
     assert "finish reviewing or request shutdown" in request
     assert "one consolidated review" in request
     assert "app_check" in request and "app_preview" in request
+    assert "find-jurisdiction-resources" in request
+    assert "site.parcel_links" in request
+    assert "fork-based PR" in request
     assert "$context" not in request and "$fiscal_year_instruction" not in request
     assert not (root / "model" / "notes" / PROMPT_FILE).exists()
 

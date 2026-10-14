@@ -14,10 +14,17 @@ only after user approval, and use the returned verified URL and restart command.
 Guided outputs are under `.taxmap/app-previews`; content approval is not deployment
 permission. The low-level steps below remain available for expert projects.
 
+Before content review, use `find-jurisdiction-resources` to check official
+tax-bill links. Verify the endpoint, representative parcel/APN formatting and
+county year behavior. Propose site.parcel_links or record an explicit
+unavailable/not-found/omitted reason; partial assessment coverage does not
+justify silently skipping bill links. Include labels, hosts/templates and
+year caveats in content approval. Never initiate payments or copy private bills.
+
 1. `project_validate`: fix errors first.
    Before building even a local preview, review the proposed site content
    with the user: parcel fields, extra roll columns, resource metadata,
-   citations, document copies and public model prose. Obtain approval for
+   citations, official parcel links, document copies and public model prose. Obtain approval for
    specific resource IDs in `site.publish_resources`; defaults withhold all
    resources. The preview uses the same approval-filtered export as deployment.
    Content approval is not permission to commit, upload or deploy. If resources
@@ -54,6 +61,8 @@ permission. The low-level steps below remain available for expert projects.
 - The Sources modal lists the approved resources and their linked inventory
   rows; review missing public citations without exposing private resources.
 - The disclaimer is visible.
+- Official parcel/bill links open the expected county parcel; verify and disclose
+  any county-selected year difference. Report unavailable external browser checks.
 - Deep links work: `#apn=...`, `#calc=<formula>`, `#district=<id>`,
   `#page=<note>`.
 
