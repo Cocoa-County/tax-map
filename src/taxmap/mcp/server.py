@@ -61,10 +61,11 @@ def project_open(path: str) -> dict:
 
 @mcp.tool()
 def project_init(path: str, name: str, jurisdiction: str, title: str | None = None, county: str | None = None,
-                 state: str | None = None, fiscal_year: str | None = None) -> dict:
-    """Create a new project folder layout (taxmap.yaml, resources/, model/, gis/, notes) and open it."""
+                 state: str | None = None, fiscal_year: str | None = None, focus: str | None = None,
+                 starting_resources: list[str] | None = None) -> dict:
+    """Create and open a project with PROJECT-PROMPT.md; optional focus/resources personalize the request."""
     _state["project"] = init_project(path, name, jurisdiction, title=title, county=county, state=state,
-                                     fiscal_year=fiscal_year)
+                                     fiscal_year=fiscal_year, focus=focus, starting_resources=starting_resources)
     return project_info()
 
 

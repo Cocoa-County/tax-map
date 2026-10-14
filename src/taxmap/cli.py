@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from taxmap.project import Project, ProjectError, find_project, init_project
+from taxmap.project.prompt import PROMPT_FILE
 
 
 def _open(args) -> Project:
@@ -36,6 +37,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--county")
     p.add_argument("--state")
     p.add_argument("--fiscal-year")
+    p.add_argument("--focus", help="Optional public question or initial district focus")
+    p.add_argument("--starting-resource", action="append", dest="starting_resources",
+                   help="Unverified document path or source URL (repeat for multiple references)")
 
     p = sub.add_parser("add", help="Add a file or URL as a resource")
     p.add_argument("target", help="File path or http(s) URL")
@@ -123,8 +127,10 @@ def _run(args) -> int:
     command = args.command
     if command == "init":
         project = init_project(args.path, args.name, args.jurisdiction, title=args.title, county=args.county,
-                               state=args.state, fiscal_year=args.fiscal_year)
+                               state=args.state, fiscal_year=args.fiscal_year, focus=args.focus,
+                               starting_resources=args.starting_resources)
         print(f"Created project at {project.root}")
+        print(f"Default agent request: {project.root / PROMPT_FILE}")
         return 0
     if command == "mcp":
         from taxmap.mcp.server import main as mcp_main

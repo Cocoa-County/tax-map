@@ -26,24 +26,29 @@ def answers(monkeypatch, values):
 
 def test_options_custom_location_and_optional_fields(tmp_path, monkeypatch):
     root = tmp_path / "City's map \u00e9"
-    answers(monkeypatch, ["My City", str(root), "City of Example", "Public Map", "Example", "CA", "2026-27"])
-    assert setup.collect_options(None) == {
+    answers(monkeypatch, ["My City", str(root), "City of Example", "Public Map", "Example", "CA", "2026-27",
+                         "Explain downtown", "C:\\Records\\City's report.pdf", "https://example.org/final", ""])
+    options, references = setup.collect_options(None)
+    assert options == {
         "name": "My City", "path": str(root), "jurisdiction": "City of Example",
         "title": "Public Map", "county": "Example", "state": "CA", "fiscal-year": "2026-27",
+        "focus": "Explain downtown",
     }
+    assert references == ["C:\\Records\\City's report.pdf", "https://example.org/final"]
     assert not root.exists()
 
 
 def test_options_defaults_and_home_expansion(tmp_path, monkeypatch):
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     monkeypatch.setenv("USERPROFILE" if os.name == "nt" else "HOME", str(tmp_path))
-    answers(monkeypatch, ["Example City", "", "Example", "", "", "", ""])
-    options = setup.collect_options(None)
+    answers(monkeypatch, ["Example City", "", "Example", "", "", "", "", "", ""])
+    options, references = setup.collect_options(None)
     assert options["path"] == str(tmp_path / "taxmap-projects" / "example-city")
     assert options["title"] == "Example City"
     assert "fiscal-year" not in options
-    answers(monkeypatch, ["Example", "~/custom", "Example", "", "", "", ""])
-    assert setup.collect_options(None)["path"] == str(tmp_path / "custom")
+    assert "focus" not in options and references == []
+    answers(monkeypatch, ["Example", "~/custom", "Example", "", "", "", "", "", ""])
+    assert setup.collect_options(None)[0]["path"] == str(tmp_path / "custom")
 
 
 def test_required_and_invalid_text(monkeypatch):
@@ -79,7 +84,7 @@ def test_unsafe_destination_relationships(tmp_path):
 
 def test_confirm_declined_does_not_write(tmp_path, monkeypatch, capsys):
     root = tmp_path / "declined"
-    answers(monkeypatch, ["Name", str(root), "City", "", "", "", "", "n"])
+    answers(monkeypatch, ["Name", str(root), "City", "", "", "", "", "", "", "n"])
     assert setup.main(["--revision", SHA]) == 0
     assert not root.exists()
     assert "No project files" in capsys.readouterr().out
@@ -101,7 +106,7 @@ def test_invalid_revision(capsys):
 @pytest.mark.parametrize("failed_stage", ["download", "pip", "verify"])
 def test_failure_never_reports_success(tmp_path, monkeypatch, capsys, failed_stage):
     root = tmp_path / "partial"
-    answers(monkeypatch, ["Name", str(root), "City", "", "", "", "", "y"])
+    answers(monkeypatch, ["Name", str(root), "City", "", "", "", "", "", "", "y"])
 
     def obtain(destination, *_):
         if failed_stage == "download":
@@ -109,6 +114,8 @@ def test_failure_never_reports_success(tmp_path, monkeypatch, capsys, failed_sta
         destination.mkdir()
 
     def run(args):
+        if failed_stage == "verify" and "init" in args:
+            init_project(root, "Name", "City")
         if ((failed_stage == "pip" and "install" in args)
                 or (failed_stage == "verify" and "--help" in args)):
             raise subprocess.CalledProcessError(1, args)
@@ -131,19 +138,27 @@ def test_install_initializes_exact_project(tmp_path, monkeypatch, capsys):
         calls.append(args)
         if "init" in args:
             values = dict(arg[2:].split("=", 1) for arg in args[3:])
+            references = [arg.split("=", 1)[1] for arg in args[3:] if arg.startswith("--starting-resource=")]
             init_project(args[2], values["name"], values["jurisdiction"],
                          title=values.get("title"), county=values.get("county"),
-                         state=values.get("state"), fiscal_year=values.get("fiscal-year"))
+                         state=values.get("state"), fiscal_year=values.get("fiscal-year"),
+                         focus=values.get("focus"), starting_resources=references)
 
     monkeypatch.setattr(setup, "run", run)
     setup.install({"path": str(root), "name": "-Example", "jurisdiction": "City",
-                   "state": "CA", "fiscal-year": "2026-27"}, SHA, None)
+                   "state": "CA", "fiscal-year": "2026-27", "focus": "-${context}"}, SHA, None,
+                  ["-document.pdf", "https://example.org/adopted?a=1,b=2"])
     project = Project(root)
     assert project.config.name == "-Example"
     assert project.config.jurisdiction.state == "CA"
     assert project.config.fiscal_year == "2026-27"
     metadata = json.loads((root / setup.METADATA).read_text())
     assert metadata["revision"] == SHA
+    assert metadata["prompt"] == str(root / "PROJECT-PROMPT.md")
+    request = (root / "PROJECT-PROMPT.md").read_text(encoding="utf-8")
+    assert "-${context}" in request
+    assert "-document.pdf" in request
+    assert "https://example.org/adopted?a=1,b=2" in request
     assert Path(metadata["mcp"]).is_relative_to(root / ".venv")
     assert ".venv/" in (root / ".gitignore").read_text()
     assert ".taxmap-tools/" in (root / ".gitignore").read_text()
@@ -152,6 +167,17 @@ def test_install_initializes_exact_project(tmp_path, monkeypatch, capsys):
     output = capsys.readouterr().out
     assert str(root) in output
     assert "connection not yet configured" in output
+    assert "Read PROJECT-PROMPT.md in this project and follow it." in output
+    assert "## Research and build" not in output
+
+
+def test_installer_requires_generated_request_before_success(tmp_path, monkeypatch):
+    root = tmp_path / "missing-request"
+    monkeypatch.setattr(setup, "obtain_source", lambda destination, *_: destination.mkdir())
+    monkeypatch.setattr(setup, "run", lambda _: None)
+    with pytest.raises(ValueError, match="did not generate PROJECT-PROMPT.md"):
+        setup.install({"path": str(root), "name": "Name", "jurisdiction": "City"}, SHA, None)
+    assert not (root / setup.METADATA).exists()
 
 
 @pytest.mark.parametrize("entry", ["../escape", f"tax-map-{SHA}/../escape",
@@ -277,7 +303,8 @@ def test_bash_missing_python_bootstraps_without_consuming_wizard_input(tmp_path)
 def test_real_install(tmp_path):
     root = tmp_path / "Installed city's map \u00e9"
     result = subprocess.run(launcher_command(),
-                            input=f"Smoke Project\n{root}\nExample City\n\n\nCA\n\ny\n",
+                            input=f"Smoke Project\n{root}\nExample City\n\n\nCA\n\nExplain downtown\n"
+                                  "https://example.org/adopted\n\ny\n",
                             text=True, capture_output=True, timeout=600,
                             env={**os.environ, "TAXMAP_SOURCE_DIR": str(ROOT)})
     assert result.returncode == 0, result.stdout + result.stderr
@@ -286,6 +313,11 @@ def test_real_install(tmp_path):
     assert project.config.name == "Smoke Project"
     metadata = json.loads((root / setup.METADATA).read_text(encoding="utf-8"))
     assert metadata["local_source"] == str(ROOT)
+    request = Path(metadata["prompt"]).read_text(encoding="utf-8")
+    assert "Explain downtown" in request
+    assert "https://example.org/adopted" in request
+    assert "latest fiscal year" in request
+    assert "## Research and build" not in result.stdout
     assert subprocess.run([metadata["python"], "-m", "pip", "check"]).returncode == 0
     assert subprocess.run([metadata["mcp"], "--help"]).returncode == 0
 

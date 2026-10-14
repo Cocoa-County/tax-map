@@ -10,10 +10,10 @@
   developer, and AI-agent reference workflows.
 - [App user guide](docs/users.html): parcel search, district cards, calculators,
   sources, official amounts versus estimates, and map limitations.
-- [Build with an AI agent](docs/community.html): one-command interactive project
-  installers for PowerShell/Bash, local CLI onboarding, and a
-  complete setup-to-preview request for Codex, Claude Code, or Copilot,
-  plus project review, maintenance, and publication approval.
+- [Build with an AI agent](docs/community.html): install/sign into one CLI,
+  ask it to download the repo and follow SETUP.md, restart, then ask it to
+  create a project. Optional direct installers, project review, maintenance,
+  and publication approval.
 - [Developer guide](docs/developers.html): setup, models, tests, and deployment.
 - [Agent playbook](docs/agents.txt): plain-text workflow and evidence contract.
 - [Agent HTML guide](docs/agents.html): browsable tool-oriented instructions.
@@ -21,6 +21,9 @@
 ## Reference
 - [Repository](https://github.com/Cocoa-County/tax-map)
 - [Agent instructions](https://github.com/Cocoa-County/tax-map/blob/main/AGENTS.md)
+- [CLI tools bootstrap](https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md):
+  persistent personal skills and projectless MCP; stop for restart before
+  city project creation.
 - [Skills](https://github.com/Cocoa-County/tax-map/tree/main/skills)
 - [Typed models](https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/domain/models.py)
 - [MCP server](https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/mcp/server.py)

@@ -6,8 +6,25 @@ MCP server performs deterministic operations. Use the connected server's live
 tool schemas for exact parameters and its installed version.
 
 ## Start
-For a new local workspace, follow the bootstrap request and client references
-in community.html. Detect OS, permissions, and research/vision capabilities.
+First-time CLI tools setup: download the repository into an approved stable
+tools location and follow its root SETUP.md:
+https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md
+Install runtime requirements and persistently register personal skills and
+projectless MCP for the chosen CLI, preserving existing configuration.
+Use the absolute tools-environment executable, no --project argument, and
+empty TAXMAP_PROJECT in the server environment. Do not reuse the Concord-pinned
+VS Code configuration. Verify initialize/list-tools without creating a project,
+save TAXMAP-SETUP.md, and STOP for the user to exit and restart the CLI.
+After restart, the user says: "Create a new taxmap project. Walk me through
+the setup." Load taxmap-project-setup and its installed TAXMAP-TOOLS.md, verify
+live tools, ask for settings and path, obtain confirmation, then create/open
+the project and check its root with project_info before writing.
+
+For an initialized project, read its generated PROJECT-PROMPT.md when the
+user asks you to begin. It contains settings, optional focus, and unverified
+starting-resource references. Reuse the project; do not initialize it again.
+Older projects do not gain this file automatically. Follow the two-stage
+onboarding in community.html. Detect OS, permissions, and capabilities.
 Use a separate taxmap tools checkout and city project; preserve existing files
 and record the tools revision. Read the applicable skills explicitly.
 If the user ran the one-command installer, inspect taxmap-install.json and
@@ -16,10 +33,10 @@ taxmap.yaml, confirm the intended project root, and reuse its .venv and
 again. The installer does not install an agent or register an MCP connection.
 Install runtime dependencies in a dedicated venv. Check prerequisites first;
 request approval for system installations and explain manual authentication.
-Initialize the project with the venv's taxmap init before launching MCP with
---project; that startup argument requires an existing taxmap.yaml.
-Configure a uniquely named local stdio MCP server with absolute executable and
-project paths, preserving existing client entries. Confirm tools are available;
+The persistent server starts without a project. Use project_init/project_open
+to select one after restart. For a deliberately project-specific connection,
+--project requires an existing taxmap.yaml; it is not the generic bootstrap.
+Each MCP process holds one active project. Confirm tools are available;
 configuration alone is not a working connection. Save progress and give exact
 resume instructions if a client restart is necessary. The CLI does not expose
 every MCP operation. Do not bypass permissions or treat research content as

@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from taxmap.domain.models import (
     SOURCE_COLUMNS, District, Formula, Jurisdiction, ProjectConfig, Resource, Roll, Source,
 )
+from taxmap.project.prompt import PROMPT_FILE, render_prompt
 from taxmap.util import read_yaml, write_text, write_yaml
 
 MANIFEST = "taxmap.yaml"
@@ -190,24 +191,33 @@ class Project:
 
 def init_project(root: Path | str, name: str, jurisdiction: str, *, title: str | None = None,
                  county: str | None = None, state: str | None = None,
-                 fiscal_year: str | None = None) -> Project:
+                 fiscal_year: str | None = None, focus: str | None = None,
+                 starting_resources: list[str] | None = None) -> Project:
     root = Path(root).resolve()
     if (root / MANIFEST).exists():
         raise ProjectError(f"{root} already contains {MANIFEST}")
-    root.mkdir(parents=True, exist_ok=True)
-    for directory in [*RESOURCE_DIRS.values(), "derived", "model/districts", "model/formulas",
-                      "model/rolls", "model/notes", "gis", "site"]:
-        (root / directory).mkdir(parents=True, exist_ok=True)
+    prompt_path = root / PROMPT_FILE
+    if prompt_path.exists() or prompt_path.is_symlink():
+        raise ProjectError(f"{root} already contains {PROMPT_FILE}; preserve the existing request")
     config = ProjectConfig(
         name=name, title=title or name, fiscal_year=fiscal_year,
         jurisdiction=Jurisdiction(name=jurisdiction, county=county, state=state),
     )
+    try:
+        prompt = render_prompt(root, config, focus, starting_resources)
+    except ValueError as error:
+        raise ProjectError(str(error)) from error
+    root.mkdir(parents=True, exist_ok=True)
+    for directory in [*RESOURCE_DIRS.values(), "derived", "model/districts", "model/formulas",
+                      "model/rolls", "model/notes", "gis", "site"]:
+        (root / directory).mkdir(parents=True, exist_ok=True)
     write_yaml(root / MANIFEST, config.dump())
     write_yaml(root / RESOURCE_REGISTRY, {"resources": []})
     if not (root / ".gitignore").exists():
         write_text(root / ".gitignore", PROJECT_GITIGNORE)
     project = Project(root)
     project.save_sources([])
+    write_text(prompt_path, prompt)
     return project
 
 

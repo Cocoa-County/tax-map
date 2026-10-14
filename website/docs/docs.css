@@ -38,8 +38,10 @@
 .docs-article pre { overflow-x: auto; padding: 18px; border-radius: 9px; background: var(--code-bg); color: #f8ecdc; font-size: .82rem; line-height: 1.6; }
 .docs-article code { overflow-wrap: anywhere; }
 .docs-article pre code { padding: 0; border: 0; margin: 0; overflow-wrap: normal; }
-.docs-article .bootstrap-prompt { white-space: pre-wrap; overflow-wrap: anywhere; }
-.docs-article .bootstrap-prompt code { overflow-wrap: anywhere; }
+.docs-article pre.starter-request { white-space: pre-wrap; overflow-wrap: anywhere; }
+.docs-article details { margin: 28px 0; padding: 18px; border: 1px solid var(--line); border-radius: 9px; }
+.docs-article summary { cursor: pointer; font-weight: 650; }
+.docs-article details h2 { margin-top: 24px; }
 .callout { padding: 18px 22px; background: var(--soft); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; }
 .table-scroll { overflow-x: auto; }
 .docs-article table { width: 100%; border-collapse: collapse; font-size: .9rem; }

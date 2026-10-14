@@ -11,11 +11,29 @@ Markdown and GeoJSON, so commits and diffs show exactly what changed.
 
 ## Steps
 
-1. **Open or create.** Call `project_open` with the folder. If it has no
-   `taxmap.yaml`, call `project_init` with `path`, `name` (lowercase id),
-   `jurisdiction` (e.g. "City of Concord"), `county`, `state`, and
-   `fiscal_year` (e.g. "2026-27").
-2. **Configure.** Call `project_configure` with top-level keys to replace.
+1. **Check the tools.** If an installed `TAXMAP-TOOLS.md` exists beside this
+   skill, read its tools location, AGENTS.md, and MCP registration. Otherwise
+   use the known repo tools location. Verify live `project_init`/`project_open`
+   tools; copying skills or saving configuration is not proof of connection.
+   If missing, follow the repo's SETUP.md and stop for the user to restart
+   their CLI before creating a project.
+2. **Walk through the choices.** Ask one question at a time: jurisdiction
+   and state, project name (lowercase id), exact location, then optional
+   county/title/fiscal year, research focus, and starting document paths or
+   official URLs. Leave year unset if not yet verified. References are
+   unverified context, not facts or permission to upload documents.
+   Show the resolved path and settings and obtain confirmation. The agent
+   creates the directory; do not require the user to run a mkdir command.
+3. **Open or create.** Inspect the chosen location before writes. Open an
+   intended existing project with `project_open`; do not reinitialize it.
+   For a new project, choose a new/empty location and call `project_init`
+   with agreed `path`, `name`, `jurisdiction`, optional `title`, `county`,
+   `state`, `fiscal_year`, `focus`, and `starting_resources`. Preserve
+   existing files and never use the Concord example as a new city's project.
+   Verify the returned root with `project_info`. New projects include
+   PROJECT-PROMPT.md; read it when the user asks to proceed with research
+   and a local preview. Older projects may lack it; do not reinitialize them.
+4. **Configure.** Call `project_configure` with top-level keys to replace.
    Nested objects are replaced as a whole, so send the full object:
    - `apn`: `{normalize: alnum, display_pattern: "###-###-###"}`. `alnum`
      (default) makes `112-138-003` and `112138003` match. Use `digits` or
@@ -25,14 +43,17 @@ Markdown and GeoJSON, so commits and diffs show exactly what changed.
    - `site`: `{title, subtitle, disclaimer, publish_fields}`. Use
      `publish_fields` as an allow-list. Leave out owner names, mailing
      addresses and other personal data unless the user decides otherwise.
-3. **Parcel layer.** If you know the parcel service, run the
-   `acquire-parcel-gis` skill now. Every map feature depends on it.
-4. Call `project_info` and `project_validate` to confirm.
+5. **Parcel layer.** When the user asks to continue building and you know
+   the parcel service, run `acquire-parcel-gis`. Every map feature depends on it.
+6. Call `project_info` and `project_validate` to confirm. Report empty-project
+   validation gaps without inventing GIS or evidence. Project creation is not
+   completion of research or permission to publish.
 
 ## Folder layout
 
 ```text
 taxmap.yaml            project config
+PROJECT-PROMPT.md      generated local research request (not a published note)
 resources.yaml         registry of documents, web pages, chats, images, data
 resources/<kind>/      stored resource files
 derived/<id>/          extracted text, tables, page images (rebuildable)

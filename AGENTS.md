@@ -5,6 +5,11 @@ assessment map project for a user, or changing this repository.
 
 ## Building a project
 
+For first-time CLI/tool installation, follow [SETUP.md](SETUP.md).
+That stage registers persistent skills and MCP without a city project, then
+stops for the user to restart their CLI. Create projects only in the fresh
+session after verifying the registered tools and project-setup skill.
+
 You do the reasoning; the `taxmap` MCP server does deterministic work
 (storage, extraction, search, GIS, computation and checks). Record each
 decision through a tool so it lands in reviewable project files.

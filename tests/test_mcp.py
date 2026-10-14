@@ -57,3 +57,37 @@ def test_mcp_stdio(tmp_path):
     init_project(root, "demo", "Town of Demo")
     note = ingest.add_note(Project(root), "Council remarks", "Residents asked about the lighting district.")
     asyncio.run(_session_run(root, note.id))
+
+
+def test_mcp_bootstrap_without_project(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("TAXMAP_PROJECT", str(tmp_path / "old-city"))
+
+    async def connect():
+        params = StdioServerParameters(
+            command=sys.executable, args=["-m", "taxmap.mcp.server"],
+            env={"TAXMAP_PROJECT": ""},
+        )
+        async with stdio_client(params) as (read, write):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                tools = {tool.name for tool in (await session.list_tools()).tools}
+                assert {"project_init", "project_open", "project_info"} <= tools
+                info = await session.call_tool("project_info", {})
+                assert _attr(info, "is_error", "isError")
+                assert not list(tmp_path.iterdir())
+
+                root = tmp_path / "new-city"
+                created = await session.call_tool("project_init", {
+                    "path": str(root), "name": "new-city",
+                    "jurisdiction": "Example City", "focus": "Explain downtown",
+                })
+                assert not _attr(created, "is_error", "isError")
+                assert _json(created)["root"] == str(root.resolve())
+                current = _json(await session.call_tool("project_info", {}))
+                assert current["root"] == str(root.resolve())
+                assert current["config"]["name"] == "new-city"
+                assert "Explain downtown" in (root / "PROJECT-PROMPT.md").read_text(encoding="utf-8")
+                assert not (tmp_path / "old-city").exists()
+
+    asyncio.run(connect())

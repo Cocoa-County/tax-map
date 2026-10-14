@@ -85,7 +85,31 @@ checks, while the agent reads, decides and writes.
 
 ## Install
 
-### One-command project setup
+### Start with your AI CLI
+
+Install and sign into Codex CLI, Claude Code, or GitHub Copilot CLI, then paste
+this into the agent:
+
+> Download https://github.com/Cocoa-County/tax-map into a separate local folder
+> and follow SETUP.md at the repository root to install taxmap and set up its
+> skills and MCP for this CLI. Ask before installing software or changing my
+> configuration. Do not create a project yet. When setup is ready, tell me how
+> to restart this CLI and ask it to create a new project.
+
+[SETUP.md](SETUP.md) gives the agent the technical workflow: install runtime
+requirements, register persistent user-scope skills and projectless MCP, check
+readiness, and save a handoff. After setup, **exit and restart the CLI**, then
+say:
+
+> Create a new taxmap project. Walk me through the setup.
+
+The agent asks for your settings, creates the chosen project directory, and
+verifies its root. No manual directory-creation command is needed. Research
+and a local preview follow when you ask to continue; publication requires
+separate approval. Follow the [non-technical guide](website/docs/community.html)
+for installation, sign-in, permissions, and review.
+
+### Optional: one-command project installer
 
 Download and run the interactive installer; no repository clone, Git, or
 administrator terminal is required.
@@ -106,7 +130,12 @@ These URLs work after the scripts are merged to `main`. The installer asks
 for project name, exact folder location, and jurisdiction, with optional map
 title, county, state, and fiscal year. The default is a new folder under
 `~/taxmap-projects`; existing non-empty folders are refused. Review the
-settings and confirm before project files are created.
+settings and confirm before project files are created. Optional research focus
+and starting document paths or official URLs personalize the generated request;
+references are not opened, uploaded, or fetched by setup.
+Run the installer from any folder; it creates your selected project directory
+and any missing parent folders. No separate directory-creation command is
+needed.
 
 taxmap and **all runtime dependencies** are installed in the project's
 `.venv`; a separate `.taxmap-tools` folder holds the source and agent skills.
@@ -134,20 +163,22 @@ installed environment depends on it.
 
 Success creates an **empty project**, records installation paths and the
 tools revision in `taxmap-install.json`, and prints exact CLI and MCP
-commands. It does not install/sign into an AI agent, register MCP, research
+commands. It also generates `PROJECT-PROMPT.md` and prints its location.
+In your agent, say **"Read PROJECT-PROMPT.md in this project and follow it."**
+The request includes evidence, privacy, and local-preview safeguards; it is
+editable and is not included in published site notes.
+Setup does not install/sign into an AI agent, register MCP, research
 records, or publish anything. Keep the environment and tools folders in
 place; they are excluded from project Git tracking.
 
-### Agent-managed or manual setup
+### Manual developer setup
 
 **New to terminals or building with AI?** Follow
 [non-technical guide](website/docs/community.html): install and sign into
-Codex, Claude Code, or GitHub Copilot CLI, open a dedicated workspace, and paste
-one project request. Use the installer above first, or let the agent handle
-local taxmap installation, MCP setup,
-research, validation, and a preview. Permissions, possible client restarts,
-missing data, and publication approval remain explicit. No hosted backend is
-required. For repository development:
+Codex, Claude Code, or GitHub Copilot CLI, ask it to follow SETUP.md, restart,
+then create a project. The direct installer above is an alternative, not a
+required first step. Permissions, missing data, and publication approval
+remain explicit. No hosted backend is required. For repository development:
 
 ```powershell
 python -m venv .venv
@@ -201,6 +232,13 @@ taxmap serve
 ```
 
 Run `taxmap <command> --help` for options.
+Every new project initialized by CLI or MCP receives `PROJECT-PROMPT.md`.
+Optional `init --focus TEXT` and repeated `--starting-resource PATH-OR-URL`
+arguments personalize it; MCP `project_init` accepts the matching `focus` and
+`starting_resources` parameters. See the
+[template](src/taxmap/project/templates/project-prompt.md).
+Existing projects are not migrated, and edited requests are never silently
+regenerated when settings change.
 
 ## Example: Concord, CA
 

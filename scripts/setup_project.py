@@ -43,7 +43,7 @@ def check_destination(root: Path, source: Path | None = None) -> None:
         raise ValueError("Keep the project outside the taxmap source checkout.")
 
 
-def collect_options(source: Path | None) -> dict[str, str]:
+def collect_options(source: Path | None) -> tuple[dict[str, str], list[str]]:
     name = prompt("Project name", required=True)
     folder = re.sub(r"[^a-z0-9_-]+", "-", name.lower()).strip("-") or "my-taxmap"
     location = prompt("Exact project folder", str(Path.home() / "taxmap-projects" / folder), required=True)
@@ -60,7 +60,15 @@ def collect_options(source: Path | None) -> dict[str, str]:
         value = prompt(label, name if key == "title" else "")
         if value:
             options[key] = value
-    return options
+    focus = prompt("Public question or initial district focus (optional)")
+    if focus:
+        options["focus"] = focus
+    print("Optional starting documents or official source URLs (one per entry; blank to finish).")
+    print("These are unverified references for your agent; setup will not open, upload, or fetch them.")
+    references = []
+    while value := prompt("Document path or source URL"):
+        references.append(value)
+    return options, references
 
 
 def run(args: list[str]) -> None:
@@ -112,7 +120,8 @@ def command_text(args: list[str]) -> str:
     return shlex.join(args)
 
 
-def install(options: dict[str, str], revision: str | None, source: Path | None) -> None:
+def install(options: dict[str, str], revision: str | None, source: Path | None,
+            starting_resources: list[str] | None = None) -> None:
     root = Path(options["path"])
     check_destination(root, source)
     if not root.exists():
@@ -131,7 +140,12 @@ def install(options: dict[str, str], revision: str | None, source: Path | None) 
     for key, value in options.items():
         if key != "path":
             args.append(f"--{key}={value}")
+    for value in starting_resources or []:
+        args.append(f"--starting-resource={value}")
     run(args)
+    prompt_path = root / "PROJECT-PROMPT.md"
+    if not prompt_path.is_file() or not prompt_path.read_text(encoding="utf-8").strip():
+        raise ValueError("Project initialization did not generate PROJECT-PROMPT.md")
     ignore = root / ".gitignore"
     with ignore.open("a", encoding="utf-8") as stream:
         stream.write("\n# Local installer tools and environment\n.venv/\n.taxmap-tools/\n")
@@ -146,10 +160,14 @@ def install(options: dict[str, str], revision: str | None, source: Path | None) 
         "local_source": str(source) if source else None,
         "project": str(root), "tools": str(tools), "python": str(python),
         "bootstrap_python": sys.executable, "cli": str(cli), "mcp": str(mcp),
+        "prompt": str(prompt_path),
     }
     (root / METADATA).write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     print(f"\nSetup complete: {root}\nThis is an empty project, not a researched or published map.")
     print(f"Installation details: {root / METADATA}")
+    print(f"Your personalized agent request: {prompt_path}")
+    print("\nIn your agent, say: Read PROJECT-PROMPT.md in this project and follow it.")
+    print("If your agent is open elsewhere, give it the absolute request-file path above.")
     print("\nCLI (no activation needed):\n" + command_text([str(cli), "--project", str(root), "validate"]))
     print("\nMCP command for your client's configuration (connection not yet configured):\n"
           + command_text([str(mcp), "--project", str(root)]))
@@ -172,10 +190,12 @@ def main(argv: list[str] | None = None) -> int:
         source = args.source.resolve() if args.source else None
         if source and not (source / "pyproject.toml").is_file():
             raise ValueError("Local source must contain pyproject.toml.")
-        options = collect_options(source)
+        options, starting_resources = collect_options(source)
         print("\nReview setup:")
         for key, value in options.items():
             print(f"  {key}: {value}")
+        for value in starting_resources:
+            print(f"  Starting reference (unverified): {value}")
         print(f"  Tools source: {source or f'{REPOSITORY}@{args.revision}'}")
         print(f"  Environment: {Path(options['path']) / '.venv'}")
         print("  Install: taxmap + all runtime dependencies; no AI agent or publication.")
@@ -183,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
         if input("Create and install? [y/N]: ").strip().lower() != "y":
             print("Setup cancelled. No project files were created.")
             return 0
-        install(options, args.revision, source)
+        install(options, args.revision, source, starting_resources)
         return 0
     except (KeyboardInterrupt, EOFError):
         print("\nSetup cancelled.", file=sys.stderr)
