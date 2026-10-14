@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Set up taxmap with an AI CLI: ask for tools setup, restart, then ask the agent to create your project and review a preview."><title>Build with an AI agent | taxmap</title><link rel="stylesheet" href="../style.css?v=cocoa-3"><link rel="stylesheet" href="docs.css?v=cocoa-4"><script src="../theme.js?v=cocoa-2"></script></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Set up taxmap with an AI CLI: ask for tools setup, restart, then ask the agent to create your project and review a preview."><title>Build with an AI agent | taxmap</title><link rel="stylesheet" href="../style.css?v=cocoa-3"><link rel="stylesheet" href="docs.css?v=cocoa-5"><script src="../theme.js?v=cocoa-2"></script></head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><a class="brand" href="../">taxmap<small>by Cocoa County</small></a><nav aria-label="Main navigation"><a href="use.html">Use a map</a><a href="create.html" aria-current="location">Create a map</a><a href="../concord/">Concord map</a></nav></header>
@@ -35,7 +35,8 @@
 
 <section id="prompt"><h2>3. Paste this short tools-setup request</h2>
 <p>Paste this into your signed-in <em>agent</em>, not the terminal's command prompt. You can use it unchanged:</p>
-<pre class="starter-request" tabindex="0" aria-label="Copy-paste tools setup request"><code>Download https://github.com/Cocoa-County/tax-map into a separate local folder and follow SETUP.md at the repository root to install taxmap and set up its skills and MCP for this CLI. Ask before installing software or changing my configuration. Do not create a project yet. When setup is ready, tell me how to restart this CLI and ask it to create a new project.</code></pre>
+<div class="prompt-actions"><button type="button" id="copy-setup-request" aria-controls="setup-request" hidden>Copy setup request</button><span id="copy-setup-status" role="status"></span></div>
+<pre id="setup-request" class="starter-request" tabindex="0" aria-label="Copy-paste tools setup request"><code>Help me set up taxmap for this CLI. Ask before downloading, installing software, or changing my configuration. Confirm a stable, separate local tools folder, then download https://github.com/Cocoa-County/tax-map there and follow SETUP.md at the repository root. Install one taxmap plugin containing all its skills and MCP connection; do not register a separate MCP server or loose skills. Preserve existing settings and save the setup handoff. Do not create a project yet. When setup checks pass, stop and tell me how to restart this CLI and ask it to create a new project.</code></pre>
 <p>The repository's <a href="https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md">SETUP.md</a> carries the technical instructions. The agent should confirm a tools-download location, install requirements, and install one <strong>taxmap plugin</strong> containing all its skills and MCP connection for your chosen CLI. The bundle remains available after restart, outside the downloaded repository.</p></section>
 
 <section id="handoffs"><h2>4. Approve setup, then restart your CLI</h2>
@@ -47,17 +48,18 @@
 <section id="new-project"><h2>5. Ask the restarted agent to create a project</h2>
 <p>In the fresh CLI session, say:</p>
 <div class="callout"><strong>Create a new taxmap project. Walk me through the setup.</strong></div>
-<p>The agent should verify its skills and live MCP tools, then ask about your city/state, project name and location, and optional fiscal year, research focus, and starting documents or official URLs. You do not need a directory-creation command: the agent creates the chosen folder after you confirm.</p>
+<p>The agent should verify its skills and live MCP tools, then ask about your city/state, project name and location, and optional fiscal year, research focus, and starting documents or official URLs. Give your requested fiscal year even if its records have not been verified yet; the agent must research that year rather than silently choose another. Leave it blank only if you have no preference. You do not need a directory-creation command: the agent creates the chosen folder after you confirm.</p>
 <p>If the tools are missing after restart, give the agent the saved <code>TAXMAP-SETUP.md</code> path and ask it to diagnose registration. Do not accept a claim that setup worked without available tools.</p>
 <p>Once the project exists, ask the agent to research the records and build a local preview. New projects include a personalized <code>PROJECT-PROMPT.md</code> for that detailed workflow; you do not need to assemble a long prompt. Starting resources are unverified references, not permission to upload documents. Publication still requires separate approval.</p></section>
 
 <section id="preview"><h2>6. Open and review the local preview</h2>
+<p><strong>Approve the preview's content first.</strong> The agent should show you the proposed parcel fields, extra roll columns, individual resources, citations, document copies and model notes. Local previews use the same content controls as a public site: resource metadata, citations and files are withheld until you approve the specific resources. If you decline or defer approval, the agent must explain the missing citations rather than expose those resources. Approving content does <strong>not</strong> authorize a commit, upload or public deployment; that needs separate permission. Check redistribution rights before including document copies.</p>
 <p>The agent should give you a browser address such as <code>http://127.0.0.1:8000/</code>, using the actual port it started and checked. Open that address in your browser on the same computer. It is not a public link; other people cannot use it to view your app.</p>
 <p>Expect a map with parcel search, district information, source links, and calculators where supported by the evidence. Also expect a summary of what was found, what was verified, and what remains missing. A polished map without that summary is not enough.</p>
 <p>Use the <a href="#review">review checklist</a>. Check the fiscal year, a few known parcels, official amounts versus estimates, citations, and coverage gaps. If research could not be completed, ask the agent to show its saved inventory and blockers rather than assume an absent charge means zero.</p></section>
 
 <section id="resume"><h2>7. Reopen, update, or publish later</h2>
-<p>The project files stay on your computer after the preview stops. A preview started through MCP can stop when the agent or its MCP process exits; a sleeping computer also makes it unavailable. Ask the agent to explain its server's lifetime and shutdown method.</p>
+<p>The agent should leave the preview running for your review, not stop it just because the build is complete. Ask it to stop after you finish reviewing or when you want to close it. The project files stay on your computer after the preview stops. A preview started through MCP can stop when the agent or its MCP process exits; a sleeping computer also makes it unavailable. Ask the agent to explain its server's lifetime and shutdown method.</p>
 <p>To reopen it, start your chosen CLI in the saved workspace and ask it to read the project handoff, verify the MCP connection, and serve the existing site. To continue research, tell it to resume from the inventory and remaining work. You do not have to repeat completed extraction just because a chat ended.</p>
 <p>If a dependency installation, login, portal, or research tool fails, preserve the exact error and ask the agent to diagnose it. A work or school device may require an administrator's help. Do not turn off security protections to get past an unexplained failure.</p>
 <h3 id="publish">Publish only after review</h3>
@@ -81,7 +83,7 @@
 <pre><code>$p = Join-Path $env:TEMP ("taxmap-" + [guid]::NewGuid() + ".ps1"); try { Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Cocoa-County/tax-map/main/scripts/install.ps1 -OutFile $p -ErrorAction Stop; &amp; $p } finally { if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p } }</code></pre>
 <h3>macOS/Linux Bash</h3>
 <pre><code>( f="$(mktemp)" || exit; trap 'rm -f "$f"' EXIT; curl -fsSL https://raw.githubusercontent.com/Cocoa-County/tax-map/main/scripts/install.sh -o "$f" &amp;&amp; bash "$f" )</code></pre>
-<p>Answer prompts for project name, exact location, and jurisdiction, then optional title, county, state, fiscal year, research focus, and starting paths/URLs. Leave the year blank until adopted records establish it. References are not opened, uploaded, or fetched. Review and confirm; existing non-empty destinations are refused.</p>
+<p>Answer prompts for project name, exact location, and jurisdiction, then optional title, county, state, fiscal year, research focus, and starting paths/URLs. Enter your requested fiscal year as the research target; leave it blank only if you have no preference. The agent will verify adopted records before modeling that year. References are not opened, uploaded, or fetched. Review and confirm; existing non-empty destinations are refused.</p>
 <p>If Python is missing, setup asks permission to install user-scoped <a href="https://docs.astral.sh/uv/reference/installer/">uv and managed Python</a>. It does not change system Python, shell profiles, or execution policy. Downloads need GitHub, PyPI, and (for Python bootstrap) Astral. Review the <a href="https://github.com/Cocoa-County/tax-map/blob/main/scripts/install.ps1">PowerShell launcher</a>, <a href="https://github.com/Cocoa-County/tax-map/blob/main/scripts/install.sh">Bash launcher</a>, and <a href="https://github.com/Cocoa-County/tax-map/blob/main/scripts/setup_project.py">shared wizard</a> before trusting them; they download matching source and may execute Astral's installer. Follow organization policies rather than bypassing restrictions.</p>
 <p>Keep the generated <code>.venv</code> and <code>.taxmap-tools</code> folders in place. <code>taxmap-install.json</code> records paths and revision; <code>PROJECT-PROMPT.md</code> is your editable local research request, not a published page. Nothing is researched or published during installation.</p>
 <p><strong>Your project is already created; do not initialize it again.</strong> Ask your agent to follow SETUP.md's plugin steps using the recorded tools paths and existing environment, preserving settings. Restart when ready, open the existing project, then say: <strong>Read PROJECT-PROMPT.md in this project and follow it.</strong> Older projects may lack this file; ask the agent to inspect saved files instead of reinitializing.</p>
@@ -91,4 +93,33 @@
 <p id="questions">Questions about displayed amounts and map coverage are answered in the <a href="users.html#questions">app user FAQ</a>.</p>
 </article></main>
 <footer><a class="brand" href="../">taxmap<small>A Cocoa County project</small></a><a href="https://github.com/Cocoa-County">About Cocoa County</a><a href="./">All documentation</a><a href="developers.html">Developer guide &rarr;</a></footer>
+<script>
+(() => {
+  "use strict";
+  const button = document.getElementById("copy-setup-request");
+  const request = document.getElementById("setup-request");
+  const status = document.getElementById("copy-setup-status");
+  button.hidden = false;
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    status.textContent = "";
+    try {
+      if (!navigator.clipboard) throw new Error("Clipboard access is unavailable.");
+      await navigator.clipboard.writeText(request.querySelector("code").textContent);
+      status.textContent = "Copied! Paste into your signed-in agent.";
+    } catch (error) {
+      console.warn("Could not copy the taxmap setup request.", error);
+      request.focus();
+      const range = document.createRange();
+      range.selectNodeContents(request.querySelector("code"));
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      status.textContent = "Could not copy automatically. The request is selected; use your browser's Copy command.";
+    } finally {
+      button.disabled = false;
+    }
+  });
+})();
+</script>
 </body></html>

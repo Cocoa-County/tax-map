@@ -43,6 +43,12 @@ def test_default_prompt_context_and_fiscal_year(tmp_path, year):
     assert "Do not register a separate" in request
     assert "Launch taxmap-mcp with --project" not in request
     assert "site.publish_resources" in request
+    assert "before building even a local preview" in request
+    assert "Content approval is not permission to commit, upload" in request
+    assert "keep resources withheld" in request
+    assert "explain missing citations in the preview handoff" in request
+    assert "completing the build is not a reason to stop it" in request
+    assert "finish reviewing or request shutdown" in request
     assert "$context" not in request and "$fiscal_year_instruction" not in request
     assert not (root / "model" / "notes" / PROMPT_FILE).exists()
 

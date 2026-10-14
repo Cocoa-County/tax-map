@@ -20,7 +20,10 @@ Markdown and GeoJSON, so commits and diffs show exactly what changed.
 2. **Walk through the choices.** Ask one question at a time: jurisdiction
    and state, project name (lowercase id), exact location, then optional
    county/title/fiscal year, research focus, and starting document paths or
-   official URLs. Leave year unset if not yet verified. References are
+   official URLs. Preserve a requested fiscal year as the research target,
+   even before its adopted records are verified; do not silently substitute
+   the latest year. Leave year unset only when the user has no preference.
+   References are
    unverified context, not facts or permission to upload documents.
    Show the resolved path and settings and obtain confirmation. The agent
    creates the directory; do not require the user to run a mkdir command.
@@ -36,8 +39,13 @@ Markdown and GeoJSON, so commits and diffs show exactly what changed.
 4. **Configure.** Call `project_configure` with top-level keys to replace.
    Nested objects are replaced as a whole, so send the full object:
    - `apn`: `{normalize: alnum, display_pattern: "###-###-###"}`. `alnum`
-     (default) makes `112-138-003` and `112138003` match. Use `digits` or
-     `none` only when letters or separators are significant.
+     (default) removes punctuation and uppercases letters, making
+     `112-138-003` and `112138003` match while preserving letter identifiers.
+     `digits` removes letters and separators; use it only when both are
+     insignificant. `none` preserves letters and separators (trimming outer
+     whitespace). Choose from actual parcel and roll identifiers and check
+     for normalization collisions before joining. Do not assume the example
+     display pattern fits the jurisdiction.
    - `projected_crs`: a meter-based EPSG code for the area (e.g. 26910 for
      UTM zone 10N). If unset, a UTM zone is derived from the data.
    - `site`: `{title, subtitle, disclaimer, publish_fields, publish_resources}`.

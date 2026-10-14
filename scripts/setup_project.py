@@ -55,7 +55,7 @@ def collect_options(source: Path | None) -> tuple[dict[str, str], list[str]]:
     options = {"name": name, "path": str(root), "jurisdiction": prompt("Jurisdiction (city or district)", required=True)}
     for key, label in [
         ("title", "Map title"), ("county", "County (optional)"), ("state", "State (optional)"),
-        ("fiscal-year", "Fiscal year (optional; leave blank until adopted records are verified)"),
+        ("fiscal-year", "Requested fiscal year (optional; leave blank only if you have no preference)"),
     ]:
         value = prompt(label, name if key == "title" else "")
         if value:

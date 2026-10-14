@@ -90,8 +90,12 @@ explicitly report problems. A successful build is not proof of accurate
 sources or complete research. Use an explicit public-field allow-list
 excluding owner names and unnecessary personal data. Review document
 redistribution rights and obtain approval for specific resource IDs in
-site.publish_resources before publishing metadata, citations or document
-copies. Resources are private by default even when cited. Keep research
+site.publish_resources before building even a local preview with metadata,
+citations or document copies. Local previews use the same approval-filtered
+export as deployment. Content approval is not permission to commit, upload
+or deploy. If approval is declined or deferred, keep resources withheld and
+explain missing citations in the preview handoff. Resources are private by
+default even when cited. Keep research
 inventory rows linked to approved resources; URL-only rows are not published.
 Approve extra roll columns with site.publish_roll_fields only when needed.
 Parcel APNs and roll assessment amounts are public map requirements.
@@ -111,7 +115,9 @@ revision, and exact restart instructions in the local project so another
 session can resume. Give me the project path, local preview URL, selected
 fiscal year, modeled coverage, validation results, formula limitations, and
 unresolved gaps. Explain how to stop and reopen the preview; warn if its
-lifetime depends on this agent session. Leave it available for my review.
+lifetime depends on this agent session. Leave it available for my review;
+completing the build is not a reason to stop it. Stop the preview when I
+finish reviewing or request shutdown.
 
 Do not commit, push, create a public repository, upload files, or deploy
 without my separate explicit approval. Ask questions when a genuine

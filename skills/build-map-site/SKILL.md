@@ -8,6 +8,14 @@ description: Generate, preview and publish the static parcel map (search, distri
 ## Build
 
 1. `project_validate`: fix errors first.
+   Before building even a local preview, review the proposed site content
+   with the user: parcel fields, extra roll columns, resource metadata,
+   citations, document copies and public model prose. Obtain approval for
+   specific resource IDs in `site.publish_resources`; defaults withhold all
+   resources. The preview uses the same approval-filtered export as deployment.
+   Content approval is not permission to commit, upload or deploy. If resources
+   remain unapproved, keep them withheld and explain missing citations in
+   the preview handoff. Check redistribution rights before copying documents.
 2. `site_build` writes `site/`:
    - parcel tiles and published attributes
    - search index
@@ -22,7 +30,10 @@ description: Generate, preview and publish the static parcel map (search, distri
    required fields that are genuinely absent.
 4. `site_serve` (default port 8000) and open `http://localhost:8000/`. The
    site needs HTTP; opening the file directly will not work. Call
-   `site_serve` with `stop: true` when done.
+   Leave the preview available for the user's review; completing the build
+   is not a reason to stop it. Call `site_serve` with `stop: true` when the
+   user finishes reviewing or requests shutdown. Explain that ending the
+   MCP process also stops its preview, and give instructions to reopen it.
 
 ## What to check in the preview
 

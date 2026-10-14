@@ -39,6 +39,10 @@
 .docs-article code { overflow-wrap: anywhere; }
 .docs-article pre code { padding: 0; border: 0; margin: 0; overflow-wrap: normal; }
 .docs-article pre.starter-request { white-space: pre-wrap; overflow-wrap: anywhere; }
+.prompt-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.prompt-actions button { padding: 10px 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); color: var(--ink); font: inherit; font-weight: 650; cursor: pointer; }
+.prompt-actions button:disabled { cursor: wait; }
+.prompt-actions [role="status"] { color: var(--muted); font-size: .9rem; }
 .docs-article details { margin: 28px 0; padding: 18px; border: 1px solid var(--line); border-radius: 9px; }
 .docs-article summary { cursor: pointer; font-weight: 650; }
 .docs-article details h2 { margin-top: 24px; }
