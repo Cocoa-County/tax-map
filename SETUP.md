@@ -4,6 +4,14 @@ This document is for the agent responding to the user's setup request.
 **Install the tools and one skills/MCP plugin, then stop for a CLI restart.
 Do not create a city project during this stage.**
 
+For an existing direct-installer project, read `taxmap-install.json` first.
+Reuse its verified tools checkout and environment instead of downloading
+another checkout or creating another environment. Apply the plugin registration,
+readiness and restart steps below without initializing a project. After restart,
+open that existing project with `project_open`, verify `project_info`, and read
+its PROJECT-PROMPT.md. Do not use the new-project request in section 6 for this
+handoff. An already working plugin connection can be reused without registration.
+
 Supported clients are Codex CLI, Claude Code, and GitHub Copilot CLI. Set up
 only the client the user chose. Keep its ordinary permission protections.
 Do not install or sign into an agent on the user's behalf, change organization

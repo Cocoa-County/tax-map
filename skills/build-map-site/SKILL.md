@@ -18,6 +18,8 @@ description: Generate, preview and publish the static parcel map (search, distri
 3. Read the `warnings`. Excluded parcel/roll fields are not added back for
    calculators; those inputs cannot prefill. Unapproved citations and research
    inventory rows are withheld. Resolve or explain these gaps before publishing.
+   Field discovery covers the whole layer; warnings identify approved or
+   required fields that are genuinely absent.
 4. `site_serve` (default port 8000) and open `http://localhost:8000/`. The
    site needs HTTP; opening the file directly will not work. Call
    `site_serve` with `stop: true` when done.
@@ -28,6 +30,7 @@ description: Generate, preview and publish the static parcel map (search, distri
   and roll amount.
 - Open each calculator: inputs are prefilled with their provenance, the
   result is compared with the roll, and every constant shows a citation.
+  Open Lookup tables and verify approved table citations and page locators.
 - The Districts modal has outlines labelled approximate and notes that
   render.
 - The Sources modal lists the approved resources and their linked inventory

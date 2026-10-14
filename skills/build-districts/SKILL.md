@@ -10,13 +10,17 @@ description: Define assessment districts and benefit zones with membership rules
 | Situation | Rule |
 |---|---|
 | Roll lists the district's parcels | `{roll: roll_id}` |
-| Roll has a zone column or Y flags | zone: `{roll: roll_id, where: {zone: "Kirkwood"}}` or `{where: {streetscape: "Y"}}` |
+| Roll has a zone column or Y flags | zone: `{roll: roll_id, where: {zone: "Kirkwood"}}` or `{roll: roll_id, where: {streetscape: "Y"}}` |
 | Every parcel in the district is in the zone | zone: `{parent: true}` |
 | Defined by a parcel attribute (e.g. city boundary, tax-rate area) | `{attribute: FIELD, values: [..]}` |
 | Defined only by a map | Digitize or import a boundary layer and record it as a lead. Don't guess membership. |
 
 A district with no membership of its own is the union of its zones. Zone ids
 must be unique across the whole project.
+Roll filters require an explicit roll ID; they do not inherit the district's
+roll. An explicit membership object must choose exactly one approach.
+Attribute rules require non-empty `values`; `parent` is valid only for zones.
+Omit membership for a district defined by the union of its zones.
 
 ## Procedure
 

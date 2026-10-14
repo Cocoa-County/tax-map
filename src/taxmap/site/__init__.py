@@ -35,6 +35,9 @@ def _published_fields(project: Project, all_fields: list[str], required: set[str
     warnings = [f"Field {f} is excluded from publication but needed by a formula/search/label/membership; "
                 "it will not be published or prefilled"
                 for f in sorted((required & set(all_fields)) - set(fields))]
+    missing = required | set(site.publish_fields or [])
+    warnings += [f"Field {f} is absent from the parcel layer; it cannot be published or prefilled"
+                 for f in sorted(missing - set(all_fields))]
     return fields, warnings
 
 
@@ -51,7 +54,7 @@ def _build_parcels(project: Project, out: Path, required_fields: set[str]) -> tu
     id_key = config.id_field or ("OBJECTID" if "OBJECTID" in first_props else None)
     all_fields: list[str] = []
     seen_fields: set[str] = set()
-    for feature in features[:1000]:
+    for feature in features:
         for key in feature.get("properties") or {}:
             if key not in seen_fields:
                 seen_fields.add(key)
@@ -246,6 +249,8 @@ def build_site(project: Project, output: str | None = None) -> dict:
         data = dict(compiled[formula.id])
         data["evidence"] = evidence(formula.evidence)
         data["constant_evidence"] = {k: evidence(c.evidence) for k, c in formula.constants.items() if c.evidence}
+        data["lookup_evidence"] = {k: evidence(table.evidence) for k, table in formula.lookups.items()
+                                   if table.evidence}
         for spec in formula.inputs:
             if spec.source and spec.source.roll:
                 roll = project.roll(spec.source.roll)

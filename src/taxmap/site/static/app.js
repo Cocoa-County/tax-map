@@ -689,10 +689,11 @@
       Object.keys(formula.lookups).length ? el("details", {}, el("summary", {}, "Lookup tables"),
         Object.entries(formula.lookups).map(([name, table]) => el("div", {}, el("h3", {}, table.label || name),
           el("table", { class: "grid" }, el("tr", {}, el("th", {}, "Keys"), el("th", {}, "Description"), el("th", { class: "num" }, "Value")),
-            table.entries.map((e) => el("tr", {}, el("td", {}, e.keys), el("td", {}, e.label || ""), el("td", { class: "num" }, numberText(e.value)))))))) : null,
+            table.entries.map((e) => el("tr", {}, el("td", {}, e.keys), el("td", {}, e.label || ""), el("td", { class: "num" }, numberText(e.value))))),
+          evidenceList((formula.lookup_evidence || {})[name])))) : null,
       formula.caveats && formula.caveats.length ? el("div", { class: "warn" }, el("strong", {}, "Caveats"),
         el("ul", {}, formula.caveats.map((c) => el("li", {}, c)))) : null,
-      el("h3", {}, "Sources"), evidenceList(formula.evidence) || el("p", { class: "muted" }, "No citations recorded."),
+      el("h3", {}, "Sources"), evidenceList(formula.evidence) || el("p", { class: "muted" }, "No formula-level citations recorded."),
       tooltip);
     recompute();
     openModal(formula.name, body);

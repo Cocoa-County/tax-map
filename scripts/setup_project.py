@@ -166,13 +166,19 @@ def install(options: dict[str, str], revision: str | None, source: Path | None,
     print(f"\nSetup complete: {root}\nThis is an empty project, not a researched or published map.")
     print(f"Installation details: {root / METADATA}")
     print(f"Your personalized agent request: {prompt_path}")
-    print("\nIn your agent, say: Read PROJECT-PROMPT.md in this project and follow it.")
-    print("If your agent is open elsewhere, give it the absolute request-file path above.")
+    print("\nInstall/sign into your chosen AI CLI separately, then give it this request:")
+    print("Read " + str(tools / "SETUP.md")
+          + " and follow its plugin steps using " + str(root / METADATA)
+          + " for the existing tools checkout and environment. Do not download another checkout, "
+          "create another environment, or initialize another project. Ask before changing configuration. "
+          "When ready, stop and tell me how to restart this CLI.")
+    print("\nAfter restarting, say: Open the existing project at " + str(root)
+          + " with project_open, verify its root with project_info, then read "
+          + str(prompt_path) + " and follow it.")
+    print("If the plugin is already installed and connected, reuse it; do not register independent MCP.")
     print("\nCLI (no activation needed):\n" + command_text([str(cli), "--project", str(root), "validate"]))
-    print("\nMCP command for your client's configuration (connection not yet configured):\n"
-          + command_text([str(mcp), "--project", str(root)]))
-    print("\nInstall/sign into your chosen AI agent separately, then follow the guide:\n"
-          "https://cocoa-county.github.io/tax-map/docs/community.html#prompt")
+    print("\nExisting-project installer handoff guide:\n"
+          "https://cocoa-county.github.io/tax-map/docs/community.html#project-install")
 
 
 def main(argv: list[str] | None = None) -> int:

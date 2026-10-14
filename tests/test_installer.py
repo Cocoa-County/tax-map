@@ -166,8 +166,17 @@ def test_install_initializes_exact_project(tmp_path, monkeypatch, capsys):
     assert not any("[dev]" in part for args in calls for part in args)
     output = capsys.readouterr().out
     assert str(root) in output
-    assert "connection not yet configured" in output
-    assert "Read PROJECT-PROMPT.md in this project and follow it." in output
+    assert str(root / ".taxmap-tools" / "SETUP.md") in output
+    assert str(root / setup.METADATA) in output
+    assert "Do not download another checkout" in output
+    assert "initialize another project" in output
+    assert "After restarting" in output and "project_open" in output and "project_info" in output
+    assert "do not register independent MCP" in output
+    assert "community.html#project-install" in output
+    assert "community.html#prompt" not in output
+    assert "MCP command for your client's configuration" not in output
+    assert setup.command_text([metadata["mcp"], "--project", str(root)]) not in output
+    assert str(root / "PROJECT-PROMPT.md") in output
     assert "## Research and build" not in output
 
 

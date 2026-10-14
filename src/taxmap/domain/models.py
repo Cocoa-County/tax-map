@@ -10,7 +10,7 @@ from typing import Any, Literal
 from urllib.parse import urlsplit
 import re
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class Model(BaseModel):
@@ -175,6 +175,18 @@ class Membership(Model):
     values: list[str] = Field(default_factory=list, description="Accepted attribute values (string compare)")
     parent: bool = Field(False, description="Zone includes every parcel of its district")
 
+    @model_validator(mode="after")
+    def validate_rule(self) -> Membership:
+        if self.where and not self.roll:
+            raise ValueError("Membership.where requires an explicit roll ID; filters do not inherit a roll")
+        if self.values and not self.attribute:
+            raise ValueError("Membership.values requires an attribute")
+        if sum([bool(self.roll), bool(self.attribute), self.parent]) != 1:
+            raise ValueError("Membership requires exactly one of roll, attribute or parent")
+        if self.attribute and not self.values:
+            raise ValueError("Attribute membership requires non-empty values")
+        return self
+
 
 class OutlineOptions(Model):
     gap_m: float = 30
@@ -220,6 +232,12 @@ class District(Model):
     notes: str | None = Field(None, description="Path to a Markdown explainer, relative to model/notes")
     outline: OutlineOptions = Field(default_factory=OutlineOptions)
     evidence: list[Evidence] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_membership(self) -> District:
+        if self.membership and self.membership.parent:
+            raise ValueError("Parent membership is only valid for zones, not districts")
+        return self
 
 
 class Roll(Model):

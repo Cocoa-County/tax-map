@@ -188,9 +188,12 @@ if project setup is cancelled; do not remove managed Python while an
 installed environment depends on it.
 
 Success creates an **empty project**, records installation paths and the
-tools revision in `taxmap-install.json`, and prints exact CLI and MCP
-commands. It also generates `PROJECT-PROMPT.md` and prints its location.
-In your agent, say **"Read PROJECT-PROMPT.md in this project and follow it."**
+tools revision in `taxmap-install.json`, and prints an exact CLI command and
+an existing-project plugin handoff. It also generates `PROJECT-PROMPT.md`.
+Follow the printed setup request using the existing checkout/environment,
+restart the CLI, then open the existing project and read the generated request.
+If a plugin is already connected, reuse it; do not register independent MCP
+or create another project.
 The request includes evidence, privacy, and local-preview safeguards; it is
 editable and is not included in published site notes.
 Setup does not install/sign into an AI agent, register MCP, research
@@ -282,7 +285,8 @@ Before building a public site, review these settings in `taxmap.yaml`:
 
 Model descriptions, roll notes and `model/notes/*.md` are public prose, not
 private resources; review them separately. Build warnings report excluded
-calculator inputs and withheld citations/inventory rows.
+calculator inputs, genuinely absent approved/required fields and withheld
+citations/inventory rows. Approved lookup-table citations appear in calculators.
 
 **Existing projects:** without `publish_resources`, no resource metadata,
 citations or documents are exported. Review and add approved IDs rather than

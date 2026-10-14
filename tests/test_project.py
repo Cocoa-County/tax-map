@@ -3,7 +3,7 @@ import json
 import pytest
 
 from taxmap import assess, gis, index, ingest, model_ops
-from taxmap.domain.models import BillLabel, District, Evidence, Formula, Membership, ParcelLink
+from taxmap.domain.models import BillLabel, District, Evidence, Formula, Lookup, Membership, ParcelLink, Zone
 from taxmap.extract import extract_text, read_pages
 from taxmap.gis.outlines import build_outlines
 from taxmap.project import Project, ProjectError, find_project, init_project
@@ -317,3 +317,88 @@ def test_roll_extra_columns_require_approval(mapped):
     build_site(mapped)
     entry = site_data(mapped, "districts.json")["index"]["001001001"]
     assert entry["r"][roll.id] == {"assessment": "10", "units": "2"}
+
+
+@pytest.mark.parametrize("rule", [
+    {}, {"where": {"streetscape": "Y"}}, {"values": ["City"]},
+    {"attribute": "CITY"}, {"roll": "roll", "attribute": "CITY", "values": ["City"]},
+    {"roll": "roll", "parent": True}, {"parent": True, "values": ["City"]},
+    {"attribute": "CITY", "values": ["City"], "where": {"zone": "A"}},
+])
+def test_incomplete_or_conflicting_memberships_rejected(rule):
+    with pytest.raises(ValueError):
+        Membership.model_validate(rule)
+
+
+def test_parent_membership_only_valid_for_zones():
+    assert Zone(id="all", name="All", membership={"parent": True}).membership.parent
+    with pytest.raises(ValueError, match="only valid for zones"):
+        District(id="invalid", name="Invalid", membership={"parent": True})
+    assert District(id="union", name="Union").membership is None
+
+
+def test_explicit_zone_roll_filter_resolves_members(mapped):
+    roll = mapped.rolls()[0]
+    mapped.roll_csv_path(roll).write_text(
+        "apn,assessment,streetscape\n001001001,10,Y\n001001002,20,\n001001003,30,Y\n")
+    district = mapped.districts()[0]
+    district.zones = [Zone(id="streetscape", name="Streetscape",
+                          membership=Membership(roll=roll.id, where={"streetscape": "Y"}))]
+    mapped.save_entity("district", district)
+    assert validate_project(mapped)["ok"]
+    assert assess.AssessmentContext(mapped).members["streetscape"] == {"001001001", "001001003"}
+    with pytest.raises(ProjectError, match="requires an explicit roll"):
+        model_ops.upsert_entity(mapped, "district", {
+            "id": "broken", "name": "Broken",
+            "zones": [{"id": "broken-zone", "name": "Broken", "membership": {"where": {"streetscape": "Y"}}}],
+        })
+    assert not (mapped.model_dir / "districts" / "broken.yaml").exists()
+    (mapped.model_dir / "districts" / "broken.yaml").write_text(
+        "id: broken\nname: Broken\nmembership:\n  where:\n    streetscape: Y\n")
+    report = validate_project(mapped)
+    assert not report["ok"]
+    assert any("requires an explicit roll" in error for error in report["errors"])
+
+
+def test_lookup_citations_are_approved_exported_and_withheld(mapped):
+    public = ingest.add_note(mapped, "Public schedule", "Approved lookup schedule")
+    private = ingest.add_note(mapped, "Internal schedule", "PRIVATE SCHEDULE")
+    formula = mapped.formulas()[0]
+    formula.lookups = {"schedule": Lookup(entries=[{"keys": [1], "value": 10}],
+                                         evidence=[Evidence(resource=public.id, page=12, locator="Appendix A"),
+                                                   Evidence(resource=private.id, quote="PRIVATE QUOTE")])}
+    mapped.save_entity("formula", formula)
+    result = build_site(mapped)
+    assert site_data(mapped, "formulas.json")["formulas"][0]["lookup_evidence"] == {"schedule": []}
+    assert any(public.id in w and private.id in w for w in result["warnings"])
+    mapped.config.site.publish_resources = [public.id]
+    result = build_site(mapped)
+    assert site_data(mapped, "formulas.json")["formulas"][0]["lookup_evidence"] == {
+        "schedule": [{"resource": public.id, "page": 12, "locator": "Appendix A"}]}
+    assert any(private.id in w and "withheld" in w for w in result["warnings"])
+    assert "PRIVATE QUOTE" not in json.dumps(site_data(mapped, "formulas.json"))
+    assert len(mapped.formulas()[0].lookups["schedule"].evidence) == 2
+
+
+def test_approved_fields_after_parcel_1000_are_exported_and_missing_fields_warn(mapped):
+    path = mapped.layer_path("parcels")
+    template = json.loads(path.read_text(encoding="utf-8"))["features"][0]
+    features = [dict(template, properties={"APN": str(i)}) for i in range(1001)]
+    features[-1]["properties"]["SQFT"] = 2500
+    features[-1]["properties"]["PRIVATE_LATE_FIELD"] = "SECRET"
+    path.write_text(json.dumps({"type": "FeatureCollection", "features": features}), encoding="utf-8")
+    mapped.config.site.publish_fields = ["APN", "SQFT", "ABSENT_APPROVED"]
+    mapped.config.layers["parcels"].address_field = "ABSENT_ADDRESS"
+    mapped.config.layers["parcels"].label_fields = ["ABSENT_LABEL"]
+    formula = mapped.formulas()[0]
+    formula.inputs[0].source.parcel = ["SQFT", "ABSENT_INPUT"]
+    mapped.save_entity("formula", formula)
+    result = build_site(mapped)
+    assert site_data(mapped, "manifest.json")["fields"] == ["APN", "SQFT"]
+    attributes = [row for p in (mapped.root / "site" / "data" / "attributes").glob("*.json")
+                  for row in json.loads(p.read_text(encoding="utf-8")).values()]
+    assert next(row for row in attributes if row["APN"] == "1000")["SQFT"] == 2500
+    assert all("PRIVATE_LATE_FIELD" not in row for row in attributes)
+    for field in ["ABSENT_APPROVED", "ABSENT_ADDRESS", "ABSENT_LABEL", "ABSENT_INPUT"]:
+        assert any(field in w and "absent from the parcel layer" in w for w in result["warnings"])
+    assert not any("SQFT" in w for w in result["warnings"])
