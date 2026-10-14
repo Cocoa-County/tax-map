@@ -31,7 +31,7 @@ For each variable, choose an input `source`:
 | Parcel attribute (use code, units, area) | `{parcel: FIELD}` or `{parcel: [FIELD1, FIELD2]}` (first non-empty) |
 | Roll column (class, units, zone flag) | `{roll: roll_id, column: name}` |
 | Zone membership indicator | `{member: zone_id}` (gives 1 or 0) |
-| Not in any data (frontage, private street) | no source, with `default` and a `caveat` |
+| Not in any data (frontage, private street) | no source and a `caveat`; use a `default` only if supported by the method |
 
 Use `layer_info` on the parcel layer to find fields and fill rates. When a
 field is only an approximation (for example current living area versus

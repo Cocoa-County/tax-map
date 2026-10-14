@@ -31,6 +31,8 @@ def test_plugin_bundle(tmp_path):
 
     manifest = read_json(plugin / "plugin.json")
     assert manifest == read_json(ROOT / "plugin.json")
+    from taxmap import __version__
+    assert manifest["version"] == __version__
     assert manifest["$schema"].endswith("/1.0.0/plugin.schema.json")
     claude = read_json(plugin / ".claude-plugin" / "plugin.json")
     assert claude["name"] == manifest["name"] == "taxmap"
@@ -45,6 +47,7 @@ def test_plugin_bundle(tmp_path):
     original_skills = {p.name for p in (ROOT / "skills").iterdir()}
     assert {p.name for p in (plugin / "skills").iterdir()} == original_skills
     assert "taxmap-uninstall" in original_skills
+    assert "build-taxmap-app" in original_skills
     for name in original_skills:
         for original in (ROOT / "skills" / name).rglob("*"):
             if original.is_file():
@@ -61,7 +64,7 @@ def test_plugin_bundle(tmp_path):
     assert context["tools_root"] == str(ROOT)
     assert context["bundle_root"] == str(output)
     assert context["tools_revision"] == "a" * 40
-    for name in ["taxmap-project-setup", "taxmap-uninstall"]:
+    for name in ["build-taxmap-app", "taxmap-project-setup", "taxmap-uninstall"]:
         text = (plugin / "skills" / name / "TAXMAP-TOOLS.md").read_text(encoding="utf-8")
         assert json.loads(text.split("```json\n")[1].split("```")[0]) == context
     marketplace = read_json(output / ".claude-plugin" / "marketplace.json")
@@ -137,6 +140,20 @@ def test_plugin_cli_reports_failure(tmp_path):
     assert "Plugin built:" not in result.stdout
 
 
+def test_plugin_cli_activation_handoff(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(sys, "argv", [
+        "build_plugin.py", "--output", str(tmp_path / "bundle"),
+        "--mcp", sys.executable, "--revision", "revision",
+    ])
+    assert builder.main() == 0
+    output = capsys.readouterr().out
+    assert "Not registered yet" in output
+    assert "install and activate" in output
+    assert "verify live skills and MCP tools" in output
+    assert "new session or restart only if required" in output
+    assert "restart after installation" not in output
+
+
 def test_bundled_mcp_without_project(tmp_path, monkeypatch):
     pytest.importorskip("mcp")
     from mcp import ClientSession, StdioServerParameters
@@ -153,12 +170,14 @@ def test_bundled_mcp_without_project(tmp_path, monkeypatch):
     monkeypatch.chdir(unrelated)
 
     async def connect():
-        params = StdioServerParameters(command=server["command"], args=server["args"], env=server["env"])
+        params = StdioServerParameters(command=server["command"], args=server["args"],
+                                       env=server["env"] | {"PYTHONPATH": str(ROOT / "src")})
         async with stdio_client(params) as (read, write):
             async with ClientSession(read, write) as session:
                 await session.initialize()
                 tools = {tool.name for tool in (await session.list_tools()).tools}
-                assert {"project_init", "project_open", "project_info"} <= tools
+                assert {"project_init", "project_open", "project_info", "app_start", "app_review",
+                        "app_check", "app_preview"} <= tools
                 assert not list(unrelated.iterdir())
 
     asyncio.run(connect())

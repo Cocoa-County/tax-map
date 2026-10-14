@@ -11,10 +11,12 @@
 - [App user guide](docs/users.html): parcel search, district cards, calculators,
   sources, official amounts versus estimates, and map limitations.
 - [Build with an AI agent](docs/community.html): install/sign into one CLI,
-  ask it to download the repo and follow SETUP.md, restart, then ask it to
-  create a project. Optional direct installers, project review, maintenance,
-  and publication approval.
-- [Developer guide](docs/developers.html): setup, models, tests, and deployment.
+  follow SETUP.md, activate and verify live tools, then say
+  "Build a taxmap app for Martinez, CA."
+  Safe defaults, research, one exact content review and a checked local preview.
+  Optional setup walkthrough, direct installer and separate deployment approval.
+- [Developer guide](docs/developers.html): one-request lifecycle, manual CLI/files,
+  models, tests, reviewed exports and deployment.
 - [Agent playbook](docs/agents.txt): plain-text workflow and evidence contract.
 - [Agent HTML guide](docs/agents.html): browsable tool-oriented instructions.
 
@@ -22,17 +24,25 @@
 - [Repository](https://github.com/Cocoa-County/tax-map)
 - [Agent instructions](https://github.com/Cocoa-County/tax-map/blob/main/AGENTS.md)
 - [CLI tools bootstrap](https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md):
-  one persistent multi-skill plugin with projectless MCP; stop for restart before
-  city project creation.
+  one persistent multi-skill plugin with projectless MCP; verify live skills/tools
+  after client-supported activation. No blanket restart; current Codex requires
+  a new session after installation. Tools-only setup does not create a city project.
 - [Disconnect tools](https://github.com/Cocoa-County/tax-map/blob/main/UNINSTALL.md):
   uninstall-skill fallback, native plugin enable/disable/removal, legacy cleanup,
   and project/data preservation.
 - [Plugin source](https://github.com/Cocoa-County/tax-map/blob/main/plugin.json):
   shared skill bundle; setup generates local machine-specific MCP and client adapters.
 - [Skills](https://github.com/Cocoa-County/tax-map/tree/main/skills)
+- [One-request app skill](https://github.com/Cocoa-County/tax-map/blob/main/skills/build-taxmap-app/SKILL.md):
+  optional guided generation; individual skills and manual tools remain supported.
 - [Typed models](https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/domain/models.py)
 - [MCP server](https://github.com/Cocoa-County/tax-map/blob/main/src/taxmap/mcp/server.py)
 - [Concord example](concord/): unofficial FY 2026-27 research map.
 
 Use live MCP schemas for exact parameters. The county bill and adopted roll
 remain authoritative; model coverage and calculator estimates are limited.
+Integrity is not financial reconciliation. Partial previews preserve source
+discrepancies and disclose gaps. Guided app.yaml stores progress/approval;
+app_preview returns the checked export under .taxmap/app-previews, while manual
+builds default to site/. Publish only a separately approved export, never the
+whole cache. Source edits alone do not update an installed runtime/plugin.

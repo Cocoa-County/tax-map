@@ -17,6 +17,7 @@ try:  # mcp >= 2
 except ImportError:  # mcp 1.x
     from mcp.server.fastmcp import FastMCP, Image
 
+from taxmap import app as guided_app
 from taxmap import assess, extract, index, ingest, model_ops
 from taxmap.domain.models import ArcGISSource, LayerConfig
 from taxmap.gis import arcgis, import_layer
@@ -26,6 +27,12 @@ from taxmap.validate import validate_project
 INSTRUCTIONS = """\
 taxmap turns a folder of public records (documents, web pages, chats, images, GIS data)
 into a cited model of tax/assessment districts and a static transparency map.
+For a one-request app, load build-taxmap-app: app_start -> research/model using
+the tools below -> app_status/app_check -> app_review -> explicit user approval
+via app_review(approve=digest) -> app_preview. Derive optional setup defaults;
+continue automatically after initialization. Record adoption evidence and gaps.
+Never call an LLM from the server or infer content approval. Partial previews
+must disclose gaps and preserve source amounts. No automatic deployment.
 Workflow: project_open/project_init -> resource_add_* -> extract_text/resource_search ->
 source_upsert (screen) -> roll_import -> arcgis_download_layer/layer_import ->
 district_upsert -> formula_upsert -> formula_validate -> district_outline_build ->
@@ -34,7 +41,7 @@ Load the skills in the repo's skills/ folder for detailed procedures.
 """
 
 mcp = FastMCP("taxmap", instructions=INSTRUCTIONS)
-_state: dict[str, Any] = {"project": None, "server": None}
+_state: dict[str, Any] = {"project": None, "server": None, "app_preview": guided_app.Preview()}
 
 
 def _project() -> Project:
@@ -43,6 +50,8 @@ def _project() -> Project:
         if found is None:
             raise ProjectError("No project open. Call project_open(path) or project_init(...)")
         _state["project"] = Project(found)
+    else:
+        _state["project"] = Project(_state["project"].root)
     return _state["project"]
 
 
@@ -51,6 +60,54 @@ def _dump(item):
 
 
 # ------------------------------------------------------------------ project
+
+@mcp.tool()
+def app_start(jurisdiction: str, state: str | None = None, path: str | None = None,
+              name: str | None = None, title: str | None = None, county: str | None = None,
+              fiscal_year: str | None = None, focus: str | None = None,
+              starting_resources: list[str] | None = None) -> dict:
+    """Start/resume a guided app with safe defaults; continue research, not an optional-settings questionnaire.
+    Supply city and state separately. Never overwrite a conflicting or unknown nonempty target."""
+    project, result = guided_app.start(
+        jurisdiction, state=state, path=path, name=name, title=title, county=county,
+        fiscal_year=fiscal_year, focus=focus, starting_resources=starting_resources,
+    )
+    _state["project"] = project
+    return result
+
+
+@mcp.tool()
+def app_status(progress: dict | None = None) -> dict:
+    """Recompute guided readiness and approval; optionally merge scope, coverage (partial|complete),
+    unmodeled, issues (public caveats), year_evidence, artifacts into durable app.yaml.
+    Cite verified adoption for the selected year; artifact paths must exist within the project."""
+    return guided_app.status(_project(), progress)
+
+
+@mcp.tool()
+def app_check() -> dict:
+    """Aggregate integrity, roll reconciliation, GIS joins, formula comparisons and current export approval.
+    Integrity success alone is not readiness. Writes derived/app-check.json and app.yaml handoff."""
+    return guided_app.status(_project())
+
+
+@mcp.tool()
+def app_review(site: dict | None = None, approve: str | None = None) -> dict:
+    """Prepare a private exact export review; site shallow-merges SiteConfig settings.
+    Inspect public prose under derived/app-review and present fields, resource IDs and notes to the user.
+    Only after explicit user approval call again with approve=<digest>, without site.
+    Changed content needs new review. Approval allows localhost preview only, not upload/deployment."""
+    return guided_app.review(_project(), site, approve)
+
+
+@mcp.tool()
+def app_preview(port: int = 0, stop: bool = False) -> dict:
+    """Build approved guided content and HTTP-check a localhost-only preview; 0 selects an available port.
+    Reuses this project's preview; refuses to interrupt another. stop=True stops only this project's
+    guided preview. MCP shutdown ends it. Return includes standalone restart/stop instructions."""
+    preview = _state["app_preview"]
+    return preview.stop(_project()) if stop else preview.start(_project(), port)
+
 
 @mcp.tool()
 def project_open(path: str) -> dict:

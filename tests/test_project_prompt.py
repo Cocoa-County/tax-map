@@ -39,6 +39,9 @@ def test_default_prompt_context_and_fiscal_year(tmp_path, year):
     assert "localhost-only" in request
     assert "excluding owner names" in request
     assert "Reuse the live plugin-managed MCP connection" in request
+    assert "supported activation and verify live readiness" in request
+    assert "continue in-session when ready" in request
+    assert "If a new session/restart is required" in request
     assert "Call project_open" in request and "root with project_info" in request
     assert "Do not register a separate" in request
     assert "Launch taxmap-mcp with --project" not in request
@@ -49,6 +52,8 @@ def test_default_prompt_context_and_fiscal_year(tmp_path, year):
     assert "explain missing citations in the preview handoff" in request
     assert "completing the build is not a reason to stop it" in request
     assert "finish reviewing or request shutdown" in request
+    assert "one consolidated review" in request
+    assert "app_check" in request and "app_preview" in request
     assert "$context" not in request and "$fiscal_year_instruction" not in request
     assert not (root / "model" / "notes" / PROMPT_FILE).exists()
 
@@ -115,7 +120,10 @@ def test_mcp_initialization_generates_same_context(tmp_path):
 
     async def initialize():
         root = tmp_path / "mcp"
-        parameters = StdioServerParameters(command=sys.executable, args=["-m", "taxmap.mcp.server"])
+        parameters = StdioServerParameters(
+            command=sys.executable, args=["-m", "taxmap.mcp.server"],
+            env={"PYTHONPATH": str(Path(__file__).resolve().parents[1] / "src")},
+        )
         async with stdio_client(parameters) as (read, write):
             async with ClientSession(read, write) as session:
                 await session.initialize()

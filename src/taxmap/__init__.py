@@ -1,3 +1,3 @@
 """taxmap: agent-driven platform for building tax and special-assessment maps."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

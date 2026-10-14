@@ -171,8 +171,9 @@ def install(options: dict[str, str], revision: str | None, source: Path | None,
           + " and follow its plugin steps using " + str(root / METADATA)
           + " for the existing tools checkout and environment. Do not download another checkout, "
           "create another environment, or initialize another project. Ask before changing configuration. "
-          "When ready, stop and tell me how to restart this CLI.")
-    print("\nAfter restarting, say: Open the existing project at " + str(root)
+          "Use this client's supported activation and verify live skills and MCP tools. "
+          "Start a new session or restart only if required; save exact resume steps.")
+    print("\nOnce live tools are ready, say: Open the existing project at " + str(root)
           + " with project_open, verify its root with project_info, then read "
           + str(prompt_path) + " and follow it.")
     print("If the plugin is already installed and connected, reuse it; do not register independent MCP.")

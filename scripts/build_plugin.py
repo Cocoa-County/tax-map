@@ -69,7 +69,7 @@ def build_plugin(output: Path, mcp_executable: Path, revision: str) -> Path:
         "The plugin manager owns the skills and MCP entry; do not register them separately.\n\n"
         "```json\n" + json.dumps(context, indent=2) + "\n```\n"
     )
-    for name in ["taxmap-project-setup", "taxmap-uninstall"]:
+    for name in ["build-taxmap-app", "taxmap-project-setup", "taxmap-uninstall"]:
         (plugin / "skills" / name / "TAXMAP-TOOLS.md").write_text(supporting, encoding="utf-8")
 
     entry = {"name": "taxmap", "source": "./taxmap", "version": manifest["version"],
@@ -100,7 +100,8 @@ def main() -> int:
     except (ValueError, OSError) as error:
         parser.exit(1, f"Plugin build failed: {error}\n")
     print(f"Plugin built: {plugin}\nMarketplace: {plugin.parent}\n"
-          "Not registered yet. Follow SETUP.md for your CLI; restart after installation.")
+          "Not registered yet. Follow SETUP.md to install and activate for your CLI, "
+          "then verify live skills and MCP tools. Start a new session or restart only if required.")
     return 0
 
 

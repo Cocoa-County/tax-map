@@ -33,8 +33,11 @@ statuses:
 3. **Verify** only when all of these hold:
    - It is the **final** report for the fiscal year (not preliminary). Check
      the adoption resolution or minutes.
-   - The totals in the report agree with each other (rate table × units ≈
-     zone totals; roll sum = stated total).
+   - Check internal reconciliation (rate table × units versus zone totals;
+     roll sum versus stated total). Record unresolved differences explicitly.
+     A verified adopted document can contain a discrepancy: `verified` means
+     authority/finality was confirmed, not that every financial check passed.
+     Never change printed values or label failed reconciliation as passing.
    - It is linked to a stored resource or stable URL.
 4. **Reject** preliminary versions once the final exists, and note
    `superseded by <id>`.

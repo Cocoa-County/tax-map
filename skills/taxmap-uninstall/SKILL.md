@@ -19,6 +19,6 @@ of disconnecting the agent.
 Use native plugin management. Do not manually delete plugin caches, globally
 remove similarly named skills, or stop processes by name. Finish independent
 legacy cleanup and save the handoff before disabling/uninstalling this plugin:
-that action removes this skill from future sessions. Tell the user how to
-restart and verify the result. If already disabled, use the external
+that action can unload this skill. Apply the client's supported refresh/session
+step and verify the live result; restart only when needed. If already disabled, use the external
 UNINSTALL.md or the plugin manager instead of claiming this skill is loaded.

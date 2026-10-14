@@ -32,7 +32,14 @@ This project is already initialized. Use the absolute project_path above and
 inspect its taxmap.yaml. Do not create another project, run init again,
 overwrite existing work, modify Concord, or change taxmap software to fit data.
 If project settings have changed since this request was generated, explain
-the difference and confirm the intended scope before proceeding.
+the difference. In a guided app, use current config and app.yaml; ask only
+about a conflicting identity, explicitly requested year, or genuine ambiguity.
+Do not ask the user to reconfirm ordinary derived defaults.
+
+For a build request with the current plugin, load build-taxmap-app and use
+app_start to resume this initialized path without reinitializing. Continue
+automatically through research and preview; do not require another message.
+An explicit request to walk through setup remains a separate guided option.
 
 Inspect this operating system, current folder, permissions, installed tools,
 and your available web research and PDF/image-reading capabilities. Do not
@@ -62,9 +69,10 @@ Call project_open with the absolute project_path above, then confirm the
 root with project_info before model writes. Configuration alone is not a
 working connection, and the CLI does not expose every MCP operation.
 If plugin tools are unavailable, follow SETUP.md from the verified tools
-checkout with permission, preserve this initialized project, and stop for
-the user to restart the CLI. In the fresh session, reopen this project;
-do not create another one. Save exact reconnect/resume instructions.
+checkout with permission and preserve this initialized project. Use the client's
+supported activation and verify live readiness; continue in-session when ready.
+If a new session/restart is required, save exact reconnect/resume instructions
+and reopen this project afterward; do not create another one.
 
 ## Research and build
 
@@ -87,7 +95,11 @@ links and label/code pairs only where evidence supports them.
 
 Run project validation, inspect errors and build warnings, and resolve or
 explicitly report problems. A successful build is not proof of accurate
-sources or complete research. Use an explicit public-field allow-list
+sources or complete research. In a guided app, record adoption evidence and
+scope/gaps through app_status, then use app_check for aggregate roll totals,
+joins and formula comparisons. Integrity success alone is not reconciliation.
+Preserve source discrepancies in a useful, clearly labeled partial preview.
+Use an explicit public-field allow-list
 excluding owner names and unnecessary personal data. Review document
 redistribution rights and obtain approval for specific resource IDs in
 site.publish_resources before building even a local preview with metadata,
@@ -101,6 +113,13 @@ Approve extra roll columns with site.publish_roll_fields only when needed.
 Parcel APNs and roll assessment amounts are public map requirements.
 Review model/notes pages and all model prose separately: they are public.
 Keep this request and its local paths out of published site notes.
+
+Use app_review for one consolidated review of the exact export, including
+resource IDs, fields, extra roll columns, public notes and model prose.
+Inspect its private review artifacts before presenting the proposal. Only
+after user approval record the digest with app_review, then use app_preview.
+Unchanged content can resume without another content questionnaire; changed
+content requires review. Do not use low-level tools to bypass guided approval.
 
 Build the site and start a localhost-only preview on an available port.
 Verify an HTTP response and, if browser tools are available, representative
@@ -118,6 +137,10 @@ unresolved gaps. Explain how to stop and reopen the preview; warn if its
 lifetime depends on this agent session. Leave it available for my review;
 completing the build is not a reason to stop it. Stop the preview when I
 finish reviewing or request shutdown.
+
+Guided app.yaml holds durable intent, research progress, approval, last
+readiness report and last preview restart instructions. The recorded URL is
+not proof the server is still running. Recompute status from current files.
 
 Do not commit, push, create a public repository, upload files, or deploy
 without my separate explicit approval. Ask questions when a genuine

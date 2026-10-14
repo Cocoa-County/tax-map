@@ -7,6 +7,13 @@ description: Generate, preview and publish the static parcel map (search, distri
 
 ## Build
 
+For a guided app with app.yaml, use `app_check`, `app_review` and `app_preview`
+from `build-taxmap-app` instead of separate approval/build/serve calls. Review
+the exact exported model prose as well as fields/resources, approve the digest
+only after user approval, and use the returned verified URL and restart command.
+Guided outputs are under `.taxmap/app-previews`; content approval is not deployment
+permission. The low-level steps below remain available for expert projects.
+
 1. `project_validate`: fix errors first.
    Before building even a local preview, review the proposed site content
    with the user: parcel fields, extra roll columns, resource metadata,
@@ -29,7 +36,7 @@ description: Generate, preview and publish the static parcel map (search, distri
    Field discovery covers the whole layer; warnings identify approved or
    required fields that are genuinely absent.
 4. `site_serve` (default port 8000) and open `http://localhost:8000/`. The
-   site needs HTTP; opening the file directly will not work. Call
+   site needs HTTP; opening the file directly will not work.
    Leave the preview available for the user's review; completing the build
    is not a reason to stop it. Call `site_serve` with `stop: true` when the
    user finishes reviewing or requests shutdown. Explain that ending the
@@ -52,8 +59,14 @@ description: Generate, preview and publish the static parcel map (search, distri
 
 ## Publish
 
-The site is static. Commit `site/` or build it in CI and deploy to GitHub
-Pages, Netlify or any web server. The Pages workflow template is
+The site is static. For manual builds, commit `site/` or build it in CI and
+deploy to GitHub Pages, Netlify or any web server, only after separate approval.
+For guided apps, use the exact checked export directory returned by
+`app_preview`, including its generated coverage page and disclaimer. Copy
+only that approved export into the deployment artifact, never the entire
+`.taxmap` cache. A low-level rebuild does not enforce app.yaml approval or add
+the guided coverage page; do not substitute one without equivalent safeguards.
+The Pages workflow template is
 `templates/github-pages.yml` in the tools checkout, not the city project or
 plugin cache. For an installed skill, read `../../taxmap-plugin.json` relative
 to this SKILL.md and resolve `tools_root`, then read the template there.

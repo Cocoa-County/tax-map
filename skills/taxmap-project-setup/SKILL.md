@@ -1,6 +1,6 @@
 ---
 name: taxmap-project-setup
-description: Create or open a taxmap project folder and configure jurisdiction, fiscal year, APN format and the parcel layer. Use when starting a new tax map, assessment-district or special-tax transparency project, or when project_open fails.
+description: Walk through taxmap project settings or open/configure an existing project when explicitly requested. Use for a setup walkthrough or project_open failure; for "build an app" intent use build-taxmap-app to derive defaults and continue automatically.
 ---
 
 # Set up a taxmap project
@@ -11,12 +11,16 @@ Markdown and GeoJSON, so commits and diffs show exactly what changed.
 
 ## Steps
 
+For a request to research or build an app, load `build-taxmap-app` instead of
+this questionnaire. Preserve an explicit request for a guided walkthrough.
+
 1. **Check the tools.** If an installed `TAXMAP-TOOLS.md` exists beside this
    skill, read its tools context and bundled `../../AGENTS.md`. Otherwise
    use the known repo tools location and its AGENTS.md. Verify live `project_init`/`project_open`
    tools; copying skills or saving configuration is not proof of connection.
-   If missing, follow the repo's SETUP.md and stop for the user to restart
-   their CLI before creating a project.
+   If missing, follow the repo's SETUP.md with permission, use client-supported
+   activation and verify live readiness before creating a project. Continue
+   in-session when ready; save resume steps if a new session/restart is required.
 2. **Walk through the choices.** Ask one question at a time: jurisdiction
    and state, project name (lowercase id), exact location, then optional
    county/title/fiscal year, research focus, and starting document paths or
@@ -67,6 +71,7 @@ Markdown and GeoJSON, so commits and diffs show exactly what changed.
 ```text
 taxmap.yaml            project config
 PROJECT-PROMPT.md      generated local research request (not a published note)
+app.yaml              guided app intent, progress, approvals and handoff (when used)
 resources.yaml         registry of documents, web pages, chats, images, data
 resources/<kind>/      stored resource files
 derived/<id>/          extracted text, tables, page images (rebuildable)

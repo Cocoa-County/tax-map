@@ -96,7 +96,9 @@ or uncertain files. In particular, the optional direct installer stores the
 environment inside a city project: **never delete that project root**.
 
 Stop only identified taxmap-owned processes with approval and specific process
-ids, or use the live `site_serve(stop=true)` tool before disconnecting it.
+ids, or use `app_preview(stop=true)` for a guided preview or
+`site_serve(stop=true)` for a low-level preview before disconnecting it. Open
+the owning project first; the guided tool will not stop another project's server.
 Keep a removal record outside any approved cleanup targets before deletion.
 Never recursively delete a repository/workspace root, user home, shared
 configuration root, or a directory chosen through a wildcard. Only remove
@@ -107,18 +109,21 @@ Leave shared Python, uv, Git, the AI CLI, authentication, shell profiles, and
 published sites alone. Do not revoke accounts, uninstall shared runtimes,
 commit, push, or change deployments.
 
-## 5. Verify and restart
+## 5. Apply the client change and verify
 
 Record what changed, what was preserved, blockers, and exact re-enable or
 reinstall instructions. Inspect the client's plugin/server lists and settings.
 Remove the dedicated marketplace only after the user approves and you verify
 no other installed plugin uses it; never use a force option to remove others.
 
-Tell the user to exit and restart the selected CLI. In the new session, verify
-that the disabled/uninstalled bundle's skills and MCP tools are absent (or
-present again after re-enable). Verify identified city project paths remain.
-If you cannot inspect a fresh session, say that the final live check remains
-for the user; do not claim it happened.
+Use the client's supported refresh/session mechanism; check its installed-version
+help, since removal behavior can differ from installation. Restart only when
+required or the supported refresh fails. For reinstallation, use SETUP.md's
+client-specific activation steps, including Codex's required new session.
+Verify that the disabled/uninstalled bundle's skills and MCP tools are absent
+from the live session (or present again after re-enable), not merely changed on
+disk. Verify identified city project paths remain. If live verification is
+unavailable, record it as pending and give exact steps; do not claim it happened.
 
 For reinstallation, follow [SETUP.md](SETUP.md), reuse the intended tools
 environment where healthy, and open existing projects rather than creating

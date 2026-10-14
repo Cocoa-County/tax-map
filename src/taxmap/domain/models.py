@@ -112,6 +112,53 @@ class ProjectConfig(Model):
     version: int = 1
 
 
+# --------------------------------------------------------------------------- guided app lifecycle
+
+class AppProgress(Model):
+    scope: str = "Initial inventory of supported adopted assessments"
+    coverage: Literal["partial", "complete"] = "partial"
+    unmodeled: list[str] = Field(default_factory=list)
+    issues: list[str] = Field(default_factory=list, description="Public, reviewed research caveats")
+    year_evidence: list[Evidence] = Field(default_factory=list, description="Evidence of adoption for the selected year")
+    artifacts: list[str] = Field(default_factory=list, description="Project-relative research handoff paths")
+
+
+class AppReadiness(Model):
+    status: Literal["blocked", "needs_approval", "ready", "ready_with_caveats"]
+    integrity: dict[str, Any]
+    blockers: list[str] = Field(default_factory=list)
+    caveats: list[str] = Field(default_factory=list)
+    rolls: list[dict[str, Any]] = Field(default_factory=list)
+    formulas: list[dict[str, Any]] = Field(default_factory=list)
+    coverage: dict[str, Any] = Field(default_factory=dict)
+
+
+class AppReview(Model):
+    digest: str
+    site: SiteConfig
+    manifest: dict[str, Any]
+
+
+class AppPreviewHandoff(Model):
+    url: str
+    site: str
+    restart_command: str
+    stop: str
+    lifetime: str
+
+
+class AppState(Model):
+    version: Literal[1] = 1
+    jurisdiction: Jurisdiction
+    name: str
+    requested_fiscal_year: str | None = None
+    progress: AppProgress = Field(default_factory=AppProgress)
+    review: AppReview | None = None
+    approved_digest: str | None = None
+    last_report: AppReadiness | None = None
+    last_preview: AppPreviewHandoff | None = Field(None, description="Last handoff, not proof a server is still running")
+
+
 # --------------------------------------------------------------------------- resources
 
 ResourceKind = Literal["document", "web", "image", "chat", "data", "note", "other"]

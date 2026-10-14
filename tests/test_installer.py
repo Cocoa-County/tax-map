@@ -170,7 +170,11 @@ def test_install_initializes_exact_project(tmp_path, monkeypatch, capsys):
     assert str(root / setup.METADATA) in output
     assert "Do not download another checkout" in output
     assert "initialize another project" in output
-    assert "After restarting" in output and "project_open" in output and "project_info" in output
+    assert "verify live skills and MCP tools" in output
+    assert "new session or restart only if required" in output
+    assert "Once live tools are ready" in output
+    assert "After restarting" not in output
+    assert "project_open" in output and "project_info" in output
     assert "do not register independent MCP" in output
     assert "community.html#project-install" in output
     assert "community.html#prompt" not in output

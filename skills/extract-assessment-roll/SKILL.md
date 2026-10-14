@@ -34,17 +34,21 @@ the billed amount per parcel. Formulas are only checked against it.
    `stated_count`, `columns` (a description of each column) and `evidence`
    (page range).
 5. **Prove completeness.**
-   - `roll_summary` must show `checks` all `ok`, with no duplicates and no
-     unparsed amounts. If the total is off, find the missing or misread rows
-     page by page (compare page subtotals when the report prints them).
+   - Inspect every `roll_summary` check and resolve duplicates and unparsed
+     amounts. If the total is off, look for missing or misread rows page by
+     page (compare printed page subtotals). If verified transcription still
+     differs from the printed total, preserve both values and disclose the
+     failed check; do not claim full reconciliation or adjust charges.
+     Guided previews can retain this supported scope as `ready_with_caveats`.
    - `roll_join_parcels` should match about 100%. Unmatched APNs usually
      mean a typo, a retired or split parcel, or a different APN format.
      Explain any that remain in the roll `notes`.
 
 ## Rules
 
-- Never fabricate or interpolate rows. If a page is unreadable, stop and
-  report it.
+- Never fabricate or interpolate rows. If a page is unreadable, stop extracting
+  that roll and record the gap; do not present a truncated roll as complete.
+  Continue other supported scope, asking only if essential progress is blocked.
 - Parcels levied $0 that are not printed in the roll are not members. Say
   so in the district note.
 - Re-run the checks after every correction.

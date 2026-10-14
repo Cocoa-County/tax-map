@@ -9,8 +9,8 @@ using the **taxmap MCP server** and **agent skills** turns them into:
 
 - **A cited model:** districts, benefit zones, rates, lookup schedules and
   formulas. Every number points to the page it came from.
-- **Verified rolls:** per-parcel amounts, checked against the document's
-  stated totals and joined to parcels.
+- **Checked rolls:** per-parcel amounts compared with the document's stated
+  totals and joined to parcels, with unresolved discrepancies disclosed.
 - **GIS layers:** parcels and approximate district outlines.
 - **A static map site:** parcel search, per-parcel districts and amounts,
   calculator modals with typeset equations, live numeric substitutions,
@@ -82,13 +82,14 @@ checks, while the agent reads, decides and writes.
 | Concept | Where it lives |
 |---|---|
 | Project | A folder with `taxmap.yaml`; plain files are the source of truth |
+| Guided app state | Optional `app.yaml`: intent, progress, approval and handoff |
 | Resource | Any input: document, web page, chat, image, data, note (`resources.yaml`) |
 | Source | Research-inventory row: lead → screened → verified (`model/sources.csv`) |
 | District / zone | Membership rule plus evidence (`model/districts/*.yaml`) |
 | Roll | Authoritative per-parcel amounts (`model/rolls/*.csv`) |
 | Formula | Inputs, constants, lookups, terms and an expression (`model/formulas/*.yaml`) |
 | Evidence | `{resource, page, locator, quote}` attached to any model value |
-| Site | Static Leaflet app in `site/` |
+| Site | Static Leaflet app: manual builds in `site/`; guided preview path returned by `app_preview` |
 
 ## Install
 
@@ -100,21 +101,36 @@ this into the agent:
 > Download https://github.com/Cocoa-County/tax-map into a separate local folder
 > and follow SETUP.md at the repository root to install taxmap and set up its
 > skills and MCP for this CLI. Ask before installing software or changing my
-> configuration. Do not create a project yet. When setup is ready, tell me how
-> to restart this CLI and ask it to create a new project.
+> configuration. Do not create a project yet. Activate the plugin using this
+> client's supported method and verify live skills and MCP tools. Save a handoff
+> with any required session steps and how to request an app for my city and state.
 
 [SETUP.md](SETUP.md) gives the agent the technical workflow: install runtime
 requirements, build/install a persistent user-scope skills/MCP plugin, check
-readiness, and save a handoff. After setup, **exit and restart the CLI**, then
-say:
+live readiness, and save a handoff. **No blanket CLI restart is required.**
+Current Copilot supports in-session refresh; Claude can use `/reload-plugins`.
+Current Codex requires a new session after plugin installation. Follow the
+client-specific activation checks in SETUP.md, then say:
 
-> Create a new taxmap project. Walk me through the setup.
+> Build a taxmap app for Martinez, CA.
 
-The agent asks for your settings, creates the chosen project directory, and
-verifies its root. No manual directory-creation command is needed. Research
-and a local preview follow when you ask to continue; publication requires
-separate approval. Follow the [non-technical guide](website/docs/community.html)
-for installation, sign-in, permissions, and review.
+Replace the city and state with yours. The agent derives the name/title and
+uses `~/taxmap-projects/<city-id>`, then continues directly into official-source
+research, modeling and a local preview. Include a fiscal year, folder or focus
+in the request if desired; otherwise it verifies the latest adopted year.
+It safely resumes matching projects and asks about conflicting folders or
+essential blockers, not every optional setting.
+
+Review one consolidated proposal of exact fields, resource IDs, extra roll
+columns and public explanations before previewing. Incomplete coverage and
+source discrepancies stay visible; missing evidence is never filled with
+invented values. Nothing is uploaded or deployed automatically. Host tool
+permissions remain separate. For a deliberate setup-only walkthrough, say
+**"Create a new taxmap project. Walk me through the setup."**
+Individual skills, CLI/MCP operations and editable project files remain
+available for a hands-on process; using the CLI directly does not require AI.
+Follow the [non-technical guide](website/docs/community.html) for installation,
+sign-in, permissions, and review.
 
 ### One plugin, all taxmap skills
 
@@ -127,7 +143,8 @@ Claude adapter. Install the generated bundle, not the raw source manifest,
 to get the machine-specific MCP connection.
 
 Use the chosen CLI's plugin manager to **disable, enable, or uninstall taxmap
-as one unit**. Restart to check the effective result. These actions preserve
+as one unit**. Apply the client's supported refresh/session step and verify the
+effective result; restart only when needed. These actions preserve
 city projects; uninstalling a plugin does not remove the separate Python
 environment. Do not also register MCP or copy loose skills, since those would
 remain active independently.
@@ -198,7 +215,8 @@ Success creates an **empty project**, records installation paths and the
 tools revision in `taxmap-install.json`, and prints an exact CLI command and
 an existing-project plugin handoff. It also generates `PROJECT-PROMPT.md`.
 Follow the printed setup request using the existing checkout/environment,
-restart the CLI, then open the existing project and read the generated request.
+activate and verify live tools, then open the existing project and read the
+generated request. Change sessions or restart only when the client requires it.
 If a plugin is already connected, reuse it; do not register independent MCP
 or create another project.
 The request includes evidence, privacy, and local-preview safeguards; it is
@@ -211,8 +229,8 @@ place; they are excluded from project Git tracking.
 
 **New to terminals or building with AI?** Follow
 [non-technical guide](website/docs/community.html): install and sign into
-Codex, Claude Code, or GitHub Copilot CLI, ask it to follow SETUP.md, restart,
-then create a project. The direct installer above is an alternative, not a
+Codex, Claude Code, or GitHub Copilot CLI, ask it to follow SETUP.md and verify
+live readiness, then create a project. The direct installer above is an alternative, not a
 required first step. Permissions, missing data, and publication approval
 remain explicit. No hosted backend is required. For repository development:
 
@@ -227,8 +245,9 @@ On macOS or Linux use `.venv/bin/pip`. Requires Python 3.10 or newer.
 
 ### Recommended: plugin-managed connection
 
-Follow [SETUP.md](SETUP.md) to install the single skills/MCP plugin, restart
-the CLI, and use its live `project_open` or `project_init` tools. The plugin
+Follow [SETUP.md](SETUP.md) to install and activate the single skills/MCP plugin,
+verify live readiness, and use `build-taxmap-app` with its live `app_start` tool. Expert
+projects can still use `project_open` or `project_init`. The plugin
 owns the connection: do not also register an independent MCP server or copy
 loose skills. Its server starts without a pinned project.
 
@@ -257,7 +276,8 @@ Point your agent at [AGENTS.md](AGENTS.md) and the [skills](skills/).
 
 | Skill | Purpose |
 |---|---|
-| [taxmap-project-setup](skills/taxmap-project-setup/SKILL.md) | Create and configure a project |
+| [build-taxmap-app](skills/build-taxmap-app/SKILL.md) | One request through research, exact content review and a checked local app |
+| [taxmap-project-setup](skills/taxmap-project-setup/SKILL.md) | Optional step-by-step setup or existing-project configuration |
 | [ingest-resources](skills/ingest-resources/SKILL.md) | Add documents, links, chats, images |
 | [screen-sources](skills/screen-sources/SKILL.md) | Find and verify authoritative documents |
 | [extract-assessment-roll](skills/extract-assessment-roll/SKILL.md) | Transcribe and prove per-parcel rolls |
@@ -269,12 +289,44 @@ Point your agent at [AGENTS.md](AGENTS.md) and the [skills](skills/).
 | [write-transparency-brief](skills/write-transparency-brief/SKILL.md) | Plain-language, cited explanations |
 | [taxmap-uninstall](skills/taxmap-uninstall/SKILL.md) | Disable, re-enable, remove tools, and review legacy installations safely |
 
+### Guided app lifecycle
+
+The assistant handles research and judgment; the MCP server never calls an
+LLM. These deterministic helpers compose existing operations:
+
+| Tool | Purpose |
+|---|---|
+| `app_start` | Safe creation/resume, standard-folder defaults, preserved explicit year |
+| `app_status` | Durable scope, adoption evidence, caveats and artifact references |
+| `app_check` | Integrity plus every roll total/count, parcel join and formula/roll comparison |
+| `app_review` | Private exact-export manifest; explicit user approval recorded by digest |
+| `app_preview` | Approved build, owned localhost server, available port and HTTP health check |
+
+Guided projects keep intent, progress, approval and last readiness/preview
+handoff in reviewable `app.yaml`. Detailed reports in `derived` and preview
+outputs under `.taxmap/app-previews` are rebuildable. A saved URL is not proof
+that a server is running. Resume with the same identity/path, check current
+files, then preview; unchanged content needs no repeated content approval.
+The MCP process owns its preview. Stop with `app_preview(stop=true)` or use
+the returned standalone restart command and Ctrl+C. Content changes need
+review again; public deployment always requires separate permission.
+
+`project_validate` still means file/reference integrity, not financial
+reconciliation. `ready_with_caveats` can include printed-total differences,
+unmatched parcels or missing optional calculators; the generated coverage
+page discloses them and never changes the adopted amounts. Structural errors,
+unparsed amounts, ambiguous joins and an empty unsupported model block the
+guided preview. Existing low-level CLI/MCP behavior remains available.
+
 ## Publication controls
 
-Before building a public site, review these settings in `taxmap.yaml`:
+Before a viewable local preview or public deployment, review these settings in
+`taxmap.yaml`. Guided `app_review` may prepare an unserved private export for
+this review; that is not permission to serve, upload or deploy it.
 
-- `site.publish_fields`: a strict parcel-attribute allow-list (`null` means
-  all fields). Required calculator, search and label fields are **not** added
+- `site.publish_fields`: a strict parcel-attribute allow-list. Low-level builds
+  retain the legacy `null` = all fields behavior; guided apps require an explicit
+  list. Required calculator, search and label fields are **not** added
   back. `site.hide_fields` takes precedence. The parcel APN must be approved:
   builds fail if it is excluded because public search and assessment joins
   require APNs. Excluded addresses are omitted from the search index too.
@@ -303,6 +355,11 @@ old independent-MCP instructions with the plugin-managed `project_open` flow.
 Previously deployed content is not removed until you rebuild and redeploy.
 
 ## CLI
+
+These low-level commands remain available for manual work. They do not run
+AI research or enforce the guided `app.yaml` approval lifecycle. Review content
+before building/serving, check roll reconciliation separately from integrity,
+and preserve coverage disclosures and source amounts.
 
 ```text
 taxmap init my-city --name my-city --jurisdiction "City of Example" --state CA
@@ -375,6 +432,12 @@ than publishing an incomplete map; the previous deployment remains available.
 
 For a separate city's project repository, use the standalone
 [Pages workflow template](templates/github-pages.yml).
+That template uses the low-level build, not guided app approval. For a guided
+app, publish the exact approved export returned by `app_preview` only after
+separate deployment permission, preserving its generated coverage page and
+disclaimer. Do not publish the whole `.taxmap` cache. A CI rebuild needs equivalent
+approval, reconciliation and coverage safeguards; a green integrity check alone
+is not enough.
 
 ## Development
 
