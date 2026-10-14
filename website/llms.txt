@@ -4,10 +4,13 @@
 > records; deterministic MCP tools store, extract, validate, and build.
 
 ## Documentation
-- [Documentation hub](docs/): app usage and three project-building guides.
+- [Documentation hub](docs/): choose between using a map and creating a map.
+- [Use a map](docs/use.html): reader hub; no installation or AI agent needed.
+- [Create a map](docs/create.html): project creator hub with agent-assisted,
+  developer, and AI-agent reference workflows.
 - [App user guide](docs/users.html): parcel search, district cards, calculators,
   sources, official amounts versus estimates, and map limitations.
-- [Non-technical guide](docs/community.html): one-command interactive project
+- [Build with an AI agent](docs/community.html): one-command interactive project
   installers for PowerShell/Bash, local CLI onboarding, and a
   complete setup-to-preview request for Codex, Claude Code, or Copilot,
   plus project review, maintenance, and publication approval.

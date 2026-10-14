@@ -214,9 +214,11 @@ original project exactly. See its [README](examples/concord/README.md).
 
 - [Landing page](https://cocoa-county.github.io/tax-map/)
 - [Concord example map](https://cocoa-county.github.io/tax-map/concord/)
-- [Documentation](https://cocoa-county.github.io/tax-map/docs/): full
-  [app user guide](website/docs/users.html) and separate non-technical project
-  creation, developer, and agent guides. Agents can read the
+- [Documentation](https://cocoa-county.github.io/tax-map/docs/): two distinct
+  paths: [Use a map](website/docs/use.html) for readers, and
+  [Create a map](website/docs/create.html) for project creators. The latter
+  contains agent-assisted, developer, and AI-agent reference guides. Existing
+  guide URLs remain unchanged. Agents can read the
   [plain-text playbook](https://cocoa-county.github.io/tax-map/docs/agents.txt)
   and [documentation index](https://cocoa-county.github.io/tax-map/llms.txt).
 
