@@ -18,7 +18,9 @@ def project():
     return Project(CONCORD)
 
 
-def test_model_validates_without_parcels(project):
+def test_model_validates_without_parcels():
+    project = Project(CONCORD)
+    project.config.site.jurisdiction_boundary = None
     report = validate_project(project, check_hashes=False)
     assert report["ok"], report["errors"]
 
