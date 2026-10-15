@@ -119,7 +119,7 @@ no other installed plugin uses it; never use a force option to remove others.
 Use the client's supported refresh/session mechanism; check its installed-version
 help, since removal behavior can differ from installation. Restart only when
 required or the supported refresh fails. For reinstallation, use SETUP.md's
-client-specific activation steps, including Codex's required new session.
+client-specific activation steps, including Codex's full app/CLI restart and fresh-conversation verification.
 Verify that the disabled/uninstalled bundle's skills and MCP tools are absent
 from the live session (or present again after re-enable), not merely changed on
 disk. Verify identified city project paths remain. If live verification is

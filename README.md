@@ -144,16 +144,21 @@ this into the agent:
 > Download https://github.com/Cocoa-County/tax-map into a separate local folder
 > and follow SETUP.md at the repository root to install taxmap and set up its
 > skills and MCP for this CLI. Ask before installing software or changing my
-> configuration. Do not create a project yet. Activate the plugin using this
-> client's supported method and verify live skills and MCP tools. Save a handoff
+> configuration. Do not create a project yet. Build the bundle for my actual
+> client using --client. For Codex, save the handoff and tell me to fully quit
+> and reopen the app or exit and relaunch the CLI before verification in a fresh
+> conversation. Activate the plugin using this client's supported method and
+> verify live skills and MCP tools. Save a handoff
 > with any required session steps and how to request an app for my city and state.
 
 [SETUP.md](SETUP.md) gives the agent the technical workflow: install runtime
 requirements, build/install a persistent user-scope skills/MCP plugin, check
-live readiness, and save a handoff. **No blanket CLI restart is required.**
+live readiness, and save a handoff. Activation depends on the client.
 Current Copilot supports in-session refresh; Claude can use `/reload-plugins`.
-Current Codex requires a new session after plugin installation. Follow the
-client-specific activation checks in SETUP.md, then say:
+For Codex, fully quit and reopen the desktop app or exit and relaunch the CLI,
+then verify in a fresh conversation. A new conversation alone was insufficient
+on the tested Windows/Codex 0.162.1 installation. Follow the client-specific
+activation checks in SETUP.md, then say:
 
 > Build a taxmap app for Martinez, CA.
 
@@ -184,10 +189,14 @@ sign-in, permissions, and review.
 [plugin.json](plugin.json) and [skills/](skills/) are the shared source bundle.
 Setup runs [scripts/build_plugin.py](scripts/build_plugin.py) to generate a
 local marketplace with every skill, the uninstall skill, and projectless MCP
-using the installed environment's absolute executable path. It includes the
-portable Agent Plugins format for compatible Copilot/Codex versions and a
-Claude adapter. Install the generated bundle, not the raw source manifest,
-to get the machine-specific MCP connection.
+using the installed environment's absolute executable path. Select
+`--client codex`, `--client claude`, or `--client copilot`; build separate bundles
+for each client. Codex gets an explicit compatibility manifest without a root
+portable manifest, avoiding the absolute-command parser failure in Codex 0.162.1.
+Claude and Copilot retain their existing packaging. Install the generated bundle,
+not the raw source manifest, to get the machine-specific MCP connection.
+See SETUP.md's maintainer checks for tested versions and remaining clean-client
+validation; packaging tests do not establish support on every platform.
 
 Use the chosen CLI's plugin manager to **disable, enable, or uninstall taxmap
 as one unit**. Apply the client's supported refresh/session step and verify the

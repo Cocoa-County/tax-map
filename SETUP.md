@@ -1,4 +1,4 @@
-# Set up taxmap for an AI CLI
+# Set up taxmap for an AI agent
 
 This document is for the agent responding to the user's setup request.
 **Install the tools and one skills/MCP plugin, activate it through the client,
@@ -13,14 +13,14 @@ open that existing project with `project_open`, verify `project_info`, and read
 its PROJECT-PROMPT.md. Do not use the new-project request in section 6 for this
 handoff. An already working plugin connection can be reused without registration.
 
-Supported clients are Codex CLI, Claude Code, and GitHub Copilot CLI. Set up
+Supported setup targets are Codex (desktop or CLI), Claude Code, and GitHub Copilot CLI. Set up
 only the client the user chose. Keep its ordinary permission protections.
 Do not install or sign into an agent on the user's behalf, change organization
 policy, publish, commit, or push.
 
 ## 1. Confirm the client and tools location
 
-Identify the OS, actual CLI/version, permissions, and available prerequisites.
+Identify the OS, actual host (desktop or CLI), version, permissions, and available prerequisites.
 Ask which client is in use if uncertain. Explain what you will download,
 install, and register before requesting permission.
 
@@ -78,11 +78,13 @@ through `tools_root` in the adjacent `taxmap-plugin.json`; do not resolve
 scripts relative to the plugin cache:
 
 ```text
-VENV_PYTHON ABSOLUTE_TOOLS_PATH/scripts/build_plugin.py --output NEW_BUNDLE_ROOT --mcp ABSOLUTE_MCP_EXECUTABLE --revision RESOLVED_REVISION
+VENV_PYTHON ABSOLUTE_TOOLS_PATH/scripts/build_plugin.py --client SELECTED_CLIENT --output NEW_BUNDLE_ROOT --mcp ABSOLUTE_MCP_EXECUTABLE --revision RESOLVED_REVISION
 ```
 
+Set SELECTED_CLIENT to codex, claude, or copilot based on the actual host.
+Build a separate bundle per client; record the client and version in the handoff.
 Choose a stable, new output folder, such as
-`.taxmap-plugins/REVISION` under the tools checkout. The builder refuses
+`.taxmap-plugins/REVISION-CLIENT` under the tools checkout. The builder refuses
 existing destinations and missing executable paths. It does not modify user
 configuration or initialize a project. Review the generated files before
 registration; a partial failed build is left for inspection, not deleted.
@@ -91,14 +93,23 @@ The output is a local marketplace containing one `taxmap` plugin with:
 
 - Every complete directory in [skills/](skills/), including `build-taxmap-app`
   and `taxmap-uninstall`.
-- Portable Agent Plugins 1.0 `plugin.json` and `mcp.json` for compatible
-  Copilot/Codex versions, plus Claude's `.claude-plugin/plugin.json` and
-  `.mcp.json` adapter.
+- For Codex: `.codex-plugin/plugin.json` explicitly declares
+  `skills: "./skills/"` and `mcpServers: "./.mcp.json"`. There is no root
+  `plugin.json` or portable `mcp.json` in this client-specific bundle.
+- For Copilot/Claude: portable Agent Plugins 1.0 `plugin.json` and `mcp.json`,
+  plus Claude's `.claude-plugin/plugin.json` and `.mcp.json` adapter.
 - Local marketplace catalogs for Codex and Claude/Copilot.
 - Bundled AGENTS.md, SETUP.md and UNINSTALL.md; `taxmap-plugin.json` records
   paths/revision. Adjacent `TAXMAP-TOOLS.md` files support app generation,
   project setup, shared-resource lookup/contributions and cleanup in later
   sessions, even from outside the checkout.
+
+The Codex layout reproduces the repair tested on Windows with Codex 0.162.1.
+That version's portable parser rejected the absolute stdio executable and omitted
+MCP while skills remained discoverable. Adding an overlay alongside root
+`plugin.json` did not fix it; the Codex bundle must select the compatibility
+manifest alone. This is a tested-version compatibility choice, not a universal
+restriction on portable plugins. See [OpenAI packaging documentation](https://developers.openai.com/plugins/build/plugins).
 
 Bundled guidance remains readable after plugin-cache installation. Build and
 update commands use the original tools checkout recorded in
@@ -167,15 +178,21 @@ help and official instructions; do not invent a universal reload command.
 |---|---|
 | Copilot CLI | Current versions apply MCP configuration changes between turns without a session restart. Prefer native in-session plugin management where supported, then verify that bundled skills and MCP tools are live. See the [official changelog](https://github.com/github/copilot-cli/blob/main/changelog.md). |
 | Claude Code | Follow the installer's activation result. If needed, use `/reload-plugins` in the existing session, including after shell-based installation; a full CLI restart is not normally required. See [plugin loading](https://code.claude.com/docs/en/plugins/loading). |
-| Codex CLI | Current [plugin instructions](https://developers.openai.com/codex/plugins) require a new session after installation before bundled skills/tools can be used. Use the installed version's supported new-session action; do not assume this requires closing the terminal or restarting the whole application. |
+| Codex desktop / CLI | Save the handoff, then fully quit and reopen the desktop application, or exit and relaunch the standalone CLI. Verify in a fresh conversation. On Windows with Codex 0.162.1, a new conversation alone exposed skills but not MCP; a full restart was needed. Do not promise that /new refreshes MCP. |
 
 Respect trust, MCP and reload approvals. Never force a reload or bypass
 permission prompts. Older versions, failed activation, or a changed runtime
 may require a supported reconnect, new session or restart. When an installed
 runtime changes, reconnect its MCP process so it runs the updated package;
 reloading skill files alone is insufficient. Save progress before disconnecting
-any MCP-owned preview. If changes only become visible on the next turn, give
-the next request for the same CLI rather than demanding an unnecessary restart.
+any MCP-owned preview. For clients supporting in-session activation, if changes
+only become visible on the next turn, give the next request for the same client.
+For Codex setup, follow the full app/CLI restart and fresh-conversation checks above.
+
+Report these stages separately: **bundle generated**, **plugin installed**, and
+**live skills/MCP verified**. Only the last means tools setup is complete.
+Installation success or a fresh-process diagnostic is not live readiness in the
+user's assistant conversation.
 
 Verify:
 
@@ -198,17 +215,27 @@ Saving configuration is not proof that the current client has loaded it.
 Record checks performed, any checks unavailable, and blockers explicitly.
 
 Save `TAXMAP-SETUP.md` in the stable tools checkout with the tools revision,
-CLI/version, environment paths, generated bundle root, installed plugin id,
+client/version, selected bundle profile, environment paths, generated bundle root, installed plugin id,
 marketplace source/name, scope, bundled MCP identity, migrated legacy entries, checks,
 remaining actions, activation method/result, and exact reconnect/resume steps.
-Include exit/relaunch instructions only when needed, using supported commands
-for the installed version. Preserve any existing handoff; do
+Include the full app/CLI restart instructions for Codex and the supported
+activation action for other clients. Preserve any existing handoff; do
 not store credentials. This is a local setup record, not a published page.
+
+Include this resume request with the actual absolute handoff path substituted:
+
+> Read ABSOLUTE_TOOLS_PATH/TAXMAP-SETUP.md and finish taxmap setup verification.
+> Do not create a project. Load the installed build-taxmap-app and taxmap-uninstall
+> skills, confirm the plugin is enabled, and discover app_start, app_status,
+> app_check, app_review, app_preview, project_init, project_open and project_info.
+> Call only read-only project_info; an expected no-project error is acceptable.
+> Record the live results and remaining blockers in the handoff. Do not register
+> duplicate skills or MCP entries.
 
 ## 6. Continue when ready, or give the required activation handoff
 
 Give the user the handoff path and readiness result. If activation is pending,
-explain the exact supported action, including Codex's required new session.
+explain the exact supported action, including Codex's full app/CLI restart and fresh-conversation verification.
 Do not claim live readiness when only registration or subprocess checks passed.
 Use the saved handoff to diagnose missing skills/tools; do not register duplicates.
 
@@ -255,3 +282,29 @@ Maintainers should bump plugin.json's version for released bundle changes.
 Check help for local-cache refresh semantics and repeat the live readiness checks
 above. Preserve the old bundle until the new one works. Moving/deleting
 the environment or tools checkout breaks absolute executable paths.
+
+## Maintainer installation checks
+
+Run `python -m pytest` in an environment with the package and dev dependencies.
+For the opt-in actual Codex loader check, set `TAXMAP_CODEX_SMOKE=1` and run
+`python -m pytest tests/test_plugin.py -k codex_loader`. It uses temporary
+CODEX_HOME/configuration, a generated bundle and the native plugin manager;
+it never changes the user's installed taxmap plugin or creates a city project.
+The check requires Codex on PATH and its experimental app-server protocol;
+failures on other versions must be investigated, not silently skipped.
+
+Before releasing, test the public setup prompt from a clean user configuration
+on each claimed client/platform. Record OS, client version, package revision,
+installation result, activation method, live skills and callable MCP result.
+Repeat from outside the checkout, then disable the plugin and verify both skills
+and MCP disappear after client activation. Re-enable and verify again.
+
+| Client/platform | Evidence available for this change |
+|---|---|
+| Codex 0.162.1 / Windows | 2026-10-14: generated 0.3.2 bundle installed through the native manager in an isolated home; fresh app-server discovered all bundled skills and required MCP schemas outside the checkout. Disable/re-enable removed/restored runtime skills and MCP together. Prior interactive installation required a full desktop restart; clean public-prompt walkthrough for 0.3.2 remains a release check. |
+| Claude Code | Packaging regression coverage; clean-client setup/activation not yet verified for this release. |
+| Copilot CLI | Packaging regression coverage; clean-client setup/activation not yet verified for this release. |
+| macOS/Linux | Not yet verified through a clean client for this release. |
+
+Keep unverified platforms explicit. Do not advertise universal installation
+success based on generated JSON or standalone MCP checks.

@@ -172,7 +172,8 @@ def install(options: dict[str, str], revision: str | None, source: Path | None,
           + " for the existing tools checkout and environment. Do not download another checkout, "
           "create another environment, or initialize another project. Ask before changing configuration. "
           "Use this client's supported activation and verify live skills and MCP tools. "
-          "Start a new session or restart only if required; save exact resume steps.")
+          "For Codex, save the handoff and fully quit/reopen the desktop app or exit/relaunch "
+          "the CLI, then verify in a fresh conversation. For other clients use supported activation.")
     print("\nOnce live tools are ready, say: Open the existing project at " + str(root)
           + " with project_open, verify its root with project_info, then read "
           + str(prompt_path) + " and follow it.")

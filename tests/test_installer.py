@@ -171,7 +171,7 @@ def test_install_initializes_exact_project(tmp_path, monkeypatch, capsys):
     assert "Do not download another checkout" in output
     assert "initialize another project" in output
     assert "verify live skills and MCP tools" in output
-    assert "new session or restart only if required" in output
+    assert "fully quit/reopen the desktop app or exit/relaunch" in output
     assert "Once live tools are ready" in output
     assert "After restarting" not in output
     assert "project_open" in output and "project_info" in output

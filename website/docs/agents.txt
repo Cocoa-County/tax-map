@@ -9,16 +9,19 @@ tool schemas for exact parameters and its installed version.
 First-time CLI tools setup: download the repository into an approved stable
 tools location and follow its root SETUP.md:
 https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md
-Install runtime requirements and run scripts/build_plugin.py to generate a
-local plugin marketplace with all skills and projectless MCP. Install through
+Install runtime requirements and run scripts/build_plugin.py with required
+--client codex|claude|copilot to generate a
+local plugin marketplace with all skills and projectless MCP. Codex uses only
+.codex-plugin/plugin.json and .mcp.json, without root plugin.json or mcp.json;
+Claude/Copilot retain their existing adapters. Build separate client bundles. Install through
 the chosen CLI's persistent user-scope plugin manager, preserving configuration.
 The plugin's MCP uses the absolute tools-environment executable, no --project
 argument, and empty TAXMAP_PROJECT. Do not register independent MCP or loose
 skill copies. Do not reuse the Concord-pinned VS Code configuration.
 Verify initialize/list-tools without creating a project, save TAXMAP-SETUP.md,
 and use client-supported activation. Current Copilot can refresh in-session;
-Claude can use /reload-plugins; current Codex requires a new session after
-installation. See SETUP.md for official references and installed-version checks.
+Claude can use /reload-plugins; for Codex, fully quit and reopen the desktop app or exit and relaunch the CLI,
+then verify in a fresh conversation. See SETUP.md for official references and installed-version checks.
 Verify the expected skills and callable MCP tools in the actual assistant session;
 a standalone subprocess test does not prove this session has loaded the plugin.
 Restart only when required or supported activation fails. If pending, save exact

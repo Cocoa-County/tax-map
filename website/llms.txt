@@ -34,8 +34,8 @@
 - [Agent instructions](https://github.com/Cocoa-County/tax-map/blob/main/AGENTS.md)
 - [CLI tools bootstrap](https://github.com/Cocoa-County/tax-map/blob/main/SETUP.md):
   one persistent multi-skill plugin with projectless MCP; verify live skills/tools
-  after client-supported activation. No blanket restart; current Codex requires
-  a new session after installation. Tools-only setup does not create a city project.
+  after client-supported activation. No blanket restart; Codex setup requires
+  a full desktop-app quit/reopen or CLI exit/relaunch, then a fresh conversation. Tools-only setup does not create a city project.
 - [Disconnect tools](https://github.com/Cocoa-County/tax-map/blob/main/UNINSTALL.md):
   uninstall-skill fallback, native plugin enable/disable/removal, legacy cleanup,
   and project/data preservation.

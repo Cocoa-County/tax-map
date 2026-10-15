@@ -10,7 +10,7 @@ That stage installs one persistent skills/MCP plugin and verifies live readiness
 after client-supported activation. A tools-only request must not create a city
 project. If the user already requested an app, continue when the skills and MCP
 tools are live; require a new session/restart only when the client needs it
-(current Codex installation requires a new session). See SETUP.md for client details.
+(Codex setup uses a full app/CLI restart and fresh-conversation verification). See SETUP.md for client details.
 For disabling or removing the bundle, use `taxmap-uninstall` and
 [UNINSTALL.md](UNINSTALL.md). Preserve city projects and shared tools.
 

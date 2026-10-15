@@ -16,7 +16,9 @@ def _write_json(path: Path, value: dict) -> None:
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
-def build_plugin(output: Path, mcp_executable: Path, revision: str) -> Path:
+def build_plugin(output: Path, mcp_executable: Path, revision: str, client: str) -> Path:
+    if client not in {"codex", "claude", "copilot"}:
+        raise ValueError(f"Unsupported client: {client}")
     output = output.expanduser().resolve()
     mcp_executable = mcp_executable.expanduser().resolve()
     if output.exists():
@@ -39,17 +41,26 @@ def build_plugin(output: Path, mcp_executable: Path, revision: str) -> Path:
     output.mkdir(parents=True, exist_ok=False)
     plugin = output / "taxmap"
     plugin.mkdir()
-    _write_json(plugin / "plugin.json", manifest)
+    if client == "codex":
+        # Codex 0.162.1's portable parser rejects absolute stdio commands.
+        # A root portable manifest also takes precedence over this adapter.
+        _write_json(plugin / ".codex-plugin" / "plugin.json", {
+            **{key: value for key, value in manifest.items() if key != "$schema"},
+            "skills": "./skills/", "mcpServers": "./.mcp.json",
+        })
+    else:
+        _write_json(plugin / "plugin.json", manifest)
     # Claude uses its compatibility manifest and MCP layout.
     _write_json(plugin / ".claude-plugin" / "plugin.json", {
         key: value for key, value in manifest.items() if key != "$schema"
     })
     server = {"type": "stdio", "command": str(mcp_executable), "args": [],
               "env": {"TAXMAP_PROJECT": ""}}
-    _write_json(plugin / "mcp.json", {
-        "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
-        "mcpServers": {"taxmap": server},
-    })
+    if client != "codex":
+        _write_json(plugin / "mcp.json", {
+            "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+            "mcpServers": {"taxmap": server},
+        })
     _write_json(plugin / ".mcp.json", {"mcpServers": {"taxmap": server}})
     for skill in skills:
         shutil.copytree(skill, plugin / "skills" / skill.name)
@@ -57,7 +68,7 @@ def build_plugin(output: Path, mcp_executable: Path, revision: str) -> Path:
         shutil.copy2(ROOT / name, plugin / name)
 
     context = {
-        "plugin": "taxmap", "marketplace": "taxmap-local",
+        "plugin": "taxmap", "marketplace": "taxmap-local", "client": client,
         "tools_root": str(ROOT), "bundle_root": str(output),
         "mcp_executable": str(mcp_executable), "tools_revision": revision,
         "handoff": str(ROOT / "TAXMAP-SETUP.md"),
@@ -91,18 +102,23 @@ def build_plugin(output: Path, mcp_executable: Path, revision: str) -> Path:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--client", required=True, choices=["codex", "claude", "copilot"],
+                        help="Client-specific package format; build a separate bundle per client")
     parser.add_argument("--output", type=Path, required=True,
                         help="New local marketplace directory; existing destinations are refused")
     parser.add_argument("--mcp", type=Path, required=True, help="Absolute installed taxmap-mcp executable")
     parser.add_argument("--revision", required=True, help="Tools checkout commit or archive revision")
     args = parser.parse_args()
     try:
-        plugin = build_plugin(args.output, args.mcp, args.revision)
+        plugin = build_plugin(args.output, args.mcp, args.revision, args.client)
     except (ValueError, OSError) as error:
         parser.exit(1, f"Plugin build failed: {error}\n")
     print(f"Plugin built: {plugin}\nMarketplace: {plugin.parent}\n"
           "Not registered yet. Follow SETUP.md to install and activate for your CLI, "
-          "then verify live skills and MCP tools. Start a new session or restart only if required.")
+          "then verify live skills and MCP tools. "
+          + ("For Codex, fully quit/reopen the desktop app or exit/relaunch the CLI; "
+             "then verify in a fresh conversation."
+             if args.client == "codex" else "Use the client's supported activation method."))
     return 0
 
 
